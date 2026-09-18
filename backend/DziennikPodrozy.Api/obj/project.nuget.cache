@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "iGtfZw+geiw=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\aniaa\\Desktop\\DziennikPodrozy\\backend\\DziennikPodrozy.Api\\DziennikPodrozy.Api.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\aniaa\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.15\\microsoft.aspnetcore.openapi.9.0.15.nupkg.sha512",
+    "C:\\Users\\aniaa\\.nuget\\packages\\microsoft.openapi\\1.6.17\\microsoft.openapi.1.6.17.nupkg.sha512"
+  ],
+  "logs": []
+}

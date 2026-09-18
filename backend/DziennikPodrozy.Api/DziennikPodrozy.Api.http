@@ -1,0 +1,6 @@
+@DziennikPodrozy.Api_HostAddress = http://localhost:5096
+
+GET {{DziennikPodrozy.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
