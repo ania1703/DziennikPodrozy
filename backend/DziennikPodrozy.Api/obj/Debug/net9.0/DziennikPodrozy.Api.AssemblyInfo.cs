@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DziennikPodrozy.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+38b4932c3cdf86d4383d59ba35ce07f9110c21b4")]
 [assembly: System.Reflection.AssemblyProductAttribute("DziennikPodrozy.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DziennikPodrozy.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
