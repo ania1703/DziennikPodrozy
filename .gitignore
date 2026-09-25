@@ -1,0 +1,16 @@
+# Wyniki kompilacji .NET
+bin/
+obj/
+
+# Pliki Visual Studio / edytorów
+.vs/
+*.user
+*.suo
+
+# Node (frontend)
+node_modules/
+dist/
+
+# Pliki systemowe
+.DS_Store
+Thumbs.db
