@@ -60,6 +60,42 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+    foreach (var roleName in new[] { "User", "Admin" })
+    {
+        if (!await roleManager.RoleExistsAsync(roleName))
+        {
+            await roleManager.CreateAsync(new IdentityRole(roleName));
+        }
+    }
+
+    var adminSection = app.Configuration.GetSection("AdminSeed");
+    var adminEmail = adminSection["Email"];
+    var adminPassword = adminSection["Password"];
+
+    if (!string.IsNullOrEmpty(adminEmail)
+        && !string.IsNullOrEmpty(adminPassword)
+        && await userManager.FindByEmailAsync(adminEmail) == null)
+    {
+        var admin = new ApplicationUser
+        {
+            UserName = adminSection["UserName"],
+            Email = adminEmail
+        };
+
+        var result = await userManager.CreateAsync(admin, adminPassword);
+
+        if (result.Succeeded)
+        {
+            await userManager.AddToRolesAsync(admin, new[] { "User", "Admin" });
+        }
+    }
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();

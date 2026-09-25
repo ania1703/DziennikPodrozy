@@ -35,6 +35,8 @@ public class AuthController : ControllerBase
             return BadRequest(result.Errors.Select(e => e.Description));
         }
 
+        await _userManager.AddToRoleAsync(user, "User");
+
         return Ok(new { message = "Konto zostało utworzone." });
     }
 
