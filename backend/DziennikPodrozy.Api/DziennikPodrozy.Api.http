@@ -1,6 +1,61 @@
-@DziennikPodrozy.Api_HostAddress = http://localhost:5096
+@host = https://localhost:7168
 
-GET {{DziennikPodrozy.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+### Rejestracja
+POST {{host}}/api/auth/register
+Content-Type: application/json
 
-###
+{
+  "userName": "ania",
+  "email": "ania@test.pl",
+  "password": "Haslo1234"
+}
+
+### Logowanie
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "ania@test.pl",
+  "password": "Haslo1234"
+}
+
+### Logowanie admina
+# @name loginAdmin
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@dziennik.pl",
+  "password": "Admin12345"
+}
+
+### Ping admina BEZ tokenu (oczekiwane: 401)
+GET {{host}}/api/admin/ping
+
+### Ping admina jako ADMIN (oczekiwane: 200)
+GET {{host}}/api/admin/ping
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+### Rejestracja zwykłego użytkownika
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "userName": "ola",
+  "email": "ola@test.pl",
+  "password": "Haslo1234"
+}
+
+### Logowanie zwykłego użytkownika
+# @name loginUser
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "ola@test.pl",
+  "password": "Haslo1234"
+}
+
+### Ping admina jako ZWYKŁY UŻYTKOWNIK (oczekiwane: 403)
+GET {{host}}/api/admin/ping
+Authorization: Bearer {{loginUser.response.body.$.token}}
