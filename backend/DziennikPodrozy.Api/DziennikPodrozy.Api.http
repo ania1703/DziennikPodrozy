@@ -59,3 +59,20 @@ Content-Type: application/json
 ### Ping admina jako ZWYKŁY UŻYTKOWNIK (oczekiwane: 403)
 GET {{host}}/api/admin/ping
 Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### Mój profil BEZ tokenu (oczekiwane: 401)
+GET {{host}}/api/profile
+
+### Mój profil jako zalogowany użytkownik (oczekiwane: 200)
+GET {{host}}/api/profile
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### Edycja mojego profilu (oczekiwane: 200)
+PUT {{host}}/api/profile
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "bio": "Kocham góry i długie wyprawy rowerem.",
+  "homeCity": "Białystok"
+}
