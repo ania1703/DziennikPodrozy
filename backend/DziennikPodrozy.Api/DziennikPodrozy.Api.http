@@ -76,3 +76,15 @@ Authorization: Bearer {{loginUser.response.body.$.token}}
   "bio": "Kocham góry i długie wyprawy rowerem.",
   "homeCity": "Białystok"
 }
+
+### Upload avatara
+POST {{host}}/api/profile/avatar
+Content-Type: multipart/form-data; boundary=MojaGranica
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+--MojaGranica
+Content-Disposition: form-data; name="file"; filename="avatar.png"
+Content-Type: image/png
+
+< C:\Users\aniaa\Desktop\efekty_uczenia.jpg
+--MojaGranica--

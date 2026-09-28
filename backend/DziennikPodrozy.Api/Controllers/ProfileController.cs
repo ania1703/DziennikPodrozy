@@ -58,4 +58,61 @@ public class ProfileController : ControllerBase
 
         return Ok(new { message = "Profil zaktualizowany." });
     }
+
+        [HttpPost("avatar")]
+    public async Task<IActionResult> UploadAvatar(IFormFile file)
+    {
+        var user = await _userManager.GetUserAsync(User);
+
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest(new { message = "Nie przesłano pliku." });
+        }
+
+        var allowedTypes = new[] { "image/jpeg", "image/png" };
+
+        if (!allowedTypes.Contains(file.ContentType))
+        {
+            return BadRequest(new { message = "Dozwolone są tylko pliki JPG i PNG." });
+        }
+
+        const long maxSizeBytes = 2 * 1024 * 1024; // 2 MB
+
+        if (file.Length > maxSizeBytes)
+        {
+            return BadRequest(new { message = "Plik jest za duży (maks. 2 MB)." });
+        }
+
+        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "avatars");
+        Directory.CreateDirectory(uploadsFolder);
+
+        var extension = Path.GetExtension(file.FileName);
+        var fileName = $"{Guid.NewGuid()}{extension}";
+        var filePath = Path.Combine(uploadsFolder, fileName);
+
+        await using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        if (!string.IsNullOrEmpty(user.AvatarUrl))
+        {
+            var oldFilePath = Path.Combine(uploadsFolder, Path.GetFileName(user.AvatarUrl));
+
+            if (System.IO.File.Exists(oldFilePath))
+            {
+                System.IO.File.Delete(oldFilePath);
+            }
+        }
+
+        user.AvatarUrl = $"/avatars/{fileName}";
+        await _userManager.UpdateAsync(user);
+
+        return Ok(new { avatarUrl = user.AvatarUrl });
+    }
 }
