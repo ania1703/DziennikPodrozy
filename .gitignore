@@ -14,3 +14,7 @@ dist/
 # Pliki systemowe
 .DS_Store
 Thumbs.db
+
+# Wgrane pliki użytkowników
+backend/DziennikPodrozy.Api/wwwroot/avatars/*
+!backend/DziennikPodrozy.Api/wwwroot/avatars/.gitkeep
