@@ -88,3 +88,48 @@ Content-Type: image/png
 
 < C:\Users\aniaa\Desktop\efekty_uczenia.jpg
 --MojaGranica--
+
+### Utworzenie podróży
+# @name createTrip
+POST {{host}}/api/trips
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Wakacje w Grecji",
+  "description": "Zwiedzanie wysp Cyklady",
+  "startDate": "2026-07-01",
+  "endDate": "2026-07-14"
+}
+
+### Lista moich podróży
+GET {{host}}/api/trips
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### Szczegóły podróży
+GET {{host}}/api/trips/{{createTrip.response.body.$.id}}
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### Edycja podróży
+PUT {{host}}/api/trips/{{createTrip.response.body.$.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Wakacje w Grecji - poprawione",
+  "description": "Zwiedzanie wysp Cyklady i Krety",
+  "startDate": "2026-07-01",
+  "endDate": "2026-07-16"
+}
+
+### Cudza podróż jako ADMIN (oczekiwane: 404, mimo że podróż istnieje)
+GET {{host}}/api/trips/{{createTrip.response.body.$.id}}
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+### Usunięcie podróży
+DELETE {{host}}/api/trips/{{createTrip.response.body.$.id}}
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### Podróż po usunięciu (oczekiwane: 404)
+GET {{host}}/api/trips/{{createTrip.response.body.$.id}}
+Authorization: Bearer {{loginUser.response.body.$.token}}
