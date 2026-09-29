@@ -201,3 +201,41 @@ Content-Type: image/png
 
 < C:\Users\aniaa\Desktop\efekty_uczenia.jpg
 --MojaGranica--
+
+### Podróż z 2025 roku
+POST {{host}}/api/trips
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Wyjazd 2025",
+  "startDate": "2025-05-01",
+  "endDate": "2025-05-10"
+}
+
+### Podróż z 2024 roku
+POST {{host}}/api/trips
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Wyjazd 2024",
+  "startDate": "2024-03-01",
+  "endDate": "2024-03-10"
+}
+
+### Wszystkie moje podróże, domyślnie od najnowszych
+GET {{host}}/api/trips
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### Tylko podróże z 2025 roku
+GET {{host}}/api/trips?year=2025
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### Tylko podróże zakończone
+GET {{host}}/api/trips?status=Finished
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### Wszystkie, od najstarszych
+GET {{host}}/api/trips?sort=oldest
+Authorization: Bearer {{loginUser.response.body.$.token}}

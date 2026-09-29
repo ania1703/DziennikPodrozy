@@ -22,12 +22,29 @@ public class TripsController : ControllerBase
 
     private string OwnerId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-    [HttpGet]
-    public async Task<IActionResult> GetTrips()
+        [HttpGet]
+    public async Task<IActionResult> GetTrips(
+        [FromQuery] int? year,
+        [FromQuery] string? status,
+        [FromQuery] string sort = "newest")
     {
-        var trips = await _context.Trips
-            .Where(t => t.OwnerId == OwnerId)
-            .ToListAsync();
+        var query = _context.Trips.Where(t => t.OwnerId == OwnerId);
+
+        if (year.HasValue)
+        {
+            query = query.Where(t => t.StartDate.Year == year.Value);
+        }
+
+        if (!string.IsNullOrEmpty(status) && Enum.TryParse<TripStatus>(status, out var statusFilter))
+        {
+            query = query.Where(t => t.Status == statusFilter);
+        }
+
+        query = sort == "oldest"
+            ? query.OrderBy(t => t.StartDate)
+            : query.OrderByDescending(t => t.StartDate);
+
+        var trips = await query.ToListAsync();
 
         return Ok(trips.Select(ToDto));
     }
