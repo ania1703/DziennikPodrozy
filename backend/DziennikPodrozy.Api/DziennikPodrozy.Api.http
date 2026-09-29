@@ -88,3 +88,154 @@ Content-Type: image/png
 
 < C:\Users\aniaa\Desktop\efekty_uczenia.jpg
 --MojaGranica--
+
+### Utworzenie podróży
+# @name createTrip
+POST {{host}}/api/trips
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Wakacje w Grecji",
+  "description": "Zwiedzanie wysp Cyklady",
+  "startDate": "2026-07-01",
+  "endDate": "2026-07-14"
+}
+
+### Lista moich podróży
+GET {{host}}/api/trips
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### Szczegóły podróży
+GET {{host}}/api/trips/{{createTrip.response.body.$.id}}
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### Edycja podróży
+PUT {{host}}/api/trips/{{createTrip.response.body.$.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Wakacje w Grecji - poprawione",
+  "description": "Zwiedzanie wysp Cyklady i Krety",
+  "startDate": "2026-07-01",
+  "endDate": "2026-07-16"
+}
+
+### Cudza podróż jako ADMIN (oczekiwane: 404, mimo że podróż istnieje)
+GET {{host}}/api/trips/{{createTrip.response.body.$.id}}
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+### Usunięcie podróży
+DELETE {{host}}/api/trips/{{createTrip.response.body.$.id}}
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### Podróż po usunięciu (oczekiwane: 404)
+GET {{host}}/api/trips/{{createTrip.response.body.$.id}}
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### Utworzenie podróży do testu statusu
+# @name createTripForStatus
+POST {{host}}/api/trips
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Wyjazd testowy",
+  "description": "Do testu zmiany statusu",
+  "startDate": "2026-08-01",
+  "endDate": "2026-08-10"
+}
+
+### Zmiana statusu na Finished (oczekiwane: 200, status "Finished")
+PATCH {{host}}/api/trips/{{createTripForStatus.response.body.$.id}}/status
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "status": "Finished"
+}
+
+### Zmiana statusu na nieprawidłową wartość (oczekiwane: 400)
+PATCH {{host}}/api/trips/{{createTripForStatus.response.body.$.id}}/status
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "status": "CosDziwnego"
+}
+
+### Utworzenie podróży do testu zdjęcia
+# @name createTripForCover
+POST {{host}}/api/trips
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Podróż ze zdjęciem",
+  "description": "Test okładki",
+  "startDate": "2026-09-01",
+  "endDate": "2026-09-10"
+}
+
+### Upload zdjęcia głównego
+POST {{host}}/api/trips/{{createTripForCover.response.body.$.id}}/cover-photo
+Content-Type: multipart/form-data; boundary=MojaGranica
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+--MojaGranica
+Content-Disposition: form-data; name="file"; filename="cover.png"
+Content-Type: image/png
+
+< C:\Users\aniaa\Desktop\efekty_uczenia.jpg
+--MojaGranica--
+
+### Upload zdjęcia do cudzej podróży jako ADMIN (oczekiwane: 404)
+POST {{host}}/api/trips/{{createTripForCover.response.body.$.id}}/cover-photo
+Content-Type: multipart/form-data; boundary=MojaGranica
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+--MojaGranica
+Content-Disposition: form-data; name="file"; filename="cover.png"
+Content-Type: image/png
+
+< C:\Users\aniaa\Desktop\efekty_uczenia.jpg
+--MojaGranica--
+
+### Podróż z 2025 roku
+POST {{host}}/api/trips
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Wyjazd 2025",
+  "startDate": "2025-05-01",
+  "endDate": "2025-05-10"
+}
+
+### Podróż z 2024 roku
+POST {{host}}/api/trips
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Wyjazd 2024",
+  "startDate": "2024-03-01",
+  "endDate": "2024-03-10"
+}
+
+### Wszystkie moje podróże, domyślnie od najnowszych
+GET {{host}}/api/trips
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### Tylko podróże z 2025 roku
+GET {{host}}/api/trips?year=2025
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### Tylko podróże zakończone
+GET {{host}}/api/trips?status=Finished
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### Wszystkie, od najstarszych
+GET {{host}}/api/trips?sort=oldest
+Authorization: Bearer {{loginUser.response.body.$.token}}
