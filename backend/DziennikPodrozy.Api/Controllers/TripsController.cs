@@ -107,6 +107,64 @@ public class TripsController : ControllerBase
         return Ok(ToDto(trip));
     }
 
+        [HttpPost("{id}/cover-photo")]
+    public async Task<IActionResult> UploadCoverPhoto(int id, IFormFile file)
+    {
+        var trip = await _context.Trips
+            .FirstOrDefaultAsync(t => t.Id == id && t.OwnerId == OwnerId);
+
+        if (trip == null)
+        {
+            return NotFound();
+        }
+
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest(new { message = "Nie przesłano pliku." });
+        }
+
+        var allowedTypes = new[] { "image/jpeg", "image/png" };
+
+        if (!allowedTypes.Contains(file.ContentType))
+        {
+            return BadRequest(new { message = "Dozwolone są tylko pliki JPG i PNG." });
+        }
+
+        const long maxSizeBytes = 2 * 1024 * 1024; // 2 MB
+
+        if (file.Length > maxSizeBytes)
+        {
+            return BadRequest(new { message = "Plik jest za duży (maks. 2 MB)." });
+        }
+
+        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "trip-covers");
+        Directory.CreateDirectory(uploadsFolder);
+
+        var extension = Path.GetExtension(file.FileName);
+        var fileName = $"{Guid.NewGuid()}{extension}";
+        var filePath = Path.Combine(uploadsFolder, fileName);
+
+        await using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        if (!string.IsNullOrEmpty(trip.CoverPhotoUrl))
+        {
+            var oldFilePath = Path.Combine(uploadsFolder, Path.GetFileName(trip.CoverPhotoUrl));
+
+            if (System.IO.File.Exists(oldFilePath))
+            {
+                System.IO.File.Delete(oldFilePath);
+            }
+        }
+
+        trip.CoverPhotoUrl = $"/trip-covers/{fileName}";
+        await _context.SaveChangesAsync();
+
+        return Ok(ToDto(trip));
+    }
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteTrip(int id)
     {
@@ -133,7 +191,8 @@ public class TripsController : ControllerBase
             Description = trip.Description,
             StartDate = trip.StartDate,
             EndDate = trip.EndDate,
-            Status = trip.Status.ToString()
+            Status = trip.Status.ToString(),
+            CoverPhotoUrl = trip.CoverPhotoUrl
         };
     }
 }

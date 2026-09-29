@@ -25,6 +25,8 @@ public class Trip
 
     public TripStatus Status { get; set; } = TripStatus.InProgress;
 
+    public string? CoverPhotoUrl { get; set; }
+
     public string OwnerId { get; set; } = string.Empty;
 
     [ForeignKey(nameof(OwnerId))]

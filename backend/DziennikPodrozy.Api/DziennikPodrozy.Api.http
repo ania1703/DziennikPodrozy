@@ -164,3 +164,40 @@ Authorization: Bearer {{loginUser.response.body.$.token}}
 {
   "status": "CosDziwnego"
 }
+
+### Utworzenie podróży do testu zdjęcia
+# @name createTripForCover
+POST {{host}}/api/trips
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Podróż ze zdjęciem",
+  "description": "Test okładki",
+  "startDate": "2026-09-01",
+  "endDate": "2026-09-10"
+}
+
+### Upload zdjęcia głównego
+POST {{host}}/api/trips/{{createTripForCover.response.body.$.id}}/cover-photo
+Content-Type: multipart/form-data; boundary=MojaGranica
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+--MojaGranica
+Content-Disposition: form-data; name="file"; filename="cover.png"
+Content-Type: image/png
+
+< C:\Users\aniaa\Desktop\efekty_uczenia.jpg
+--MojaGranica--
+
+### Upload zdjęcia do cudzej podróży jako ADMIN (oczekiwane: 404)
+POST {{host}}/api/trips/{{createTripForCover.response.body.$.id}}/cover-photo
+Content-Type: multipart/form-data; boundary=MojaGranica
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+--MojaGranica
+Content-Disposition: form-data; name="file"; filename="cover.png"
+Content-Type: image/png
+
+< C:\Users\aniaa\Desktop\efekty_uczenia.jpg
+--MojaGranica--

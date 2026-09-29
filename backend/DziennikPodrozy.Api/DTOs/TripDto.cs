@@ -8,4 +8,5 @@ public class TripDto
     public DateOnly StartDate { get; set; }
     public DateOnly? EndDate { get; set; }
     public string Status { get; set; } = string.Empty;
+    public string? CoverPhotoUrl { get; set; }
 }
