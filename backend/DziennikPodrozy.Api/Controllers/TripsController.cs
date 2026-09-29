@@ -85,6 +85,28 @@ public class TripsController : ControllerBase
         return Ok(ToDto(trip));
     }
 
+        [HttpPatch("{id}/status")]
+    public async Task<IActionResult> ChangeTripStatus(int id, ChangeTripStatusDto dto)
+    {
+        var trip = await _context.Trips
+            .FirstOrDefaultAsync(t => t.Id == id && t.OwnerId == OwnerId);
+
+        if (trip == null)
+        {
+            return NotFound();
+        }
+
+        if (!Enum.TryParse<TripStatus>(dto.Status, out var newStatus))
+        {
+            return BadRequest(new { message = "Nieprawidłowy status. Dozwolone wartości: InProgress, Finished." });
+        }
+
+        trip.Status = newStatus;
+        await _context.SaveChangesAsync();
+
+        return Ok(ToDto(trip));
+    }
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteTrip(int id)
     {
