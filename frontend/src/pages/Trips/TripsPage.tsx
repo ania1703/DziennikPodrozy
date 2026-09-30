@@ -1,5 +1,15 @@
+import Typography from '@mui/material/Typography'
+import TripsList from './TripsList'
+
 function TripsPage() {
-    return <h1>Moje podróże</h1>
+  return (
+    <div>
+      <Typography variant="h4" component="h1" sx={{ padding: '24px 24px 0' }}>
+        Moje podróże
+      </Typography>
+      <TripsList />
+    </div>
+  )
 }
 
 export default TripsPage
