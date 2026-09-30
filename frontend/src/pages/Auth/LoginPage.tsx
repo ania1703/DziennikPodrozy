@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography'
 import Alert from '@mui/material/Alert'
 import { useLogin } from '../../api/useLogin'
 import { useAuth } from '../../contexts/useAuth'
-import { LoginFormContainer } from './LoginPage.styles'
+import { AuthFormContainer } from '../../components/common/AuthFormContainer'
 
 function LoginPage() {
   const [email, setEmail] = useState('')
@@ -27,7 +27,7 @@ function LoginPage() {
   }
 
   return (
-    <LoginFormContainer onSubmit={handleSubmit}>
+    <AuthFormContainer onSubmit={handleSubmit}>
       <Typography variant="h4" component="h1">
         Logowanie
       </Typography>
@@ -55,7 +55,7 @@ function LoginPage() {
       <Button type="submit" variant="contained" disabled={login.isPending}>
         {login.isPending ? 'Logowanie...' : 'Zaloguj się'}
       </Button>
-    </LoginFormContainer>
+    </AuthFormContainer>
   )
 }
 
