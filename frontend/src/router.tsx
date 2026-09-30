@@ -1,8 +1,15 @@
 import { createBrowserRouter } from 'react-router-dom'
 import LoginPage from './pages/Auth/LoginPage'
 import RegisterPage from './pages/Auth/RegisterPage'
+import TripsPage from './pages/Trips/TripsPage'
+import { ProtectedRoute } from './components/common/ProtectedRoute'
+import { RootRedirect } from './components/common/RootRedirect'
 
 export const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <RootRedirect />,
+  },
   {
     path: '/login',
     element: <LoginPage />,
@@ -10,5 +17,14 @@ export const router = createBrowserRouter([
   {
     path: '/register',
     element: <RegisterPage />,
+  },
+  {
+    element: <ProtectedRoute />,
+    children: [
+      {
+        path: '/trips',
+        element: <TripsPage />,
+      },
+    ],
   },
 ])
