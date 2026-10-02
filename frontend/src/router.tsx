@@ -4,6 +4,7 @@ import RegisterPage from './pages/Auth/RegisterPage'
 import TripsPage from './pages/Trips/TripsPage'
 import { ProtectedRoute } from './components/common/ProtectedRoute'
 import { RootRedirect } from './components/common/RootRedirect'
+import { AppLayout } from './components/common/AppLayout'
 
 export const router = createBrowserRouter([
   {
@@ -22,8 +23,13 @@ export const router = createBrowserRouter([
     element: <ProtectedRoute />,
     children: [
       {
-        path: '/trips',
-        element: <TripsPage />,
+        element: <AppLayout />,
+        children: [
+          {
+            path: '/trips',
+            element: <TripsPage />,
+          },
+        ],
       },
     ],
   },
