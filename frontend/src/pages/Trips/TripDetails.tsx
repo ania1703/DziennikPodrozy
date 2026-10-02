@@ -4,6 +4,7 @@ import Typography from '@mui/material/Typography'
 import { getFileUrl } from '../../api/fileUrl'
 import type { Trip } from '../../api/useTrips'
 import { TripStatusChip } from '../../components/common/TripStatusChip'
+import TripStatusSwitch from './TripStatusSwitch'
 import {
   TripDetailsContainer,
   TripDetailsContent,
@@ -38,6 +39,8 @@ function TripDetails({ trip }: TripDetailsProps) {
         </Typography>
 
         <TripStatusChip status={trip.status} />
+
+        <TripStatusSwitch trip={trip} />
 
         <Typography>{trip.description ?? 'Brak opisu.'}</Typography>
       </TripDetailsContent>
