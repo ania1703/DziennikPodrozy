@@ -19,10 +19,10 @@ function TripCard({ trip }: TripCardProps) {
             }}
         >
             <TripCardOverlay>
-                <Typography variant="h6" component="h2" color="white">
+                <Typography variant="h6" component="h2" sx={{ color: 'common.white' }}>
                     {trip.title}
                 </Typography>
-                <Typography variant="body2" color="white">
+                <Typography variant="body2" sx={{ color: 'common.white' }}>
                     {trip.startDate}
                     {trip.endDate ? ` – ${trip.endDate}` : ''}
                 </Typography>

@@ -5,6 +5,7 @@ import TripsPage from './pages/Trips/TripsPage'
 import { ProtectedRoute } from './components/common/ProtectedRoute'
 import { RootRedirect } from './components/common/RootRedirect'
 import { AppLayout } from './components/common/AppLayout'
+import NewTripPage from './pages/Trips/NewTripPage'
 
 export const router = createBrowserRouter([
   {
@@ -29,6 +30,10 @@ export const router = createBrowserRouter([
             path: '/trips',
             element: <TripsPage />,
           },
+          {
+            path: '/trips/new',
+            element: <NewTripPage />,
+          }
         ],
       },
     ],

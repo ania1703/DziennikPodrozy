@@ -28,3 +28,18 @@ export const TripCardOverlay = styled(Box)({
   padding: 16,
   background: 'linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0) 60%)',
 })
+
+export const TripFormContainer = styled('form')({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 16,
+  maxWidth: 480,
+  padding: 24,
+})
+
+export const TripsHeader = styled(Box)({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  padding: '24px 24px 0',
+})
