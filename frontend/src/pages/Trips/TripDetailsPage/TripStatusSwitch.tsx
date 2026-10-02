@@ -1,8 +1,8 @@
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Switch from '@mui/material/Switch'
 import Alert from '@mui/material/Alert'
-import { useChangeTripStatus } from '../../api/useChangeTripStatus'
-import type { Trip } from '../../api/useTrips'
+import { useChangeTripStatus } from '../../../api/useChangeTripStatus'
+import type { Trip } from '../../../api/useTrips'
 
 interface TripStatusSwitchProps {
   trip: Trip

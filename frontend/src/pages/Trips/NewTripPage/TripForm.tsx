@@ -2,8 +2,8 @@ import { useState, type FormEvent } from 'react'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
-import type { CreateTripPayLoad } from '../../api/useCreateTrip'
-import { TripFormContainer } from './TripsPage.styles'
+import type { CreateTripPayLoad } from '../../../api/useCreateTrip'
+import { TripFormContainer } from './NewTripPage.styles'
 
 interface TripFormProps {
   onSubmit: (payload: CreateTripPayLoad) => void

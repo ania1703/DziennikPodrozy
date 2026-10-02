@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import Typography from '@mui/material/Typography'
-import { useCreateTrip } from '../../api/useCreateTrip'
+import { useCreateTrip } from '../../../api/useCreateTrip'
 import TripForm from './TripForm'
 
 function NewTripPage() {
