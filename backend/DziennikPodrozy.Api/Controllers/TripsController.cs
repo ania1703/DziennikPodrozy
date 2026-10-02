@@ -66,6 +66,11 @@ public class TripsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateTrip(CreateTripDto dto)
     {
+        if (dto.EndDate.HasValue && dto.EndDate.Value < dto.StartDate)
+        {
+            return BadRequest(new { message = "Data zakończenia nie może być wcześniejsza niż data rozpoczęcia." });
+        }
+
         var trip = new Trip
         {
             Title = dto.Title,
@@ -84,6 +89,11 @@ public class TripsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateTrip(int id, UpdateTripDto dto)
     {
+        if (dto.EndDate.HasValue && dto.EndDate.Value < dto.StartDate)
+        {
+            return BadRequest(new { message = "Data zakończenia nie może być wcześniejsza niż data rozpoczęcia." });
+        }
+
         var trip = await _context.Trips
             .FirstOrDefaultAsync(t => t.Id == id && t.OwnerId == OwnerId);
 
