@@ -239,3 +239,35 @@ Authorization: Bearer {{loginUser.response.body.$.token}}
 ### Wszystkie, od najstarszych
 GET {{host}}/api/trips?sort=oldest
 Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### Tworzenie podróży z końcem przed początkiem (oczekiwane: 400)
+POST {{host}}/api/trips
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Zła kolejność dat",
+  "startDate": "2026-08-10",
+  "endDate": "2026-08-01"
+}
+
+### Edycja podróży z końcem przed początkiem (oczekiwane: 400)
+PUT {{host}}/api/trips/{{createTripForStatus.response.body.$.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Wyjazd testowy",
+  "startDate": "2026-08-10",
+  "endDate": "2026-08-01"
+}
+
+### Tworzenie podróży bez daty końca (oczekiwane: 201, nadal działa)
+POST {{host}}/api/trips
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Podróż w trakcie",
+  "startDate": "2026-08-10"
+}

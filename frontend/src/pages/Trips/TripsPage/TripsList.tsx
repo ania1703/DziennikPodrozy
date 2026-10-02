@@ -1,7 +1,7 @@
 import CircularProgress from '@mui/material/CircularProgress'
 import Alert from '@mui/material/Alert'
 import Typography from '@mui/material/Typography'
-import { useTrips } from '../../api/useTrips'
+import { useTrips } from '../../../api/useTrips'
 import TripCard from './TripCard'
 import { TripsGrid } from './TripsPage.styles'
 

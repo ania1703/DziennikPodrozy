@@ -28,3 +28,10 @@ export const TripCardOverlay = styled(Box)({
   padding: 16,
   background: 'linear-gradient(to top, rgba(0,0,0,0.7), rgba(0,0,0,0) 60%)',
 })
+
+export const TripsHeader = styled(Box)({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  padding: '24px 24px 0',
+})
