@@ -7,6 +7,7 @@ import { RootRedirect } from './components/common/RootRedirect'
 import { AppLayout } from './components/common/AppLayout'
 import NewTripPage from './pages/Trips/NewTripPage/NewTripPage'
 import TripDetailsPage from './pages/Trips/TripDetailsPage/TripDetailsPage'
+import EditTripPage from './pages/Trips/EditTripPage/EditTripPage'
 
 export const router = createBrowserRouter([
   {
@@ -38,6 +39,10 @@ export const router = createBrowserRouter([
           {
             path: '/trips/:id',
             element: <TripDetailsPage />,
+          },
+          {
+            path: '/trips/:id/edit',
+            element: <EditTripPage />,
           }
         ],
       },

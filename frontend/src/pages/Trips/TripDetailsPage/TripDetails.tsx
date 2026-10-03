@@ -6,10 +6,12 @@ import type { Trip } from '../../../api/useTrips'
 import { TripStatusChip } from '../../../components/common/TripStatusChip'
 import TripStatusSwitch from './TripStatusSwitch'
 import DeleteTripAction from './DeleteTripAction'
+import { formatDateRange } from '../../../utils/formatDate'
 import {
   TripDetailsContainer,
   TripDetailsContent,
   TripDetailsCover,
+  TripDetailsActions,
 } from './TripDetailsPage.styles'
 
 interface TripDetailsProps {
@@ -35,15 +37,20 @@ function TripDetails({ trip }: TripDetailsProps) {
         </Typography>
 
         <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-          {trip.startDate}
-          {trip.endDate ? ` – ${trip.endDate}` : ''}
+          {formatDateRange(trip.startDate, trip.endDate)}
         </Typography>
 
         <TripStatusChip status={trip.status} />
 
         <TripStatusSwitch trip={trip} />
 
-        <DeleteTripAction trip={trip} />
+        <TripDetailsActions>
+          <Button variant="outlined" component={Link} to={`/trips/${trip.id}/edit`}>
+            Edytuj podróż
+          </Button>
+
+          <DeleteTripAction trip={trip} />
+        </TripDetailsActions>
 
         <Typography>{trip.description ?? 'Brak opisu.'}</Typography>
       </TripDetailsContent>

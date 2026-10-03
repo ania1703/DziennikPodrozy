@@ -4,6 +4,7 @@ import { getFileUrl } from '../../../api/fileUrl'
 import type { Trip } from '../../../api/useTrips'
 import { TripStatusChip } from '../../../components/common/TripStatusChip'
 import { TripCardOverlay, TripCardRoot } from './TripsPage.styles'
+import { formatDateRange } from '../../../utils/formatDate'
 
 interface TripCardProps {
   trip: Trip
@@ -24,8 +25,7 @@ function TripCard({ trip }: TripCardProps) {
             {trip.title}
           </Typography>
           <Typography variant="body2" sx={{ color: 'common.white' }}>
-            {trip.startDate}
-            {trip.endDate ? ` – ${trip.endDate}` : ''}
+            {formatDateRange(trip.startDate, trip.endDate)}
           </Typography>
           <TripStatusChip status={trip.status} />
         </TripCardOverlay>
