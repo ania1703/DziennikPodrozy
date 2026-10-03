@@ -25,5 +25,19 @@ export const TripDetailsContent = styled(Box)({
 
 export const TripDetailsActions = styled(Box)({
   display: 'flex',
+  flexWrap: 'wrap',
+  alignItems: 'flex-start',
   gap: 8,
+})
+
+export const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
 })
