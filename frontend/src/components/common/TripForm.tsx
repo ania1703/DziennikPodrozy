@@ -2,20 +2,27 @@ import { useState, type FormEvent } from 'react'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
-import type { CreateTripPayLoad } from '../../../api/useCreateTrip'
-import { TripFormContainer } from './NewTripPage.styles'
+import { TripFormContainer } from './TripForm.styles'
+
+export interface TripFormValues {
+  title: string
+  description: string | null
+  startDate: string
+  endDate: string | null
+}
 
 interface TripFormProps {
-  onSubmit: (payload: CreateTripPayLoad) => void
+  initialValues?: TripFormValues
+  onSubmit: (values: TripFormValues) => void
   isPending: boolean
   isError: boolean
 }
 
-function TripForm({ onSubmit, isPending, isError }: TripFormProps) {
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [startDate, setStartDate] = useState('')
-  const [endDate, setEndDate] = useState('')
+export function TripForm({ initialValues, onSubmit, isPending, isError }: TripFormProps) {
+  const [title, setTitle] = useState(initialValues?.title ?? '')
+  const [description, setDescription] = useState(initialValues?.description ?? '')
+  const [startDate, setStartDate] = useState(initialValues?.startDate ?? '')
+  const [endDate, setEndDate] = useState(initialValues?.endDate ?? '')
 
   const isEndBeforeStart = startDate !== '' && endDate !== '' && endDate < startDate
 
@@ -58,14 +65,16 @@ function TripForm({ onSubmit, isPending, isError }: TripFormProps) {
         required
       />
 
-       <TextField
+      <TextField
         label="Data zakończenia"
         type="date"
         value={endDate}
         onChange={(event) => setEndDate(event.target.value)}
         error={isEndBeforeStart}
         helperText={
-          isEndBeforeStart ? 'Data zakończenia nie może być wcześniejsza niż rozpoczęcia.' : undefined
+          isEndBeforeStart
+            ? 'Data zakończenia nie może być wcześniejsza niż rozpoczęcia.'
+            : undefined
         }
         slotProps={{ inputLabel: { shrink: true }, htmlInput: { min: startDate } }}
       />
@@ -76,5 +85,3 @@ function TripForm({ onSubmit, isPending, isError }: TripFormProps) {
     </TripFormContainer>
   )
 }
-
-export default TripForm

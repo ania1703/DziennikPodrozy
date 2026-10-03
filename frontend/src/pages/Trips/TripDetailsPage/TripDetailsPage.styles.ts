@@ -22,3 +22,8 @@ export const TripDetailsContent = styled(Box)({
   gap: 12,
   paddingTop: 24,
 })
+
+export const TripDetailsActions = styled(Box)({
+  display: 'flex',
+  gap: 8,
+})
