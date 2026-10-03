@@ -7,6 +7,7 @@ import { TripStatusChip } from '../../../components/common/TripStatusChip'
 import TripStatusSwitch from './TripStatusSwitch'
 import DeleteTripAction from './DeleteTripAction'
 import { formatDateRange } from '../../../utils/formatDate'
+import UploadCoverAction from './UploadCoverAction'
 import {
   TripDetailsContainer,
   TripDetailsContent,
@@ -45,6 +46,8 @@ function TripDetails({ trip }: TripDetailsProps) {
         <TripStatusSwitch trip={trip} />
 
         <TripDetailsActions>
+          <UploadCoverAction trip={trip} />
+
           <Button variant="outlined" component={Link} to={`/trips/${trip.id}/edit`}>
             Edytuj podróż
           </Button>
