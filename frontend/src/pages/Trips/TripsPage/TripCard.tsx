@@ -5,6 +5,7 @@ import type { Trip } from '../../../api/useTrips'
 import { TripStatusChip } from '../../../components/common/TripStatusChip'
 import { TripCardOverlay, TripCardRoot } from './TripsPage.styles'
 import { formatDateRange } from '../../../utils/formatDate'
+import { getTripFallbackColor } from '../../../utils/tripColors'
 
 interface TripCardProps {
   trip: Trip
@@ -17,6 +18,7 @@ function TripCard({ trip }: TripCardProps) {
     <Link to={`/trips/${trip.id}`} style={{ textDecoration: 'none' }}>
       <TripCardRoot
         style={{
+          backgroundColor: getTripFallbackColor(trip.id),
           backgroundImage: imageUrl ? `url(${imageUrl})` : undefined,
         }}
       >

@@ -1,15 +1,17 @@
-import CircularProgress from '@mui/material/CircularProgress'
+import { Link } from 'react-router-dom'
 import Alert from '@mui/material/Alert'
+import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
 import { useTrips } from '../../../api/useTrips'
+import { LoadingSpinner } from '../../../components/common/LoadingSpinner'
 import TripCard from './TripCard'
-import { TripsGrid } from './TripsPage.styles'
+import { EmptyState, TripsGrid } from './TripsPage.styles'
 
 function TripsList() {
   const { data: trips, isLoading, isError } = useTrips()
 
   if (isLoading) {
-    return <CircularProgress />
+    return <LoadingSpinner />
   }
 
   if (isError) {
@@ -17,7 +19,17 @@ function TripsList() {
   }
 
   if (!trips || trips.length === 0) {
-    return <Typography>Nie masz jeszcze żadnych podróży.</Typography>
+    return (
+      <EmptyState>
+        <Typography variant="h6" component="p">
+          Nie masz jeszcze żadnych podróży.
+        </Typography>
+
+        <Button variant="contained" component={Link} to="/trips/new">
+          Dodaj pierwszą podróż
+        </Button>
+      </EmptyState>
+    )
   }
 
   return (

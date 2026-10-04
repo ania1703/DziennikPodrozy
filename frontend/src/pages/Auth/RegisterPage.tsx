@@ -1,5 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
+import MuiLink from '@mui/material/Link'
+import { AuthLayout } from '../../components/common/AuthLayout'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
@@ -19,6 +21,7 @@ function RegisterPage() {
   }
 
   return (
+    <AuthLayout>
     <AuthFormContainer onSubmit={handleSubmit}>
       <Typography variant="h4" component="h1">
         Rejestracja
@@ -57,8 +60,11 @@ function RegisterPage() {
         {register.isPending ? 'Rejestracja...' : 'Zarejestruj się'}
       </Button>
 
-      <Link to="/login">Masz już konto? Zaloguj się</Link>
+      <MuiLink component={Link} to="/login">
+          Masz już konto? Zaloguj się
+      </MuiLink>
     </AuthFormContainer>
+    </AuthLayout>
   )
 }
 
