@@ -1,18 +1,22 @@
 import { Link } from 'react-router-dom'
 import Button from '@mui/material/Button'
+import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
 import { getFileUrl } from '../../../api/fileUrl'
 import type { Trip } from '../../../api/useTrips'
 import { TripStatusChip } from '../../../components/common/TripStatusChip'
-import TripStatusSwitch from './TripStatusSwitch'
-import DeleteTripAction from './DeleteTripAction'
 import { formatDateRange } from '../../../utils/formatDate'
+import { getTripFallbackColor } from '../../../utils/tripColors'
+import DeleteTripAction from './DeleteTripAction'
+import TripStatusSwitch from './TripStatusSwitch'
 import UploadCoverAction from './UploadCoverAction'
 import {
+  TripDetailsActions,
+  TripDetailsCard,
   TripDetailsContainer,
   TripDetailsContent,
   TripDetailsCover,
-  TripDetailsActions,
+  TripDetailsStatus,
 } from './TripDetailsPage.styles'
 
 interface TripDetailsProps {
@@ -28,35 +32,45 @@ function TripDetails({ trip }: TripDetailsProps) {
         ← Wróć do listy
       </Button>
 
-      <TripDetailsCover
-        style={{ backgroundImage: imageUrl ? `url(${imageUrl})` : undefined }}
-      />
+      <TripDetailsCard>
+        <TripDetailsCover
+          style={{
+            backgroundColor: getTripFallbackColor(trip.id),
+            backgroundImage: imageUrl ? `url(${imageUrl})` : undefined,
+          }}
+        />
 
-      <TripDetailsContent>
-        <Typography variant="h4" component="h1">
-          {trip.title}
-        </Typography>
+        <TripDetailsContent>
+          <Typography variant="h4" component="h1">
+            {trip.title}
+          </Typography>
 
-        <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-          {formatDateRange(trip.startDate, trip.endDate)}
-        </Typography>
+          <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+            {formatDateRange(trip.startDate, trip.endDate)}
+          </Typography>
 
-        <TripStatusChip status={trip.status} />
+          <TripDetailsStatus>
+            <TripStatusChip status={trip.status} />
+            <TripStatusSwitch trip={trip} />
+          </TripDetailsStatus>
 
-        <TripStatusSwitch trip={trip} />
+          <Typography sx={{ whiteSpace: 'pre-wrap', maxWidth: '70ch' }}>
+            {trip.description ?? 'Brak opisu.'}
+          </Typography>
 
-        <TripDetailsActions>
-          <UploadCoverAction trip={trip} />
+          <Divider />
 
-          <Button variant="outlined" component={Link} to={`/trips/${trip.id}/edit`}>
-            Edytuj podróż
-          </Button>
+          <TripDetailsActions>
+            <UploadCoverAction trip={trip} />
 
-          <DeleteTripAction trip={trip} />
-        </TripDetailsActions>
+            <Button variant="outlined" component={Link} to={`/trips/${trip.id}/edit`}>
+              Edytuj podróż
+            </Button>
 
-        <Typography>{trip.description ?? 'Brak opisu.'}</Typography>
-      </TripDetailsContent>
+            <DeleteTripAction trip={trip} />
+          </TripDetailsActions>
+        </TripDetailsContent>
+      </TripDetailsCard>
     </TripDetailsContainer>
   )
 }

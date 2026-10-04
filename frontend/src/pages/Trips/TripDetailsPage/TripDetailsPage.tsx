@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom'
-import CircularProgress from '@mui/material/CircularProgress'
+import { LoadingSpinner } from '../../../components/common/LoadingSpinner'
 import Alert from '@mui/material/Alert'
 import { useTrip } from '../../../api/useTrip'
 import TripDetails from './TripDetails'
@@ -9,7 +9,7 @@ function TripDetailsPage() {
   const { data: trip, isLoading, isError } = useTrip(id)
 
   if (isLoading) {
-    return <CircularProgress />
+    return <LoadingSpinner />
   }
 
   if (isError || !trip) {

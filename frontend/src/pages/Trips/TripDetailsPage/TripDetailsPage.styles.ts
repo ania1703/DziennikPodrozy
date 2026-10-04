@@ -2,15 +2,22 @@ import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 
 export const TripDetailsContainer = styled(Box)({
-  maxWidth: 900,
+  maxWidth: 1200,
   margin: '0 auto',
   padding: 24,
 })
 
+export const TripDetailsCard = styled(Box)(({ theme }) => ({
+  marginTop: 16,
+  overflow: 'hidden',
+  borderRadius: 16,
+  border: '1px solid #EADFCB',
+  backgroundColor: theme.palette.background.paper,
+  boxShadow: '0 2px 8px rgba(59, 47, 42, 0.1)',
+}))
+
 export const TripDetailsCover = styled(Box)({
-  height: 240,
-  borderRadius: 12,
-  backgroundColor: '#37474f',
+  height: 340,
   backgroundSize: 'cover',
   backgroundPosition: 'center',
 })
@@ -18,9 +25,15 @@ export const TripDetailsCover = styled(Box)({
 export const TripDetailsContent = styled(Box)({
   display: 'flex',
   flexDirection: 'column',
-  alignItems: 'flex-start',
-  gap: 12,
-  paddingTop: 24,
+  gap: 16,
+  padding: 32,
+})
+
+export const TripDetailsStatus = styled(Box)({
+  display: 'flex',
+  flexWrap: 'wrap',
+  alignItems: 'center',
+  gap: 16,
 })
 
 export const TripDetailsActions = styled(Box)({
