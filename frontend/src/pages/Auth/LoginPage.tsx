@@ -5,6 +5,7 @@ import Typography from '@mui/material/Typography'
 import Alert from '@mui/material/Alert'
 import { useLogin } from '../../api/useLogin'
 import { useAuth } from '../../contexts/useAuth'
+import { useNavigate } from 'react-router-dom'
 import { AuthFormContainer } from '../../components/common/AuthFormContainer'
 
 function LoginPage() {
@@ -12,6 +13,7 @@ function LoginPage() {
   const [password, setPassword] = useState('')
   const login = useLogin()
   const { login: saveAuth } = useAuth()
+  const navigate = useNavigate()
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault()
@@ -21,6 +23,7 @@ function LoginPage() {
       {
         onSuccess: (data) => {
           saveAuth(data.token, data.userName, data.roles)
+          navigate('/trips', { replace: true })
         },
       },
     )
@@ -34,7 +37,6 @@ function LoginPage() {
 
       {login.isError && <Alert severity="error">Nieprawidłowy e-mail lub hasło.</Alert>}
 
-      {login.isSuccess && <Alert severity="success">Zalogowano jako {login.data.userName}</Alert>}
 
       <TextField
         label="E-mail"
