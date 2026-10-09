@@ -19,6 +19,7 @@ function EditTripForm({ trip }: EditTripFormProps) {
         startDate: trip.startDate,
         endDate: trip.endDate,
       }}
+      cancelTo={`/trips/${trip.id}`}
       isPending={updateTrip.isPending}
       isError={updateTrip.isError}
       onSubmit={(values) =>

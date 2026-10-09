@@ -2,7 +2,8 @@ import { useState, type FormEvent } from 'react'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
-import { TripFormContainer } from './TripForm.styles'
+import { TripFormActions, TripFormContainer } from './TripForm.styles'
+import { Link } from 'react-router-dom'
 
 export interface TripFormValues {
   title: string
@@ -13,12 +14,13 @@ export interface TripFormValues {
 
 interface TripFormProps {
   initialValues?: TripFormValues
+  cancelTo: string
   onSubmit: (values: TripFormValues) => void
   isPending: boolean
   isError: boolean
 }
 
-export function TripForm({ initialValues, onSubmit, isPending, isError }: TripFormProps) {
+export function TripForm({ initialValues, cancelTo, onSubmit, isPending, isError }: TripFormProps) {
   const [title, setTitle] = useState(initialValues?.title ?? '')
   const [description, setDescription] = useState(initialValues?.description ?? '')
   const [startDate, setStartDate] = useState(initialValues?.startDate ?? '')
@@ -79,9 +81,15 @@ export function TripForm({ initialValues, onSubmit, isPending, isError }: TripFo
         slotProps={{ inputLabel: { shrink: true }, htmlInput: { min: startDate } }}
       />
 
-      <Button type="submit" variant="contained" disabled={isPending || isEndBeforeStart}>
-        {isPending ? 'Zapisywanie...' : 'Zapisz podróż'}
-      </Button>
+      <TripFormActions>
+        <Button type="submit" variant="contained" disabled={isPending || isEndBeforeStart}>
+          {isPending ? 'Zapisywanie...' : 'Zapisz podróż'}
+        </Button>
+
+        <Button component={Link} to={cancelTo}>
+          Anuluj
+        </Button>
+      </TripFormActions>
     </TripFormContainer>
   )
 }
