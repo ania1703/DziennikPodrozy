@@ -15,4 +15,6 @@ public class CreateTripDto
     public DateOnly StartDate { get; set; }
 
     public DateOnly? EndDate { get; set; }
+    
+    public string? Status { get; set; }
 }

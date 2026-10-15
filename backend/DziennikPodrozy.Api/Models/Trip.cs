@@ -5,8 +5,9 @@ namespace DziennikPodrozy.Api.Models;
 
 public enum TripStatus
 {
-    InProgress,
-    Finished
+    InProgress = 0,
+    Finished = 1,
+    Planned = 2
 }
 
 public class Trip
@@ -23,7 +24,7 @@ public class Trip
     public DateOnly StartDate { get; set; }
     public DateOnly? EndDate { get; set; }
 
-    public TripStatus Status { get; set; } = TripStatus.InProgress;
+    public TripStatus Status { get; set; } = TripStatus.Planned;
 
     public string? CoverPhotoUrl { get; set; }
 

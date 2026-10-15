@@ -1,13 +1,15 @@
 import { useQuery } from '@tanstack/react-query'
 import axiosClient from './axiosClient'
 
+export type TripStatus = 'Planned' | 'InProgress' | 'Finished'
+
 export interface Trip {
   id: number
   title: string
   description: string | null
   startDate: string
   endDate: string | null
-  status: string
+  status: TripStatus
   coverPhotoUrl: string | null
 }
 

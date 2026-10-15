@@ -71,12 +71,23 @@ public class TripsController : ControllerBase
             return BadRequest(new { message = "Data zakończenia nie może być wcześniejsza niż data rozpoczęcia." });
         }
 
+        var status = TripStatus.Planned;
+
+        if (!string.IsNullOrEmpty(dto.Status))
+        {
+            if (!Enum.TryParse<TripStatus>(dto.Status, out status) || !Enum.IsDefined(status))
+            {
+                return BadRequest(new { message = "Nieprawidłowy status. Dozwolone wartości: Planned, InProgress, Finished." });
+            }
+        }
+
         var trip = new Trip
         {
             Title = dto.Title,
             Description = dto.Description,
             StartDate = dto.StartDate,
             EndDate = dto.EndDate,
+            Status = status,
             OwnerId = OwnerId
         };
 
@@ -123,9 +134,9 @@ public class TripsController : ControllerBase
             return NotFound();
         }
 
-        if (!Enum.TryParse<TripStatus>(dto.Status, out var newStatus))
+        if (!Enum.TryParse<TripStatus>(dto.Status, out var newStatus) || !Enum.IsDefined(newStatus))
         {
-            return BadRequest(new { message = "Nieprawidłowy status. Dozwolone wartości: InProgress, Finished." });
+            return BadRequest(new { message = "Nieprawidłowy status. Dozwolone wartości: Planned, InProgress, Finished." });
         }
 
         trip.Status = newStatus;
