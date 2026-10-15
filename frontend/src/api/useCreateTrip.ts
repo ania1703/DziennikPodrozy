@@ -1,12 +1,13 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axiosClient from './axiosClient'
-import type { Trip } from './useTrips'
+import type { Trip, TripStatus } from './useTrips'
 
 export interface CreateTripPayLoad {
   title: string
   description: string | null
   startDate: string
   endDate: string | null
+  status?: TripStatus
 }
 
 export function useCreateTrip() {

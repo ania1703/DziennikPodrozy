@@ -10,6 +10,7 @@ function NewTripPage() {
   return (
     <FormPageLayout title="Nowa podróż" backTo="/trips" backLabel="← Wróć do listy">
       <TripForm
+        withStatus
         cancelTo="/trips"
         isPending={createTrip.isPending}
         isError={createTrip.isError}

@@ -4,38 +4,44 @@ import Button from '@mui/material/Button'
 import Alert from '@mui/material/Alert'
 import { TripFormActions, TripFormContainer } from './TripForm.styles'
 import { Link } from 'react-router-dom'
+import MenuItem from '@mui/material/MenuItem'
+import type { TripStatus } from '../../api/useTrips'
 
 export interface TripFormValues {
   title: string
   description: string | null
   startDate: string
   endDate: string | null
+  status?: TripStatus
 }
 
 interface TripFormProps {
   initialValues?: TripFormValues
   cancelTo: string
+  withStatus?: boolean
   onSubmit: (values: TripFormValues) => void
   isPending: boolean
   isError: boolean
 }
 
-export function TripForm({ initialValues, cancelTo, onSubmit, isPending, isError }: TripFormProps) {
+export function TripForm({ initialValues, cancelTo, withStatus, onSubmit, isPending, isError }: TripFormProps) {
   const [title, setTitle] = useState(initialValues?.title ?? '')
   const [description, setDescription] = useState(initialValues?.description ?? '')
   const [startDate, setStartDate] = useState(initialValues?.startDate ?? '')
   const [endDate, setEndDate] = useState(initialValues?.endDate ?? '')
+  const [status, setStatus] = useState<TripStatus>(initialValues?.status ?? 'Planned')
 
   const isEndBeforeStart = startDate !== '' && endDate !== '' && endDate < startDate
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault()
 
-    onSubmit({
+        onSubmit({
       title,
       description: description || null,
       startDate,
       endDate: endDate || null,
+      ...(withStatus ? { status } : {}),
     })
   }
 
@@ -80,6 +86,19 @@ export function TripForm({ initialValues, cancelTo, onSubmit, isPending, isError
         }
         slotProps={{ inputLabel: { shrink: true }, htmlInput: { min: startDate } }}
       />
+
+      {withStatus && (
+        <TextField
+          select
+          label="Status"
+          value={status}
+          onChange={(event) => setStatus(event.target.value as TripStatus)}
+        >
+          <MenuItem value="Planned">Zaplanowana</MenuItem>
+          <MenuItem value="InProgress">W trakcie</MenuItem>
+          <MenuItem value="Finished">Zakończona</MenuItem>
+        </TextField>
+      )}
 
       <TripFormActions>
         <Button type="submit" variant="contained" disabled={isPending || isEndBeforeStart}>

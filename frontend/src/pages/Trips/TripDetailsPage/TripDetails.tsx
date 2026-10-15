@@ -8,7 +8,7 @@ import { TripStatusChip } from '../../../components/common/TripStatusChip'
 import { formatDateRange } from '../../../utils/formatDate'
 import { getTripFallbackColor } from '../../../utils/tripColors'
 import DeleteTripAction from './DeleteTripAction'
-import TripStatusSwitch from './TripStatusSwitch'
+import TripStatusControl from './TripStatusControl'
 import UploadCoverAction from './UploadCoverAction'
 import {
   TripDetailsActions,
@@ -50,8 +50,8 @@ function TripDetails({ trip }: TripDetailsProps) {
           </Typography>
 
           <TripDetailsStatus>
-            <TripStatusChip status={trip.status} />
-            <TripStatusSwitch trip={trip} />
+            <TripStatusChip status={trip.status} size="medium" />
+            <TripStatusControl trip={trip} />
           </TripDetailsStatus>
 
           <Typography sx={{ whiteSpace: 'pre-wrap', maxWidth: '70ch' }}>
