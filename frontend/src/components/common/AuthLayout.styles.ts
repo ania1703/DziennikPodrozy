@@ -19,6 +19,12 @@ export const BrandPanel = styled(Box)(({ theme }) => ({
   },
 }))
 
+export const BrandMap = styled('img')({
+  width: '100%',
+  maxWidth: 720,
+  marginTop: 48,
+})
+
 export const FormPanel = styled(Box)({
   flex: 1,
   display: 'flex',
