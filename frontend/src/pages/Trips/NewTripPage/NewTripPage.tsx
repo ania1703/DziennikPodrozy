@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
-import Typography from '@mui/material/Typography'
 import { useCreateTrip } from '../../../api/useCreateTrip'
+import { FormPageLayout } from '../../../components/common/FormPageLayout'
 import { TripForm } from '../../../components/common/TripForm'
 
 function NewTripPage() {
@@ -8,19 +8,16 @@ function NewTripPage() {
   const navigate = useNavigate()
 
   return (
-    <div>
-      <Typography variant="h4" component="h1" sx={{ padding: '24px 24px 0' }}>
-        Nowa podróż
-      </Typography>
-
+    <FormPageLayout title="Nowa podróż" backTo="/trips" backLabel="← Wróć do listy">
       <TripForm
+        cancelTo="/trips"
         isPending={createTrip.isPending}
         isError={createTrip.isError}
         onSubmit={(payload) =>
           createTrip.mutate(payload, { onSuccess: () => navigate('/trips') })
         }
       />
-    </div>
+    </FormPageLayout>
   )
 }
 

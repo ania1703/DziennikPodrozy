@@ -22,7 +22,7 @@ public class TripsController : ControllerBase
 
     private string OwnerId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
-        [HttpGet]
+    [HttpGet]
     public async Task<IActionResult> GetTrips(
         [FromQuery] int? year,
         [FromQuery] string? status,
@@ -112,7 +112,7 @@ public class TripsController : ControllerBase
         return Ok(ToDto(trip));
     }
 
-        [HttpPatch("{id}/status")]
+    [HttpPatch("{id}/status")]
     public async Task<IActionResult> ChangeTripStatus(int id, ChangeTripStatusDto dto)
     {
         var trip = await _context.Trips
@@ -134,7 +134,7 @@ public class TripsController : ControllerBase
         return Ok(ToDto(trip));
     }
 
-        [HttpPost("{id}/cover-photo")]
+    [HttpPost("{id}/cover-photo")]
     public async Task<IActionResult> UploadCoverPhoto(int id, IFormFile file)
     {
         var trip = await _context.Trips
@@ -176,15 +176,7 @@ public class TripsController : ControllerBase
             await file.CopyToAsync(stream);
         }
 
-        if (!string.IsNullOrEmpty(trip.CoverPhotoUrl))
-        {
-            var oldFilePath = Path.Combine(uploadsFolder, Path.GetFileName(trip.CoverPhotoUrl));
-
-            if (System.IO.File.Exists(oldFilePath))
-            {
-                System.IO.File.Delete(oldFilePath);
-            }
-        }
+        DeleteCoverFile(trip.CoverPhotoUrl);
 
         trip.CoverPhotoUrl = $"/trip-covers/{fileName}";
         await _context.SaveChangesAsync();
@@ -206,7 +198,28 @@ public class TripsController : ControllerBase
         _context.Trips.Remove(trip);
         await _context.SaveChangesAsync();
 
+        DeleteCoverFile(trip.CoverPhotoUrl);
+
         return NoContent();
+    }
+
+    private static void DeleteCoverFile(string? coverPhotoUrl)
+    {
+        if (string.IsNullOrEmpty(coverPhotoUrl))
+        {
+            return;
+        }
+
+        var filePath = Path.Combine(
+            Directory.GetCurrentDirectory(),
+            "wwwroot",
+            "trip-covers",
+            Path.GetFileName(coverPhotoUrl));
+
+        if (System.IO.File.Exists(filePath))
+        {
+            System.IO.File.Delete(filePath);
+        }
     }
 
     private static TripDto ToDto(Trip trip)
