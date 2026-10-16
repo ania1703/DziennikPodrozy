@@ -7,9 +7,11 @@ import { DayBoxHeader, DayBoxRoot, DayBoxStops } from './TripDetailsPage.styles'
 interface DayBoxProps {
   day: StopDay
   firstNumber: number
+  selectedStopId: number | null
+  onToggleStop: (stopId: number) => void
 }
 
-function DayBox({ day, firstNumber }: DayBoxProps) {
+function DayBox({ day, firstNumber, selectedStopId, onToggleStop }: DayBoxProps) {
   return (
     <DayBoxRoot>
       <DayBoxHeader>
@@ -24,7 +26,13 @@ function DayBox({ day, firstNumber }: DayBoxProps) {
 
       <DayBoxStops>
         {day.stops.map((stop, index) => (
-          <StopBox key={stop.id} stop={stop} number={firstNumber + index} />
+          <StopBox
+            key={stop.id}
+            stop={stop}
+            number={firstNumber + index}
+            selected={stop.id === selectedStopId}
+            onToggle={onToggleStop}
+          />
         ))}
       </DayBoxStops>
     </DayBoxRoot>

@@ -12,12 +12,14 @@ const WORLD_BOUNDS: [[number, number], [number, number]] = [
   [85, 180],
 ]
 
-function createStopIcon(number: number) {
+function createStopIcon(number: number, selected: boolean) {
+  const size = selected ? 42 : 32
+
   return divIcon({
-    className: 'stop-marker',
+    className: selected ? 'stop-marker stop-marker--active' : 'stop-marker',
     html: String(number),
-    iconSize: [32, 32],
-    iconAnchor: [16, 16],
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
   })
 }
 
@@ -36,13 +38,32 @@ function FitToStops({ stops }: { stops: TripStop[] }) {
   return null
 }
 
-interface TripMapProps {
-  stops: TripStop[]
+function FlyToSelected({ stop }: { stop: TripStop | undefined }) {
+  const map = useMap()
+
+  useEffect(() => {
+    if (!stop) {
+      return
+    }
+
+    map.flyTo([stop.latitude, stop.longitude], Math.max(map.getZoom(), 14), {
+      duration: 0.8,
+    })
+  }, [map, stop])
+
+  return null
 }
 
-function TripMap({ stops }: TripMapProps) {
+interface TripMapProps {
+  stops: TripStop[]
+  selectedStopId: number | null
+  onSelectStop: (stopId: number) => void
+}
+
+function TripMap({ stops, selectedStopId, onSelectStop }: TripMapProps) {
   const theme = useTheme()
   const positions = stops.map((stop): [number, number] => [stop.latitude, stop.longitude])
+  const selectedStop = stops.find((stop) => stop.id === selectedStopId)
 
   return (
     <MapFrame>
@@ -61,6 +82,7 @@ function TripMap({ stops }: TripMapProps) {
         />
 
         <FitToStops stops={stops} />
+        <FlyToSelected stop={selectedStop} />
 
         <Polyline
           positions={positions}
@@ -76,7 +98,9 @@ function TripMap({ stops }: TripMapProps) {
           <Marker
             key={stop.id}
             position={[stop.latitude, stop.longitude]}
-            icon={createStopIcon(index + 1)}
+            icon={createStopIcon(index + 1, stop.id === selectedStopId)}
+            zIndexOffset={stop.id === selectedStopId ? 1000 : 0}
+            eventHandlers={{ click: () => onSelectStop(stop.id) }}
           >
             <Tooltip direction="top" offset={[0, -16]}>
               {stop.title}

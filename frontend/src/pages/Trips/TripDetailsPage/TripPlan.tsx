@@ -5,8 +5,9 @@ import type { Trip } from '../../../api/useTrips'
 import { LoadingSpinner } from '../../../components/common/LoadingSpinner'
 import { groupStopsByDay } from '../../../utils/groupStopsByDay'
 import DayBox from './DayBox'
-import { TripPlanSection } from './TripDetailsPage.styles'
+import { PlanDays, PlanLayout, PlanMapColumn, TripPlanSection } from './TripDetailsPage.styles'
 import TripMap from './TripMap'
+import { useState } from 'react'
 
 interface TripPlanProps {
   trip: Trip
@@ -14,6 +15,20 @@ interface TripPlanProps {
 
 function TripPlan({ trip }: TripPlanProps) {
   const { data: stops, isLoading, isError } = useTripStops(trip.id)
+
+  const [selectedStopId, setSelectedStopId] = useState<number | null>(null)
+
+  function handleToggleStop(stopId: number) {
+    setSelectedStopId((current) => (current === stopId ? null : stopId))
+  }
+
+  function handleSelectFromMap(stopId: number) {
+    setSelectedStopId(stopId)
+
+    document
+      .getElementById(`stop-${stopId}`)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }
 
   if (isLoading) {
     return <LoadingSpinner />
@@ -35,17 +50,33 @@ function TripPlan({ trip }: TripPlanProps) {
         Plan podróży
       </Typography>
 
-        <TripMap stops={stops} />
+      <PlanLayout>
+        <PlanMapColumn>
+          <TripMap
+            stops={stops}
+            selectedStopId={selectedStopId}
+            onSelectStop={handleSelectFromMap}
+          />
+        </PlanMapColumn>
 
-      {days.length === 0 ? (
-        <Typography sx={{ color: 'text.secondary' }}>
-          Nie dodano jeszcze żadnych przystanków.
-        </Typography>
-      ) : (
-        days.map((day, index) => (
-          <DayBox key={day.date} day={day} firstNumber={firstNumbers[index]} />
-        ))
-      )}
+        <PlanDays>
+          {days.length === 0 ? (
+            <Typography sx={{ color: 'text.secondary' }}>
+              Nie dodano jeszcze żadnych przystanków.
+            </Typography>
+          ) : (
+            days.map((day, index) => (
+              <DayBox
+                key={day.date}
+                day={day}
+                firstNumber={firstNumbers[index]}
+                selectedStopId={selectedStopId}
+                onToggleStop={handleToggleStop}
+              />
+            ))
+          )}
+        </PlanDays>
+      </PlanLayout>
     </TripPlanSection>
   )
 }
