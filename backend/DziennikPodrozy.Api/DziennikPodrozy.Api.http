@@ -271,3 +271,186 @@ Authorization: Bearer {{loginUser.response.body.$.token}}
   "title": "Podróż w trakcie",
   "startDate": "2026-08-10"
 }
+
+### Nowa podróż bez statusu (oczekiwane: 201, status Planned)
+# @name createPlanned
+POST {{host}}/api/trips
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Podróż zaplanowana",
+  "startDate": "2026-12-20",
+  "endDate": "2026-12-27"
+}
+
+### Nowa podróż ze statusem Finished (oczekiwane: 201, status Finished)
+POST {{host}}/api/trips
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Podróż z przeszłości",
+  "startDate": "2025-06-01",
+  "endDate": "2025-06-07",
+  "status": "Finished"
+}
+
+### Nowa podróż z błędnym statusem (oczekiwane: 400)
+POST {{host}}/api/trips
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Zły status",
+  "startDate": "2026-12-20",
+  "status": "Cokolwiek"
+}
+
+### Nowa podróż ze statusem jako liczba spoza listy (oczekiwane: 400)
+POST {{host}}/api/trips
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Liczba zamiast statusu",
+  "startDate": "2026-12-20",
+  "status": "5"
+}
+
+### Rozpoczęcie zaplanowanej podróży (oczekiwane: 200, status InProgress)
+PATCH {{host}}/api/trips/{{createPlanned.response.body.$.id}}/status
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "status": "InProgress"
+}
+
+### Zmiana statusu na liczbę spoza listy (oczekiwane: 400)
+PATCH {{host}}/api/trips/{{createPlanned.response.body.$.id}}/status
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "status": "5"
+}
+
+### Podróż do testu przystanków
+# @name createTripForStops
+POST {{host}}/api/trips
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Wypad do Krakowa",
+  "startDate": "2026-12-20",
+  "endDate": "2026-12-22"
+}
+
+### Przystanek 1, dzień 1 (oczekiwane: 201, sortOrder 1)
+# @name stop1
+POST {{host}}/api/trips/{{createTripForStops.response.body.$.id}}/stops
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Wawel",
+  "latitude": 50.0540,
+  "longitude": 19.9354,
+  "date": "2026-12-20",
+  "note": "Zamek i katedra"
+}
+
+### Przystanek 2, dzień 1 (oczekiwane: 201, sortOrder 2)
+POST {{host}}/api/trips/{{createTripForStops.response.body.$.id}}/stops
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Rynek Główny",
+  "latitude": 50.0617,
+  "longitude": 19.9373,
+  "date": "2026-12-20"
+}
+
+### Przystanek 3, dzień 2 (oczekiwane: 201, sortOrder 1)
+POST {{host}}/api/trips/{{createTripForStops.response.body.$.id}}/stops
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Kopalnia soli",
+  "latitude": 49.9833,
+  "longitude": 20.0553,
+  "date": "2026-12-21"
+}
+
+### Lista przystanków (oczekiwane: 200, trzy przystanki w kolejności)
+GET {{host}}/api/trips/{{createTripForStops.response.body.$.id}}/stops
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### Edycja przystanku 1, przeniesienie na dzień 2 (oczekiwane: 200, sortOrder 2)
+PUT {{host}}/api/trips/{{createTripForStops.response.body.$.id}}/stops/{{stop1.response.body.$.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Wawel (zmieniony)",
+  "latitude": 50.0540,
+  "longitude": 19.9354,
+  "date": "2026-12-21",
+  "note": "Przeniesione na dzień 2"
+}
+
+### Data poza zakresem podróży (oczekiwane: 400)
+POST {{host}}/api/trips/{{createTripForStops.response.body.$.id}}/stops
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Za późno",
+  "latitude": 50.0,
+  "longitude": 20.0,
+  "date": "2026-12-30"
+}
+
+### Szerokość geograficzna spoza zakresu (oczekiwane: 400)
+POST {{host}}/api/trips/{{createTripForStops.response.body.$.id}}/stops
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Poza Ziemią",
+  "latitude": 200,
+  "longitude": 20.0,
+  "date": "2026-12-20"
+}
+
+### Pusty tytuł (oczekiwane: 400)
+POST {{host}}/api/trips/{{createTripForStops.response.body.$.id}}/stops
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "",
+  "latitude": 50.0,
+  "longitude": 20.0,
+  "date": "2026-12-20"
+}
+
+### Cudze przystanki jako ADMIN (oczekiwane: 404)
+GET {{host}}/api/trips/{{createTripForStops.response.body.$.id}}/stops
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+### Usunięcie przystanku (oczekiwane: 204)
+DELETE {{host}}/api/trips/{{createTripForStops.response.body.$.id}}/stops/{{stop1.response.body.$.id}}
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### Usunięcie podróży (kasuje też jej przystanki, oczekiwane: 204)
+DELETE {{host}}/api/trips/{{createTripForStops.response.body.$.id}}
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### Lista przystanków po usunięciu podróży (oczekiwane: 404)
+GET {{host}}/api/trips/{{createTripForStops.response.body.$.id}}/stops
+Authorization: Bearer {{loginUser.response.body.$.token}}

@@ -30,6 +30,8 @@ public class Trip
 
     public string OwnerId { get; set; } = string.Empty;
 
+    public List<TripStop> Stops { get; set; } = new();
+
     [ForeignKey(nameof(OwnerId))]
     public ApplicationUser? Owner { get; set; }
 }
