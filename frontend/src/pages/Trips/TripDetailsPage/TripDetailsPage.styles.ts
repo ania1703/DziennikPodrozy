@@ -105,3 +105,28 @@ export const StopNumber = styled(Box)(({ theme }) => ({
   fontSize: '0.875rem',
   fontWeight: 600,
 }))
+
+export const MapFrame = styled(Box)(({ theme }) => ({
+  height: 420,
+  overflow: 'hidden',
+  borderRadius: 16,
+  border: '1px solid #EADFCB',
+  '& .leaflet-container': {
+    backgroundColor: '#F3EEE3',
+  },
+  '& .leaflet-tile-pane': {
+    filter: 'sepia(0.35) saturate(0.9)',
+  },
+  '& .stop-marker': {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: '50%',
+    border: `2px solid ${theme.palette.background.default}`,
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.background.default,
+    fontFamily: theme.typography.fontFamily,
+    fontWeight: 600,
+    boxShadow: '0 2px 6px rgba(59, 47, 42, 0.4)',
+  },
+}))

@@ -6,6 +6,7 @@ import { LoadingSpinner } from '../../../components/common/LoadingSpinner'
 import { groupStopsByDay } from '../../../utils/groupStopsByDay'
 import DayBox from './DayBox'
 import { TripPlanSection } from './TripDetailsPage.styles'
+import TripMap from './TripMap'
 
 interface TripPlanProps {
   trip: Trip
@@ -33,6 +34,8 @@ function TripPlan({ trip }: TripPlanProps) {
       <Typography variant="h5" component="h2" sx={{ fontWeight: 600 }}>
         Plan podróży
       </Typography>
+
+        <TripMap stops={stops} />
 
       {days.length === 0 ? (
         <Typography sx={{ color: 'text.secondary' }}>
