@@ -10,6 +10,7 @@ import { getTripFallbackColor } from '../../../utils/tripColors'
 import DeleteTripAction from './DeleteTripAction'
 import TripStatusControl from './TripStatusControl'
 import UploadCoverAction from './UploadCoverAction'
+import TripPlan from './TripPlan'
 import {
   TripDetailsActions,
   TripDetailsCard,
@@ -57,6 +58,8 @@ function TripDetails({ trip }: TripDetailsProps) {
           <Typography sx={{ whiteSpace: 'pre-wrap', maxWidth: '70ch' }}>
             {trip.description ?? 'Brak opisu.'}
           </Typography>
+
+          <TripPlan trip={trip} />
 
           <Divider />
 
