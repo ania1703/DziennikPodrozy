@@ -54,3 +54,54 @@ export const VisuallyHiddenInput = styled('input')({
   whiteSpace: 'nowrap',
   width: 1,
 })
+
+export const TripPlanSection = styled(Box)({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 16,
+})
+
+export const DayBoxRoot = styled(Box)(({ theme }) => ({
+  overflow: 'hidden',
+  borderRadius: 12,
+  border: '1px solid #EADFCB',
+  backgroundColor: theme.palette.background.default,
+}))
+
+export const DayBoxHeader = styled(Box)({
+  display: 'flex',
+  alignItems: 'baseline',
+  gap: 12,
+  padding: '12px 16px',
+  borderBottom: '1px solid #EADFCB',
+})
+
+export const DayBoxStops = styled(Box)({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 8,
+  padding: 12,
+})
+
+export const StopBoxRoot = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  gap: 12,
+  padding: '12px 16px',
+  borderRadius: 10,
+  border: '1px solid #EADFCB',
+  backgroundColor: theme.palette.background.paper,
+}))
+
+export const StopNumber = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexShrink: 0,
+  width: 28,
+  height: 28,
+  borderRadius: '50%',
+  backgroundColor: theme.palette.primary.main,
+  color: theme.palette.background.default,
+  fontSize: '0.875rem',
+  fontWeight: 600,
+}))
