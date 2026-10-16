@@ -11,4 +11,6 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     }
     public DbSet<Trip> Trips { get; set; }
 
+    public DbSet<TripStop> TripStops { get; set; }
+
 }
