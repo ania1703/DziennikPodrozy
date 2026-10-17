@@ -6,6 +6,7 @@ import {
   Polyline,
   TileLayer,
   Tooltip,
+  ZoomControl,
   useMap,
   useMapEvents,
 } from 'react-leaflet'
@@ -86,6 +87,20 @@ function FlyToSelected({ stop }: { stop: TripStop | undefined }) {
   return null
 }
 
+function FlyToPosition({ position }: { position: MapPosition | null }) {
+  const map = useMap()
+
+  useEffect(() => {
+    if (!position) {
+      return
+    }
+
+    map.flyTo([position.latitude, position.longitude], 15, { duration: 0.8 })
+  }, [map, position])
+
+  return null
+}
+
 function PickPosition({
   active,
   onPick,
@@ -111,6 +126,7 @@ interface TripMapProps {
   addingStop: boolean
   pendingPosition: MapPosition | null
   onPickPosition: (position: MapPosition) => void
+  focusPosition: MapPosition | null
 }
 
 function TripMap({
@@ -119,6 +135,7 @@ function TripMap({
   onSelectStop,
   addingStop,
   pendingPosition,
+  focusPosition,
   onPickPosition,
 }: TripMapProps) {
   const theme = useTheme()
@@ -130,6 +147,7 @@ function TripMap({
         center={DEFAULT_CENTER}
         zoom={5}
         minZoom={2}
+        zoomControl={false}
         maxBounds={WORLD_BOUNDS}
         maxBoundsViscosity={1}
         style={{ height: '100%', width: '100%' }}
@@ -140,8 +158,11 @@ function TripMap({
           url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
+        <ZoomControl position="bottomright" />
+
         <FitToStops stops={stops} />
         <FlyToSelected stop={selectedStop} />
+        <FlyToPosition position={focusPosition} />
         <PickPosition active={addingStop} onPick={onPickPosition} />
 
         {getDayRoutes(stops).map((positions, index) => (
