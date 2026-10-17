@@ -43,6 +43,18 @@ function createStopIcon(number: number, selected: boolean) {
   })
 }
 
+function getDayRoutes(stops: TripStop[]): [number, number][][] {
+  const routes = new Map<string, [number, number][]>()
+
+  for (const stop of stops) {
+    const route = routes.get(stop.date) ?? []
+    route.push([stop.latitude, stop.longitude])
+    routes.set(stop.date, route)
+  }
+
+  return [...routes.values()]
+}
+
 function FitToStops({ stops }: { stops: TripStop[] }) {
   const map = useMap()
 
@@ -110,7 +122,6 @@ function TripMap({
   onPickPosition,
 }: TripMapProps) {
   const theme = useTheme()
-  const positions = stops.map((stop): [number, number] => [stop.latitude, stop.longitude])
   const selectedStop = stops.find((stop) => stop.id === selectedStopId)
 
   return (
@@ -133,15 +144,18 @@ function TripMap({
         <FlyToSelected stop={selectedStop} />
         <PickPosition active={addingStop} onPick={onPickPosition} />
 
-        <Polyline
-          positions={positions}
-          pathOptions={{
-            color: theme.palette.primary.main,
-            weight: 3,
-            opacity: 0.8,
-            dashArray: '8 8',
-          }}
-        />
+        {getDayRoutes(stops).map((positions, index) => (
+          <Polyline
+            key={index}
+            positions={positions}
+            pathOptions={{
+              color: theme.palette.primary.main,
+              weight: 3,
+              opacity: 0.8,
+              dashArray: '8 8',
+            }}
+          />
+        ))}
 
         {stops.map((stop, index) => (
           <Marker
