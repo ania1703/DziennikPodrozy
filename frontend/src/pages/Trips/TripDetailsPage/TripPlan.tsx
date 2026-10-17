@@ -1,18 +1,18 @@
 import { useState } from 'react'
 import Alert from '@mui/material/Alert'
-import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import type { PlaceResult } from '../../../api/usePlaceSearch'
 import { useTripStops } from '../../../api/useTripStops'
 import type { Trip } from '../../../api/useTrips'
 import { LoadingSpinner } from '../../../components/common/LoadingSpinner'
 import { groupStopsByDay } from '../../../utils/groupStopsByDay'
 import AddStopDialog from './AddStopDialog'
 import DayBox from './DayBox'
+import MapAddControls from './MapAddControls'
 import {
   PlanDays,
   PlanLayout,
   PlanMapColumn,
-  TripPlanHeader,
   TripPlanSection,
 } from './TripDetailsPage.styles'
 import TripMap, { type MapPosition } from './TripMap'
@@ -21,11 +21,17 @@ interface TripPlanProps {
   trip: Trip
 }
 
+interface StopDraft {
+  position: MapPosition
+  title: string
+  fromSearch: boolean
+}
+
 function TripPlan({ trip }: TripPlanProps) {
   const { data: stops, isLoading, isError } = useTripStops(trip.id)
   const [selectedStopId, setSelectedStopId] = useState<number | null>(null)
   const [addingStop, setAddingStop] = useState(false)
-  const [newStopPosition, setNewStopPosition] = useState<MapPosition | null>(null)
+  const [draft, setDraft] = useState<StopDraft | null>(null)
 
   function handleToggleStop(stopId: number) {
     setSelectedStopId((current) => (current === stopId ? null : stopId))
@@ -40,7 +46,16 @@ function TripPlan({ trip }: TripPlanProps) {
   }
 
   function handlePickPosition(position: MapPosition) {
-    setNewStopPosition(position)
+    setDraft({ position, title: '', fromSearch: false })
+    setAddingStop(false)
+  }
+
+  function handleSelectPlace(place: PlaceResult) {
+    setDraft({
+      position: { latitude: place.latitude, longitude: place.longitude },
+      title: place.name,
+      fromSearch: true,
+    })
     setAddingStop(false)
   }
 
@@ -62,24 +77,9 @@ function TripPlan({ trip }: TripPlanProps) {
 
   return (
     <TripPlanSection>
-      <TripPlanHeader>
-        <Typography variant="h5" component="h2" sx={{ fontWeight: 600 }}>
-          Plan podróży
-        </Typography>
-
-        <Button
-          variant={addingStop ? 'outlined' : 'contained'}
-          onClick={() => setAddingStop((current) => !current)}
-        >
-          {addingStop ? 'Anuluj dodawanie' : 'Dodaj przystanek'}
-        </Button>
-      </TripPlanHeader>
-
-      {addingStop && (
-        <Alert severity="info">
-          Kliknij na mapie miejsce, które chcesz dodać jako przystanek.
-        </Alert>
-      )}
+      <Typography variant="h5" component="h2" sx={{ fontWeight: 600 }}>
+        Plan podróży
+      </Typography>
 
       <PlanLayout>
         <PlanMapColumn>
@@ -88,8 +88,16 @@ function TripPlan({ trip }: TripPlanProps) {
             selectedStopId={selectedStopId}
             onSelectStop={handleSelectFromMap}
             addingStop={addingStop}
-            pendingPosition={newStopPosition}
+            pendingPosition={draft?.position ?? null}
+            focusPosition={draft?.fromSearch ? draft.position : null}
             onPickPosition={handlePickPosition}
+          />
+
+          <MapAddControls
+            adding={addingStop}
+            onStart={() => setAddingStop(true)}
+            onCancel={() => setAddingStop(false)}
+            onSelectPlace={handleSelectPlace}
           />
         </PlanMapColumn>
 
@@ -112,12 +120,13 @@ function TripPlan({ trip }: TripPlanProps) {
         </PlanDays>
       </PlanLayout>
 
-      {newStopPosition && (
+      {draft && (
         <AddStopDialog
           trip={trip}
-          position={newStopPosition}
+          position={draft.position}
+          initialTitle={draft.title}
           defaultDate={defaultDate}
-          onClose={() => setNewStopPosition(null)}
+          onClose={() => setDraft(null)}
         />
       )}
     </TripPlanSection>

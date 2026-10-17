@@ -6,6 +6,7 @@ import {
   Polyline,
   TileLayer,
   Tooltip,
+  ZoomControl,
   useMap,
   useMapEvents,
 } from 'react-leaflet'
@@ -43,6 +44,18 @@ function createStopIcon(number: number, selected: boolean) {
   })
 }
 
+function getDayRoutes(stops: TripStop[]): [number, number][][] {
+  const routes = new Map<string, [number, number][]>()
+
+  for (const stop of stops) {
+    const route = routes.get(stop.date) ?? []
+    route.push([stop.latitude, stop.longitude])
+    routes.set(stop.date, route)
+  }
+
+  return [...routes.values()]
+}
+
 function FitToStops({ stops }: { stops: TripStop[] }) {
   const map = useMap()
 
@@ -74,6 +87,20 @@ function FlyToSelected({ stop }: { stop: TripStop | undefined }) {
   return null
 }
 
+function FlyToPosition({ position }: { position: MapPosition | null }) {
+  const map = useMap()
+
+  useEffect(() => {
+    if (!position) {
+      return
+    }
+
+    map.flyTo([position.latitude, position.longitude], 15, { duration: 0.8 })
+  }, [map, position])
+
+  return null
+}
+
 function PickPosition({
   active,
   onPick,
@@ -99,6 +126,7 @@ interface TripMapProps {
   addingStop: boolean
   pendingPosition: MapPosition | null
   onPickPosition: (position: MapPosition) => void
+  focusPosition: MapPosition | null
 }
 
 function TripMap({
@@ -107,10 +135,10 @@ function TripMap({
   onSelectStop,
   addingStop,
   pendingPosition,
+  focusPosition,
   onPickPosition,
 }: TripMapProps) {
   const theme = useTheme()
-  const positions = stops.map((stop): [number, number] => [stop.latitude, stop.longitude])
   const selectedStop = stops.find((stop) => stop.id === selectedStopId)
 
   return (
@@ -119,6 +147,7 @@ function TripMap({
         center={DEFAULT_CENTER}
         zoom={5}
         minZoom={2}
+        zoomControl={false}
         maxBounds={WORLD_BOUNDS}
         maxBoundsViscosity={1}
         style={{ height: '100%', width: '100%' }}
@@ -129,19 +158,25 @@ function TripMap({
           url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
+        <ZoomControl position="bottomright" />
+
         <FitToStops stops={stops} />
         <FlyToSelected stop={selectedStop} />
+        <FlyToPosition position={focusPosition} />
         <PickPosition active={addingStop} onPick={onPickPosition} />
 
-        <Polyline
-          positions={positions}
-          pathOptions={{
-            color: theme.palette.primary.main,
-            weight: 3,
-            opacity: 0.8,
-            dashArray: '8 8',
-          }}
-        />
+        {getDayRoutes(stops).map((positions, index) => (
+          <Polyline
+            key={index}
+            positions={positions}
+            pathOptions={{
+              color: theme.palette.primary.main,
+              weight: 3,
+              opacity: 0.8,
+              dashArray: '8 8',
+            }}
+          />
+        ))}
 
         {stops.map((stop, index) => (
           <Marker

@@ -125,6 +125,7 @@ export const MapFrame = styled(Box)(({ theme }) => ({
     height: 'min(70vh, 640px)',
   },
   overflow: 'hidden',
+  isolation: 'isolate',
   borderRadius: 16,
   border: '1px solid #EADFCB',
   '& .leaflet-container': {
@@ -172,6 +173,7 @@ export const PlanLayout = styled(Box)(({ theme }) => ({
 }))
 
 export const PlanMapColumn = styled(Box)(({ theme }) => ({
+  position: 'relative',
   [theme.breakpoints.up('md')]: {
     position: 'sticky',
     top: 16,
@@ -197,10 +199,48 @@ export const StopFormFields = styled(Box)({
   paddingTop: 8,
 })
 
-export const TripPlanHeader = styled(Box)({
+export const PlaceSearchForm = styled('form')({
   display: 'flex',
-  flexWrap: 'wrap',
+  alignItems: 'center',
+  gap: 8,
+})
+
+export const PlaceResults = styled(Box)(({ theme }) => ({
+  marginTop: 8,
+  maxHeight: 240,
+  overflowY: 'auto',
+  borderRadius: 12,
+  border: '1px solid #EADFCB',
+  backgroundColor: theme.palette.background.paper,
+}))
+
+export const MapOverlay = styled(Box)({
+  position: 'absolute',
+  top: 12,
+  left: 12,
+  zIndex: 1,
+  width: 'calc(100% - 24px)',
+  maxWidth: 420,
+  pointerEvents: 'none',
+  '& > *': {
+    pointerEvents: 'auto',
+  },
+})
+
+export const MapSearchCard = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 8,
+  padding: 12,
+  borderRadius: 12,
+  border: '1px solid #EADFCB',
+  backgroundColor: theme.palette.background.paper,
+  boxShadow: '0 4px 14px rgba(59, 47, 42, 0.2)',
+}))
+
+export const MapSearchFooter = styled(Box)({
+  display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  gap: 12,
+  gap: 8,
 })

@@ -15,12 +15,13 @@ import type { MapPosition } from './TripMap'
 interface AddStopDialogProps {
   trip: Trip
   position: MapPosition
+  initialTitle: string
   defaultDate: string
   onClose: () => void
 }
 
-function AddStopDialog({ trip, position, defaultDate, onClose }: AddStopDialogProps) {
-  const [title, setTitle] = useState('')
+function AddStopDialog({ trip, position, initialTitle, defaultDate, onClose }: AddStopDialogProps) {
+  const [title, setTitle] = useState(initialTitle)
   const [date, setDate] = useState(defaultDate)
   const [note, setNote] = useState('')
   const createStop = useCreateTripStop(trip.id)
