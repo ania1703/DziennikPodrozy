@@ -244,3 +244,9 @@ export const MapSearchFooter = styled(Box)({
   justifyContent: 'space-between',
   gap: 8,
 })
+
+export const StopActions = styled(Box)({
+  display: 'flex',
+  gap: 8,
+  marginTop: 8,
+})
