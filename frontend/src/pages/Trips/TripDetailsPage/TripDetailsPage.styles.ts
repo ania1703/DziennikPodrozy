@@ -2,14 +2,14 @@ import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 
 export const TripDetailsContainer = styled(Box)({
-  maxWidth: 1200,
+  maxWidth: 1400,
   margin: '0 auto',
   padding: 24,
 })
 
 export const TripDetailsCard = styled(Box)(({ theme }) => ({
   marginTop: 16,
-  overflow: 'hidden',
+  overflow: 'clip',
   borderRadius: 16,
   border: '1px solid #EADFCB',
   backgroundColor: theme.palette.background.paper,
@@ -90,6 +90,19 @@ export const StopBoxRoot = styled(Box)(({ theme }) => ({
   borderRadius: 10,
   border: '1px solid #EADFCB',
   backgroundColor: theme.palette.background.paper,
+  cursor: 'pointer',
+  transition: 'border-color 0.2s, box-shadow 0.2s',
+  '&:hover': {
+    borderColor: theme.palette.primary.main,
+  },
+  '&[data-selected="true"]': {
+    borderColor: theme.palette.primary.main,
+    boxShadow: '0 2px 10px rgba(59, 47, 42, 0.15)',
+  },
+  '&:focus-visible': {
+    outline: `2px solid ${theme.palette.primary.main}`,
+    outlineOffset: 2,
+  },
 }))
 
 export const StopNumber = styled(Box)(({ theme }) => ({
@@ -105,3 +118,89 @@ export const StopNumber = styled(Box)(({ theme }) => ({
   fontSize: '0.875rem',
   fontWeight: 600,
 }))
+
+export const MapFrame = styled(Box)(({ theme }) => ({
+  height: 420,
+  [theme.breakpoints.up('md')]: {
+    height: 'min(70vh, 640px)',
+  },
+  overflow: 'hidden',
+  borderRadius: 16,
+  border: '1px solid #EADFCB',
+  '& .leaflet-container': {
+    backgroundColor: '#F3EEE3',
+  },
+  '& .leaflet-tile-pane': {
+    filter: 'sepia(0.35) saturate(0.9)',
+  },
+  '& .stop-marker': {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: '50%',
+    border: `2px solid ${theme.palette.background.default}`,
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.background.default,
+    fontFamily: theme.typography.fontFamily,
+    fontWeight: 600,
+    boxShadow: '0 2px 6px rgba(59, 47, 42, 0.4)',
+  },
+  '& .stop-marker--active': {
+    backgroundColor: theme.palette.secondary.main,
+    fontSize: '1.1rem',
+    boxShadow: '0 3px 10px rgba(59, 47, 42, 0.5)',
+  },
+  '& .stop-marker--pending': {
+    backgroundColor: theme.palette.background.default,
+    color: theme.palette.primary.main,
+    border: `2px dashed ${theme.palette.primary.main}`,
+    fontSize: '1.25rem',
+  },
+  '&[data-adding="true"] .leaflet-grab, &[data-adding="true"] .leaflet-interactive': {
+    cursor: 'crosshair',
+  },
+}))
+
+export const PlanLayout = styled(Box)(({ theme }) => ({
+  display: 'grid',
+  gridTemplateColumns: '1fr',
+  gap: 24,
+  [theme.breakpoints.up('md')]: {
+    gridTemplateColumns: '5fr 6fr',
+    alignItems: 'start',
+  },
+}))
+
+export const PlanMapColumn = styled(Box)(({ theme }) => ({
+  [theme.breakpoints.up('md')]: {
+    position: 'sticky',
+    top: 16,
+    gridColumn: 2,
+    gridRow: 1,
+  },
+}))
+
+export const PlanDays = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 16,
+  [theme.breakpoints.up('md')]: {
+    gridColumn: 1,
+    gridRow: 1,
+  },
+}))
+
+export const StopFormFields = styled(Box)({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 16,
+  paddingTop: 8,
+})
+
+export const TripPlanHeader = styled(Box)({
+  display: 'flex',
+  flexWrap: 'wrap',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 12,
+})
