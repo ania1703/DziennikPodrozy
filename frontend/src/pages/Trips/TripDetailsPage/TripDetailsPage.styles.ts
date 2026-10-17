@@ -150,6 +150,15 @@ export const MapFrame = styled(Box)(({ theme }) => ({
     fontSize: '1.1rem',
     boxShadow: '0 3px 10px rgba(59, 47, 42, 0.5)',
   },
+  '& .stop-marker--pending': {
+    backgroundColor: theme.palette.background.default,
+    color: theme.palette.primary.main,
+    border: `2px dashed ${theme.palette.primary.main}`,
+    fontSize: '1.25rem',
+  },
+  '&[data-adding="true"] .leaflet-grab, &[data-adding="true"] .leaflet-interactive': {
+    cursor: 'crosshair',
+  },
 }))
 
 export const PlanLayout = styled(Box)(({ theme }) => ({
@@ -180,3 +189,18 @@ export const PlanDays = styled(Box)(({ theme }) => ({
     gridRow: 1,
   },
 }))
+
+export const StopFormFields = styled(Box)({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 16,
+  paddingTop: 8,
+})
+
+export const TripPlanHeader = styled(Box)({
+  display: 'flex',
+  flexWrap: 'wrap',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 12,
+})
