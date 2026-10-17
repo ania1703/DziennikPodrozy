@@ -2,13 +2,15 @@ import { useState } from 'react'
 import Alert from '@mui/material/Alert'
 import Typography from '@mui/material/Typography'
 import type { PlaceResult } from '../../../api/usePlaceSearch'
-import { useTripStops } from '../../../api/useTripStops'
+import { useTripStops, type TripStop } from '../../../api/useTripStops'
 import type { Trip } from '../../../api/useTrips'
 import { LoadingSpinner } from '../../../components/common/LoadingSpinner'
 import { groupStopsByDay } from '../../../utils/groupStopsByDay'
 import AddStopDialog from './AddStopDialog'
 import DayBox from './DayBox'
 import MapAddControls from './MapAddControls'
+import DeleteStopDialog from './DeleteStopDialog'
+import EditStopDialog from './EditStopDialog'
 import {
   PlanDays,
   PlanLayout,
@@ -32,6 +34,8 @@ function TripPlan({ trip }: TripPlanProps) {
   const [selectedStopId, setSelectedStopId] = useState<number | null>(null)
   const [addingStop, setAddingStop] = useState(false)
   const [draft, setDraft] = useState<StopDraft | null>(null)
+  const [editingStop, setEditingStop] = useState<TripStop | null>(null)
+  const [deletingStop, setDeletingStop] = useState<TripStop | null>(null)
 
   function handleToggleStop(stopId: number) {
     setSelectedStopId((current) => (current === stopId ? null : stopId))
@@ -114,6 +118,8 @@ function TripPlan({ trip }: TripPlanProps) {
                 firstNumber={firstNumbers[index]}
                 selectedStopId={selectedStopId}
                 onToggleStop={handleToggleStop}
+                onEditStop={setEditingStop}
+                onDeleteStop={setDeletingStop}
               />
             ))
           )}
@@ -129,6 +135,15 @@ function TripPlan({ trip }: TripPlanProps) {
           onClose={() => setDraft(null)}
         />
       )}
+
+      {editingStop && (
+        <EditStopDialog trip={trip} stop={editingStop} onClose={() => setEditingStop(null)} />
+      )}
+
+      {deletingStop && (
+        <DeleteStopDialog trip={trip} stop={deletingStop} onClose={() => setDeletingStop(null)} />
+      )}
+      
     </TripPlanSection>
   )
 }

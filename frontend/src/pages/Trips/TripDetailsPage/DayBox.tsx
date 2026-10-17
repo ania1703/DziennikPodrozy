@@ -3,15 +3,25 @@ import { formatDateRange } from '../../../utils/formatDate'
 import type { StopDay } from '../../../utils/groupStopsByDay'
 import StopBox from './StopBox'
 import { DayBoxHeader, DayBoxRoot, DayBoxStops } from './TripDetailsPage.styles'
+import type { TripStop } from '../../../api/useTripStops'
 
 interface DayBoxProps {
   day: StopDay
   firstNumber: number
   selectedStopId: number | null
   onToggleStop: (stopId: number) => void
+  onEditStop: (stop: TripStop) => void
+  onDeleteStop: (stop: TripStop) => void
 }
 
-function DayBox({ day, firstNumber, selectedStopId, onToggleStop }: DayBoxProps) {
+function DayBox({
+  day,
+  firstNumber,
+  selectedStopId,
+  onToggleStop,
+  onEditStop,
+  onDeleteStop,
+}: DayBoxProps) {
   return (
     <DayBoxRoot>
       <DayBoxHeader>
@@ -32,6 +42,8 @@ function DayBox({ day, firstNumber, selectedStopId, onToggleStop }: DayBoxProps)
             number={firstNumber + index}
             selected={stop.id === selectedStopId}
             onToggle={onToggleStop}
+            onEdit={onEditStop}
+            onDelete={onDeleteStop}
           />
         ))}
       </DayBoxStops>

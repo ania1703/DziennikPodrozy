@@ -1,18 +1,25 @@
 import type { KeyboardEvent } from 'react'
+import Button from '@mui/material/Button'
 import Collapse from '@mui/material/Collapse'
 import Typography from '@mui/material/Typography'
 import type { TripStop } from '../../../api/useTripStops'
-import { StopBoxRoot, StopNumber } from './TripDetailsPage.styles'
+import { StopActions, StopBoxRoot, StopNumber } from './TripDetailsPage.styles'
 
 interface StopBoxProps {
   stop: TripStop
   number: number
   selected: boolean
   onToggle: (stopId: number) => void
+  onEdit: (stop: TripStop) => void
+  onDelete: (stop: TripStop) => void
 }
 
-function StopBox({ stop, number, selected, onToggle }: StopBoxProps) {
+function StopBox({ stop, number, selected, onToggle, onEdit, onDelete }: StopBoxProps) {
   function handleKeyDown(event: KeyboardEvent) {
+    if (event.target !== event.currentTarget) {
+      return
+    }
+
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
       onToggle(stop.id)
@@ -44,6 +51,29 @@ function StopBox({ stop, number, selected, onToggle }: StopBoxProps) {
           <Typography variant="caption" component="p" sx={{ color: 'text.secondary' }}>
             {stop.latitude.toFixed(4)}, {stop.longitude.toFixed(4)}
           </Typography>
+
+          <StopActions>
+            <Button
+              size="small"
+              onClick={(event) => {
+                event.stopPropagation()
+                onEdit(stop)
+              }}
+            >
+              Edytuj
+            </Button>
+
+            <Button
+              size="small"
+              color="error"
+              onClick={(event) => {
+                event.stopPropagation()
+                onDelete(stop)
+              }}
+            >
+              Usuń
+            </Button>
+          </StopActions>
         </Collapse>
       </div>
     </StopBoxRoot>
