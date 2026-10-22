@@ -1,5 +1,6 @@
 import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 
 export const TripDetailsContainer = styled(Box)({
   maxWidth: 1400,
@@ -194,13 +195,6 @@ export const PlanDays = styled(Box)(({ theme }) => ({
   },
 }))
 
-export const StopFormFields = styled(Box)({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 16,
-  paddingTop: 8,
-})
-
 export const PlaceSearchForm = styled('form')({
   display: 'flex',
   alignItems: 'center',
@@ -281,3 +275,107 @@ export const LegendItem = styled(Box)({
   alignItems: 'center',
   gap: 6,
 })
+
+export const RichTextRoot = styled('div')(({ theme }) => ({
+  ...theme.typography.body2,
+  color: theme.palette.text.secondary,
+  '& > *:first-of-type': {
+    marginTop: 0,
+  },
+  '& > *:last-child': {
+    marginBottom: 0,
+  },
+  '& p': {
+    margin: '0 0 8px',
+  },
+  '& ul, & ol': {
+    margin: '0 0 8px',
+    paddingLeft: 24,
+  },
+  '& h2, & h3': {
+    margin: '12px 0 4px',
+  },
+}))
+
+export const StopPreview = styled(Typography)(({ theme }) => ({
+  color: theme.palette.text.secondary,
+  display: '-webkit-box',
+  WebkitLineClamp: 2,
+  WebkitBoxOrient: 'vertical',
+  overflow: 'hidden',
+}))
+
+export const EditorFrame = styled(Box)(({ theme }) => ({
+  border: '1px solid rgba(59, 47, 42, 0.3)',
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: theme.palette.background.paper,
+  '&:focus-within': {
+    borderColor: theme.palette.primary.main,
+    boxShadow: `0 0 0 1px ${theme.palette.primary.main}`,
+  },
+  '& .tiptap': {
+    ...theme.typography.body1,
+    minHeight: 220,
+    maxHeight: 420,
+    overflowY: 'auto',
+    padding: '12px 14px',
+    outline: 'none',
+    '& > *:first-of-type': {
+      marginTop: 0,
+    },
+    '& > *:last-child': {
+      marginBottom: 0,
+    },
+    '& p': {
+      margin: '0 0 8px',
+    },
+    '& ul, & ol': {
+      margin: '0 0 8px',
+      paddingLeft: 24,
+    },
+    '& h2, & h3': {
+      margin: '12px 0 4px',
+    },
+  },
+}))
+
+export const EditorToolbar = styled(Box)({
+  display: 'flex',
+  gap: 4,
+  padding: 4,
+  borderBottom: '1px solid #EADFCB',
+})
+
+export const StopFormGrid = styled(Box)(({ theme }) => ({
+  display: 'grid',
+  gridTemplateColumns: '1fr',
+  gap: 24,
+  [theme.breakpoints.up('md')]: {
+    gridTemplateColumns: '5fr 7fr',
+  },
+}))
+
+export const StopFormColumn = styled(Box)({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 16,
+})
+
+export const EntryPlaceholder = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: 8,
+  minHeight: 220,
+  padding: 16,
+  borderRadius: theme.shape.borderRadius,
+  border: '2px dashed #D9C9AE',
+  color: theme.palette.text.secondary,
+  textAlign: 'center',
+}))
+
+export const StopFormSectionTitle = styled(Typography)(({ theme }) => ({
+  fontWeight: 600,
+  color: theme.palette.text.primary,
+}))

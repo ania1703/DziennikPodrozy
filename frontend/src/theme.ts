@@ -18,4 +18,13 @@ export const theme = createTheme({
     button: { textTransform: 'none', fontWeight: 600 },
   },
   shape: { borderRadius: 12 },
+    components: {
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          borderRadius: 20,
+        },
+      },
+    },
+  },
 })
