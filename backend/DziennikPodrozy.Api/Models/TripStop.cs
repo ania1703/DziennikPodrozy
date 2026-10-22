@@ -22,6 +22,6 @@ public class TripStop
     public DateOnly Date { get; set; }
     public int SortOrder { get; set; }
 
-    [MaxLength(2000)]
+    [MaxLength(10000)]
     public string? Note { get; set; }
 }

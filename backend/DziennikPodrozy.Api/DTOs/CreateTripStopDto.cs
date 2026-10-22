@@ -16,6 +16,6 @@ public class CreateTripStopDto
 
     public DateOnly Date { get; set; }
 
-    [MaxLength(2000)]
+    [MaxLength(10000)]
     public string? Note { get; set; }
 }
