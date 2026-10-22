@@ -9,12 +9,13 @@ interface StopBoxProps {
   stop: TripStop
   number: number
   selected: boolean
+  color: string
   onToggle: (stopId: number) => void
   onEdit: (stop: TripStop) => void
   onDelete: (stop: TripStop) => void
 }
 
-function StopBox({ stop, number, selected, onToggle, onEdit, onDelete }: StopBoxProps) {
+function StopBox({ stop, number, selected, color, onToggle, onEdit, onDelete }: StopBoxProps) {
   function handleKeyDown(event: KeyboardEvent) {
     if (event.target !== event.currentTarget) {
       return
@@ -36,7 +37,7 @@ function StopBox({ stop, number, selected, onToggle, onEdit, onDelete }: StopBox
       onClick={() => onToggle(stop.id)}
       onKeyDown={handleKeyDown}
     >
-      <StopNumber>{number}</StopNumber>
+      <StopNumber style={{ backgroundColor: color }}>{number}</StopNumber>
 
       <div>
         <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>

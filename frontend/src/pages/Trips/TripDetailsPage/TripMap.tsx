@@ -10,13 +10,19 @@ import {
   useMap,
   useMapEvents,
 } from 'react-leaflet'
-import { useTheme } from '@mui/material/styles'
 import type { TripStop } from '../../../api/useTripStops'
+import { getDayColor } from '../../../utils/dayColors'
+import { getDayNumber } from '../../../utils/groupStopsByDay'
 import { MapFrame } from './TripDetailsPage.styles'
 
 export interface MapPosition {
   latitude: number
   longitude: number
+}
+
+interface DayRoute {
+  date: string
+  positions: [number, number][]
 }
 
 const DEFAULT_CENTER: [number, number] = [52.0, 19.0]
@@ -27,33 +33,33 @@ const WORLD_BOUNDS: [[number, number], [number, number]] = [
 ]
 
 const PENDING_ICON = divIcon({
-  className: 'stop-marker stop-marker--pending',
-  html: '+',
+  className: 'stop-marker',
+  html: '<div class="stop-pin stop-pin--pending">+</div>',
   iconSize: [36, 36],
   iconAnchor: [18, 18],
 })
 
-function createStopIcon(number: number, selected: boolean) {
-  const size = selected ? 42 : 32
+function createStopIcon(number: number, selected: boolean, color: string) {
+  const pinClass = selected ? 'stop-pin stop-pin--active' : 'stop-pin'
 
   return divIcon({
-    className: selected ? 'stop-marker stop-marker--active' : 'stop-marker',
-    html: String(number),
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
+    className: 'stop-marker',
+    html: `<div class="${pinClass}" style="background-color: ${color}">${number}</div>`,
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
   })
 }
 
-function getDayRoutes(stops: TripStop[]): [number, number][][] {
+function getDayRoutes(stops: TripStop[]): DayRoute[] {
   const routes = new Map<string, [number, number][]>()
 
   for (const stop of stops) {
-    const route = routes.get(stop.date) ?? []
-    route.push([stop.latitude, stop.longitude])
-    routes.set(stop.date, route)
+    const positions = routes.get(stop.date) ?? []
+    positions.push([stop.latitude, stop.longitude])
+    routes.set(stop.date, positions)
   }
 
-  return [...routes.values()]
+  return [...routes.entries()].map(([date, positions]) => ({ date, positions }))
 }
 
 function FitToStops({ stops }: { stops: TripStop[] }) {
@@ -121,6 +127,7 @@ function PickPosition({
 
 interface TripMapProps {
   stops: TripStop[]
+  tripStartDate: string
   selectedStopId: number | null
   onSelectStop: (stopId: number) => void
   addingStop: boolean
@@ -131,6 +138,7 @@ interface TripMapProps {
 
 function TripMap({
   stops,
+  tripStartDate,
   selectedStopId,
   onSelectStop,
   addingStop,
@@ -138,8 +146,11 @@ function TripMap({
   focusPosition,
   onPickPosition,
 }: TripMapProps) {
-  const theme = useTheme()
   const selectedStop = stops.find((stop) => stop.id === selectedStopId)
+
+  function colorForDate(date: string) {
+    return getDayColor(getDayNumber(date, tripStartDate))
+  }
 
   return (
     <MapFrame data-adding={addingStop}>
@@ -165,14 +176,14 @@ function TripMap({
         <FlyToPosition position={focusPosition} />
         <PickPosition active={addingStop} onPick={onPickPosition} />
 
-        {getDayRoutes(stops).map((positions, index) => (
+        {getDayRoutes(stops).map((route) => (
           <Polyline
-            key={index}
-            positions={positions}
+            key={route.date}
+            positions={route.positions}
             pathOptions={{
-              color: theme.palette.primary.main,
+              color: colorForDate(route.date),
               weight: 3,
-              opacity: 0.8,
+              opacity: 0.85,
               dashArray: '8 8',
             }}
           />
@@ -182,7 +193,7 @@ function TripMap({
           <Marker
             key={stop.id}
             position={[stop.latitude, stop.longitude]}
-            icon={createStopIcon(index + 1, stop.id === selectedStopId)}
+            icon={createStopIcon(index + 1, stop.id === selectedStopId, colorForDate(stop.date))}
             zIndexOffset={stop.id === selectedStopId ? 1000 : 0}
             eventHandlers={{ click: () => onSelectStop(stop.id) }}
           >

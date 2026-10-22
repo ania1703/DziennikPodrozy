@@ -18,6 +18,7 @@ import {
   TripPlanSection,
 } from './TripDetailsPage.styles'
 import TripMap, { type MapPosition } from './TripMap'
+import MapLegend from './MapLegend'
 
 interface TripPlanProps {
   trip: Trip
@@ -95,7 +96,10 @@ function TripPlan({ trip }: TripPlanProps) {
             pendingPosition={draft?.position ?? null}
             focusPosition={draft?.fromSearch ? draft.position : null}
             onPickPosition={handlePickPosition}
+            tripStartDate={trip.startDate}
           />
+
+          <MapLegend days={days} />
 
           <MapAddControls
             adding={addingStop}
