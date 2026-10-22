@@ -2,8 +2,9 @@ import Typography from '@mui/material/Typography'
 import { formatDateRange } from '../../../utils/formatDate'
 import type { StopDay } from '../../../utils/groupStopsByDay'
 import StopBox from './StopBox'
-import { DayBoxHeader, DayBoxRoot, DayBoxStops } from './TripDetailsPage.styles'
+import { DayBoxHeader, DayBoxRoot, DayBoxStops, DayDot } from './TripDetailsPage.styles'
 import type { TripStop } from '../../../api/useTripStops'
+import { getDayColor } from '../../../utils/dayColors'
 
 interface DayBoxProps {
   day: StopDay
@@ -22,9 +23,12 @@ function DayBox({
   onEditStop,
   onDeleteStop,
 }: DayBoxProps) {
+  const color = getDayColor(day.dayNumber)
   return (
     <DayBoxRoot>
       <DayBoxHeader>
+        <DayDot style={{ backgroundColor: color }} />
+
         <Typography variant="h6" component="h3">
           Dzień {day.dayNumber}
         </Typography>
@@ -40,6 +44,7 @@ function DayBox({
             key={stop.id}
             stop={stop}
             number={firstNumber + index}
+            color={color}
             selected={stop.id === selectedStopId}
             onToggle={onToggleStop}
             onEdit={onEditStop}

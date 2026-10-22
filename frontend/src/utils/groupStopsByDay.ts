@@ -12,6 +12,10 @@ function toDayCount(isoDate: string): number {
   return Date.UTC(year, month - 1, day) / 86400000
 }
 
+export function getDayNumber(date: string, tripStartDate: string): number {
+  return toDayCount(date) - toDayCount(tripStartDate) + 1
+}
+
 export function groupStopsByDay(stops: TripStop[], tripStartDate: string): StopDay[] {
   const days: StopDay[] = []
 
@@ -21,7 +25,7 @@ export function groupStopsByDay(stops: TripStop[], tripStartDate: string): StopD
     if (!day) {
       day = {
         date: stop.date,
-        dayNumber: toDayCount(stop.date) - toDayCount(tripStartDate) + 1,
+        dayNumber: getDayNumber(stop.date, tripStartDate),
         stops: [],
       }
 

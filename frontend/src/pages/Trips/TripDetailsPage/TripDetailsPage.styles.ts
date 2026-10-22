@@ -134,24 +134,26 @@ export const MapFrame = styled(Box)(({ theme }) => ({
   '& .leaflet-tile-pane': {
     filter: 'sepia(0.35) saturate(0.9)',
   },
-  '& .stop-marker': {
+  '& .stop-pin': {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    boxSizing: 'border-box',
+    width: '100%',
+    height: '100%',
     borderRadius: '50%',
     border: `2px solid ${theme.palette.background.default}`,
-    backgroundColor: theme.palette.primary.main,
     color: theme.palette.background.default,
     fontFamily: theme.typography.fontFamily,
     fontWeight: 600,
     boxShadow: '0 2px 6px rgba(59, 47, 42, 0.4)',
+    transition: 'transform 0.15s',
   },
-  '& .stop-marker--active': {
-    backgroundColor: theme.palette.secondary.main,
-    fontSize: '1.1rem',
-    boxShadow: '0 3px 10px rgba(59, 47, 42, 0.5)',
+  '& .stop-pin--active': {
+    transform: 'scale(1.3)',
+    boxShadow: '0 0 0 3px rgba(59, 47, 42, 0.35), 0 3px 10px rgba(59, 47, 42, 0.5)',
   },
-  '& .stop-marker--pending': {
+  '& .stop-pin--pending': {
     backgroundColor: theme.palette.background.default,
     color: theme.palette.primary.main,
     border: `2px dashed ${theme.palette.primary.main}`,
@@ -249,4 +251,33 @@ export const StopActions = styled(Box)({
   display: 'flex',
   gap: 8,
   marginTop: 8,
+})
+
+export const DayDot = styled(Box)({
+  flexShrink: 0,
+  alignSelf: 'center',
+  width: 12,
+  height: 12,
+  borderRadius: '50%',
+})
+
+export const MapLegendRoot = styled(Box)({
+  position: 'absolute',
+  bottom: 12,
+  left: 12,
+  zIndex: 1,
+  display: 'flex',
+  flexWrap: 'wrap',
+  gap: 12,
+  maxWidth: 'calc(100% - 100px)',
+  padding: '6px 12px',
+  borderRadius: 10,
+  border: '1px solid #EADFCB',
+  backgroundColor: 'rgba(255, 253, 248, 0.92)',
+})
+
+export const LegendItem = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 6,
 })
