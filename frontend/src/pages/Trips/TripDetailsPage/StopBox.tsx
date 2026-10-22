@@ -3,7 +3,9 @@ import Button from '@mui/material/Button'
 import Collapse from '@mui/material/Collapse'
 import Typography from '@mui/material/Typography'
 import type { TripStop } from '../../../api/useTripStops'
-import { StopActions, StopBoxRoot, StopNumber } from './TripDetailsPage.styles'
+import { StopActions, StopBoxRoot, StopNumber, StopPreview } from './TripDetailsPage.styles'
+import { htmlToText } from '../../../utils/richText'
+import RichTextView from './RichTextView'
 
 interface StopBoxProps {
   stop: TripStop
@@ -44,9 +46,19 @@ function StopBox({ stop, number, selected, color, onToggle, onEdit, onDelete }: 
           {stop.title}
         </Typography>
 
+        {!selected && stop.note && (
+          <StopPreview variant="body2">{htmlToText(stop.note)}</StopPreview>
+        )}
+
         <Collapse in={selected}>
           <Typography variant="body2" sx={{ color: 'text.secondary', whiteSpace: 'pre-wrap' }}>
-            {stop.note ?? 'Brak notatki.'}
+          {stop.note ? (
+            <RichTextView content={stop.note} />
+          ) : (
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              Brak wpisu.
+            </Typography>
+          )}
           </Typography>
 
           <Typography variant="caption" component="p" sx={{ color: 'text.secondary' }}>

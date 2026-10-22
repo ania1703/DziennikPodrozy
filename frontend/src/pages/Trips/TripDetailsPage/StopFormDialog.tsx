@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import AddIcon from '@mui/icons-material/Add'
 import Alert from '@mui/material/Alert'
 import Button from '@mui/material/Button'
 import Dialog from '@mui/material/Dialog'
@@ -8,7 +9,13 @@ import DialogTitle from '@mui/material/DialogTitle'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import type { Trip } from '../../../api/useTrips'
-import { StopFormFields } from './TripDetailsPage.styles'
+import RichTextEditor from './RichTextEditor'
+import {
+  EntryPlaceholder,
+  StopFormColumn,
+  StopFormGrid,
+  StopFormSectionTitle,
+} from './TripDetailsPage.styles'
 import type { MapPosition } from './TripMap'
 
 export interface StopFormValues {
@@ -43,6 +50,7 @@ function StopFormDialog({
   const [title, setTitle] = useState(initialValues.title)
   const [date, setDate] = useState(initialValues.date)
   const [note, setNote] = useState(initialValues.note ?? '')
+  const [showEditor, setShowEditor] = useState(Boolean(initialValues.note))
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault()
@@ -51,53 +59,73 @@ function StopFormDialog({
   }
 
   return (
-    <Dialog open onClose={onClose} fullWidth maxWidth="sm">
+    <Dialog open onClose={onClose} fullWidth maxWidth="lg">
       <form onSubmit={handleSubmit}>
-        <DialogTitle>{dialogTitle}</DialogTitle>
+        <DialogTitle
+          variant="h5"
+          sx={{ fontWeight: 700, borderBottom: '1px solid #EADFCB', marginBottom: 2 }}
+        >
+          {dialogTitle}
+        </DialogTitle>
 
         <DialogContent>
-          <StopFormFields>
-            {isError && (
-              <Alert severity="error">
-                Nie udało się zapisać przystanku. Sprawdź, czy data mieści się w datach podróży.
-              </Alert>
-            )}
+          {isError && (
+            <Alert severity="error" sx={{ marginBottom: 2 }}>
+              Nie udało się zapisać przystanku. Sprawdź, czy data mieści się w datach podróży
+              i czy wpis nie jest zbyt długi.
+            </Alert>
+          )}
 
-            <TextField
-              label="Nazwa miejsca"
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              autoFocus
-              required
-            />
+          <StopFormGrid>
+            <StopFormColumn>
+              <StopFormSectionTitle variant="h6">Miejsce</StopFormSectionTitle>
 
-            <TextField
-              label="Dzień"
-              type="date"
-              value={date}
-              onChange={(event) => setDate(event.target.value)}
-              slotProps={{
-                inputLabel: { shrink: true },
-                htmlInput: { min: trip.startDate, max: trip.endDate ?? undefined },
-              }}
-              required
-            />
+              <TextField
+                label="Nazwa miejsca"
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+                autoFocus
+                required
+              />
 
-            <TextField
-              label="Notatka"
-              value={note}
-              onChange={(event) => setNote(event.target.value)}
-              multiline
-              minRows={3}
-            />
+              <TextField
+                label="Dzień"
+                type="date"
+                value={date}
+                onChange={(event) => setDate(event.target.value)}
+                slotProps={{
+                  inputLabel: { shrink: true },
+                  htmlInput: { min: trip.startDate, max: trip.endDate ?? undefined },
+                }}
+                required
+              />
 
-            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-              Położenie: {position.latitude.toFixed(4)}, {position.longitude.toFixed(4)}
-            </Typography>
-          </StopFormFields>
+              <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+                Położenie: {position.latitude.toFixed(4)}, {position.longitude.toFixed(4)}
+              </Typography>
+            </StopFormColumn>
+
+            <StopFormColumn>
+              <StopFormSectionTitle variant="h6">Wpis</StopFormSectionTitle>
+
+              {showEditor ? (
+                <RichTextEditor value={note} onChange={setNote} />
+              ) : (
+                <EntryPlaceholder>
+                  <Typography variant="body2">
+                    Opisz to miejsce własnymi słowami: co się tu wydarzyło i co warto zapamiętać.
+                  </Typography>
+
+                  <Button startIcon={<AddIcon />} onClick={() => setShowEditor(true)}>
+                    Dodaj wpis (opcjonalnie)
+                  </Button>
+                </EntryPlaceholder>
+              )}
+            </StopFormColumn>
+          </StopFormGrid>
         </DialogContent>
 
-        <DialogActions>
+        <DialogActions sx={{ padding: '16px 24px' }}>
           <Button onClick={onClose}>Anuluj</Button>
 
           <Button type="submit" variant="contained" disabled={isPending}>
