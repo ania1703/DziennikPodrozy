@@ -5,6 +5,7 @@ using DziennikPodrozy.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using DziennikPodrozy.Api.Services;
 
 namespace DziennikPodrozy.Api.Controllers;
 
@@ -14,10 +15,12 @@ namespace DziennikPodrozy.Api.Controllers;
 public class TripsController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly FileStorageService _fileStorage;
 
-    public TripsController(AppDbContext context)
+    public TripsController(AppDbContext context, FileStorageService fileStorage)
     {
         _context = context;
+        _fileStorage = fileStorage;
     }
 
     private string OwnerId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -156,40 +159,16 @@ public class TripsController : ControllerBase
             return NotFound();
         }
 
-        if (file == null || file.Length == 0)
+        var saved = await _fileStorage.SaveImageAsync(file, "trip-covers", 2 * 1024 * 1024);
+
+        if (saved.Error != null)
         {
-            return BadRequest(new { message = "Nie przesłano pliku." });
+            return BadRequest(new { message = saved.Error });
         }
 
-        var allowedTypes = new[] { "image/jpeg", "image/png" };
+        _fileStorage.Delete(trip.CoverPhotoUrl);
 
-        if (!allowedTypes.Contains(file.ContentType))
-        {
-            return BadRequest(new { message = "Dozwolone są tylko pliki JPG i PNG." });
-        }
-
-        const long maxSizeBytes = 2 * 1024 * 1024; // 2 MB
-
-        if (file.Length > maxSizeBytes)
-        {
-            return BadRequest(new { message = "Plik jest za duży (maks. 2 MB)." });
-        }
-
-        var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "trip-covers");
-        Directory.CreateDirectory(uploadsFolder);
-
-        var extension = Path.GetExtension(file.FileName);
-        var fileName = $"{Guid.NewGuid()}{extension}";
-        var filePath = Path.Combine(uploadsFolder, fileName);
-
-        await using (var stream = new FileStream(filePath, FileMode.Create))
-        {
-            await file.CopyToAsync(stream);
-        }
-
-        DeleteCoverFile(trip.CoverPhotoUrl);
-
-        trip.CoverPhotoUrl = $"/trip-covers/{fileName}";
+        trip.CoverPhotoUrl = saved.Url;
         await _context.SaveChangesAsync();
 
         return Ok(ToDto(trip));
@@ -209,28 +188,9 @@ public class TripsController : ControllerBase
         _context.Trips.Remove(trip);
         await _context.SaveChangesAsync();
 
-        DeleteCoverFile(trip.CoverPhotoUrl);
+        _fileStorage.Delete(trip.CoverPhotoUrl);
 
         return NoContent();
-    }
-
-    private static void DeleteCoverFile(string? coverPhotoUrl)
-    {
-        if (string.IsNullOrEmpty(coverPhotoUrl))
-        {
-            return;
-        }
-
-        var filePath = Path.Combine(
-            Directory.GetCurrentDirectory(),
-            "wwwroot",
-            "trip-covers",
-            Path.GetFileName(coverPhotoUrl));
-
-        if (System.IO.File.Exists(filePath))
-        {
-            System.IO.File.Delete(filePath);
-        }
     }
 
     private static TripDto ToDto(Trip trip)

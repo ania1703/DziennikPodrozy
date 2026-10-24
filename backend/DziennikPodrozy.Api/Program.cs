@@ -46,6 +46,8 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<TokenService>();
 
+builder.Services.AddScoped<FileStorageService>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
