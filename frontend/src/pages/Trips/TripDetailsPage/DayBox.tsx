@@ -8,6 +8,7 @@ import { getDayColor } from '../../../utils/dayColors'
 
 interface DayBoxProps {
   day: StopDay
+  tripId: number
   firstNumber: number
   selectedStopId: number | null
   onToggleStop: (stopId: number) => void
@@ -22,6 +23,7 @@ function DayBox({
   onToggleStop,
   onEditStop,
   onDeleteStop,
+  tripId
 }: DayBoxProps) {
   const color = getDayColor(day.dayNumber)
   return (
@@ -49,6 +51,7 @@ function DayBox({
             onToggle={onToggleStop}
             onEdit={onEditStop}
             onDelete={onDeleteStop}
+            tripId={tripId}
           />
         ))}
       </DayBoxStops>

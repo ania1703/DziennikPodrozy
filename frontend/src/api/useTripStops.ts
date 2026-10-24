@@ -1,6 +1,13 @@
 import { useQuery } from '@tanstack/react-query'
 import axiosClient from './axiosClient'
 
+export interface StopPhoto {
+  id: number
+  url: string
+  caption: string | null
+  sortOrder: number
+}
+
 export interface TripStop {
   id: number
   title: string
@@ -9,6 +16,7 @@ export interface TripStop {
   date: string
   sortOrder: number
   note: string | null
+  photos: StopPhoto[]
 }
 
 export function useTripStops(tripId: number) {

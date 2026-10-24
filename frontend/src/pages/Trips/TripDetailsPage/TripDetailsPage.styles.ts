@@ -379,3 +379,36 @@ export const StopFormSectionTitle = styled(Typography)(({ theme }) => ({
   fontWeight: 600,
   color: theme.palette.text.primary,
 }))
+
+export const PhotoSectionHeader = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 8,
+  marginTop: 12,
+  marginBottom: 8,
+})
+
+export const PhotoGrid = styled(Box)({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(96px, 1fr))',
+  gap: 8,
+})
+
+export const PhotoThumb = styled('img')({
+  display: 'block',
+  width: '100%',
+  aspectRatio: '1 / 1',
+  objectFit: 'cover',
+  borderRadius: 8,
+  cursor: 'pointer',
+})
+
+export const PhotoCount = styled(Box)(({ theme }) => ({
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: 4,
+  marginTop: 4,
+  color: theme.palette.text.secondary,
+  fontSize: '0.85rem',
+}))
