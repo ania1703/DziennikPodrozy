@@ -412,3 +412,29 @@ export const PhotoCount = styled(Box)(({ theme }) => ({
   color: theme.palette.text.secondary,
   fontSize: '0.85rem',
 }))
+
+export const LightboxBar = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 8,
+  padding: '8px 16px',
+})
+
+export const LightboxStage = styled(Box)({
+  position: 'relative',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '0 64px 24px',
+})
+
+export const LightboxImage = styled('img')({
+  display: 'block',
+  maxWidth: '100%',
+  maxHeight: '72vh',
+  objectFit: 'contain',
+  border: '6px solid #FFFFFF',
+  borderRadius: 6,
+  boxShadow: '0 4px 16px rgba(59, 47, 42, 0.25)',
+})
