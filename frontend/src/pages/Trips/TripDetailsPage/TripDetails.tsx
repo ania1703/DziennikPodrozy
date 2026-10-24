@@ -6,6 +6,7 @@ import { getFileUrl } from '../../../api/fileUrl'
 import type { Trip } from '../../../api/useTrips'
 import { TripStatusChip } from '../../../components/common/TripStatusChip'
 import { formatDateRange } from '../../../utils/formatDate'
+import { formatTripSummary } from '../../../utils/formatTripSummary'
 import { getTripFallbackColor } from '../../../utils/tripColors'
 import DeleteTripAction from './DeleteTripAction'
 import TripStatusControl from './TripStatusControl'
@@ -55,9 +56,24 @@ function TripDetails({ trip }: TripDetailsProps) {
             <TripStatusControl trip={trip} />
           </TripDetailsStatus>
 
-          <Typography sx={{ whiteSpace: 'pre-wrap', maxWidth: '70ch' }}>
-            {trip.description ?? 'Brak opisu.'}
-          </Typography>
+          {trip.description && (
+            <Typography
+              sx={{
+                fontStyle: 'italic',
+                whiteSpace: 'pre-wrap',
+                maxWidth: '70ch',
+                color: 'text.secondary',
+              }}
+            >
+              „{trip.description}”
+            </Typography>
+          )}
+
+          {formatTripSummary(trip) && (
+            <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+              {formatTripSummary(trip)}
+            </Typography>
+          )}
 
           <TripPlan trip={trip} />
 

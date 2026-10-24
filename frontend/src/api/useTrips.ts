@@ -11,6 +11,10 @@ export interface Trip {
   endDate: string | null
   status: TripStatus
   coverPhotoUrl: string | null
+  dayCount: number | null
+  stopCount: number
+  photoCount: number
+  recordingCount: number
 }
 
 export function useTrips() {

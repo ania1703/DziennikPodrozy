@@ -6,6 +6,7 @@ import { TripStatusChip } from '../../../components/common/TripStatusChip'
 import { TripCardOverlay, TripCardRoot } from './TripsPage.styles'
 import { formatDateRange } from '../../../utils/formatDate'
 import { getTripFallbackColor } from '../../../utils/tripColors'
+import { formatTripSummary } from '../../../utils/formatTripSummary'
 
 interface TripCardProps {
   trip: Trip
@@ -29,6 +30,11 @@ function TripCard({ trip }: TripCardProps) {
           <Typography variant="body2" sx={{ color: 'common.white' }}>
             {formatDateRange(trip.startDate, trip.endDate)}
           </Typography>
+          {formatTripSummary(trip) && (
+            <Typography variant="caption" sx={{ color: 'common.white', opacity: 0.85 }}>
+              {formatTripSummary(trip)}
+            </Typography>
+          )}
           <TripStatusChip status={trip.status} />
         </TripCardOverlay>
       </TripCardRoot>
