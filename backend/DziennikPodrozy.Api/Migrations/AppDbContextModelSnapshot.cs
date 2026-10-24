@@ -187,8 +187,17 @@ namespace DziennikPodrozy.Api.Migrations
                         .HasMaxLength(10000)
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<double?>("PrecipitationMm")
+                        .HasColumnType("float");
+
                     b.Property<int>("SortOrder")
                         .HasColumnType("int");
+
+                    b.Property<double?>("TemperatureMax")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("TemperatureMin")
+                        .HasColumnType("float");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -196,6 +205,12 @@ namespace DziennikPodrozy.Api.Migrations
                         .HasColumnType("nvarchar(150)");
 
                     b.Property<int>("TripId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("WeatherCheckedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("WeatherCode")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
