@@ -126,6 +126,35 @@ namespace DziennikPodrozy.Api.Migrations
                     b.ToTable("StopPhotos");
                 });
 
+            modelBuilder.Entity("DziennikPodrozy.Api.Models.StopRecording", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DurationSeconds")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TripStopId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TripStopId");
+
+                    b.ToTable("StopRecordings");
+                });
+
             modelBuilder.Entity("DziennikPodrozy.Api.Models.Trip", b =>
                 {
                     b.Property<int>("Id")
@@ -364,6 +393,17 @@ namespace DziennikPodrozy.Api.Migrations
                     b.Navigation("TripStop");
                 });
 
+            modelBuilder.Entity("DziennikPodrozy.Api.Models.StopRecording", b =>
+                {
+                    b.HasOne("DziennikPodrozy.Api.Models.TripStop", "TripStop")
+                        .WithMany("Recordings")
+                        .HasForeignKey("TripStopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TripStop");
+                });
+
             modelBuilder.Entity("DziennikPodrozy.Api.Models.Trip", b =>
                 {
                     b.HasOne("DziennikPodrozy.Api.Models.ApplicationUser", "Owner")
@@ -445,6 +485,8 @@ namespace DziennikPodrozy.Api.Migrations
             modelBuilder.Entity("DziennikPodrozy.Api.Models.TripStop", b =>
                 {
                     b.Navigation("Photos");
+
+                    b.Navigation("Recordings");
                 });
 #pragma warning restore 612, 618
         }

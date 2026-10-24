@@ -15,4 +15,6 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
 
     public DbSet<StopPhoto> StopPhotos { get; set; }
 
+    public DbSet<StopRecording> StopRecordings { get; set; }
+
 }

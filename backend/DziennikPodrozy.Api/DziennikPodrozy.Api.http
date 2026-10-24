@@ -597,3 +597,111 @@ Authorization: Bearer {{loginUser.response.body.$.token}}
   "longitude": 19.93,
   "date": "2025-06-02"
 }
+
+### NAGRANIA: dodanie (oczekiwane: 200, url /stop-recordings/....webm, durationSeconds 3)
+# @name uploadRecording
+POST {{host}}/api/trips/16/stops/4/recordings
+Content-Type: multipart/form-data; boundary=MojaGranica
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+--MojaGranica
+Content-Disposition: form-data; name="durationSeconds"
+
+3
+--MojaGranica
+Content-Disposition: form-data; name="file"; filename="nagranie.webm"
+Content-Type: audio/webm
+
+< C:\Users\aniaa\Desktop\nagranie.webm
+--MojaGranica--
+
+### NAGRANIA: lista przystanków, przystanek 4 ma w "recordings" jedno nagranie (oczekiwane: 200)
+GET {{host}}/api/trips/16/stops
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### NAGRANIA: podrobiony plik (oczekiwane: 400, komunikat o prawidłowych nagraniach)
+POST {{host}}/api/trips/16/stops/4/recordings
+Content-Type: multipart/form-data; boundary=MojaGranica
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+--MojaGranica
+Content-Disposition: form-data; name="durationSeconds"
+
+3
+--MojaGranica
+Content-Disposition: form-data; name="file"; filename="fake.webm"
+Content-Type: audio/webm
+
+< C:\Users\aniaa\Desktop\fake.png
+--MojaGranica--
+
+### NAGRANIA: czas trwania 0 (oczekiwane: 400, komunikat o czasie od 1 s do 5 minut)
+POST {{host}}/api/trips/16/stops/4/recordings
+Content-Type: multipart/form-data; boundary=MojaGranica
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+--MojaGranica
+Content-Disposition: form-data; name="durationSeconds"
+
+0
+--MojaGranica
+Content-Disposition: form-data; name="file"; filename="nagranie.webm"
+Content-Type: audio/webm
+
+< C:\Users\aniaa\Desktop\nagranie.webm
+--MojaGranica--
+
+### NAGRANIA: czas trwania ponad 5 minut (oczekiwane: 400)
+POST {{host}}/api/trips/16/stops/4/recordings
+Content-Type: multipart/form-data; boundary=MojaGranica
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+--MojaGranica
+Content-Disposition: form-data; name="durationSeconds"
+
+400
+--MojaGranica
+Content-Disposition: form-data; name="file"; filename="nagranie.webm"
+Content-Type: audio/webm
+
+< C:\Users\aniaa\Desktop\nagranie.webm
+--MojaGranica--
+
+### NAGRANIA: cudzy przystanek jako ADMIN (oczekiwane: 404)
+POST {{host}}/api/trips/16/stops/4/recordings
+Content-Type: multipart/form-data; boundary=MojaGranica
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+--MojaGranica
+Content-Disposition: form-data; name="durationSeconds"
+
+3
+--MojaGranica
+Content-Disposition: form-data; name="file"; filename="nagranie.webm"
+Content-Type: audio/webm
+
+< C:\Users\aniaa\Desktop\nagranie.webm
+--MojaGranica--
+
+### NAGRANIA: brak tokenu (oczekiwane: 401)
+POST {{host}}/api/trips/16/stops/4/recordings
+Content-Type: multipart/form-data; boundary=MojaGranica
+
+--MojaGranica
+Content-Disposition: form-data; name="durationSeconds"
+
+3
+--MojaGranica
+Content-Disposition: form-data; name="file"; filename="nagranie.webm"
+Content-Type: audio/webm
+
+< C:\Users\aniaa\Desktop\nagranie.webm
+--MojaGranica--
+
+### NAGRANIA: usunięcie pierwszego nagrania z "uploadRecording" (oczekiwane: 204)
+DELETE {{host}}/api/trips/16/stops/4/recordings/{{uploadRecording.response.body.$.id}}
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### NAGRANIA: ponowne usunięcie tego samego (oczekiwane: 404)
+DELETE {{host}}/api/trips/16/stops/4/recordings/{{uploadRecording.response.body.$.id}}
+Authorization: Bearer {{loginUser.response.body.$.token}}
