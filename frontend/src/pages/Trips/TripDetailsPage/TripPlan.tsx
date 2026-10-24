@@ -124,6 +124,7 @@ function TripPlan({ trip }: TripPlanProps) {
                 onToggleStop={handleToggleStop}
                 onEditStop={setEditingStop}
                 onDeleteStop={setDeletingStop}
+                tripId={trip.id}
               />
             ))
           )}

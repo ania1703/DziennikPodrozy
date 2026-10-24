@@ -20,3 +20,5 @@ backend/DziennikPodrozy.Api/wwwroot/avatars/*
 !backend/DziennikPodrozy.Api/wwwroot/avatars/.gitkeep
 backend/DziennikPodrozy.Api/wwwroot/trip-covers/*
 !backend/DziennikPodrozy.Api/wwwroot/trip-covers/.gitkeep
+backend/DziennikPodrozy.Api/wwwroot/stop-photos/*
+!backend/DziennikPodrozy.Api/wwwroot/stop-photos/.gitkeep

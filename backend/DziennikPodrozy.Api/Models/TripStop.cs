@@ -24,4 +24,6 @@ public class TripStop
 
     [MaxLength(10000)]
     public string? Note { get; set; }
+
+    public List<StopPhoto> Photos { get; set; } = new();
 }

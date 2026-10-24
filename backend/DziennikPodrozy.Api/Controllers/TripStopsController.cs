@@ -5,6 +5,7 @@ using DziennikPodrozy.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using DziennikPodrozy.Api.Services;
 
 namespace DziennikPodrozy.Api.Controllers;
 
@@ -17,10 +18,12 @@ public class TripStopsController : ControllerBase
         "Data przystanku musi mieścić się w datach podróży.";
 
     private readonly AppDbContext _context;
+    private readonly FileStorageService _fileStorage;
 
-    public TripStopsController(AppDbContext context)
+    public TripStopsController(AppDbContext context, FileStorageService fileStorage)
     {
         _context = context;
+        _fileStorage = fileStorage;
     }
 
     private string OwnerId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -37,6 +40,7 @@ public class TripStopsController : ControllerBase
         }
 
         var stops = await _context.TripStops
+            .Include(s => s.Photos)
             .Where(s => s.TripId == tripId)
             .OrderBy(s => s.Date)
             .ThenBy(s => s.SortOrder)
@@ -121,6 +125,11 @@ public class TripStopsController : ControllerBase
         _context.TripStops.Remove(stop);
         await _context.SaveChangesAsync();
 
+        foreach (var photo in stop.Photos)
+        {
+            _fileStorage.Delete(photo.Url);
+        }
+
         return NoContent();
     }
 
@@ -134,6 +143,7 @@ public class TripStopsController : ControllerBase
     {
         return _context.TripStops
             .Include(s => s.Trip)
+            .Include(s => s.Photos)
             .FirstOrDefaultAsync(s =>
                 s.Id == id && s.TripId == tripId && s.Trip!.OwnerId == OwnerId);
     }
@@ -163,7 +173,11 @@ public class TripStopsController : ControllerBase
             Longitude = stop.Longitude,
             Date = stop.Date,
             SortOrder = stop.SortOrder,
-            Note = stop.Note
+            Note = stop.Note,
+            Photos = stop.Photos
+                .OrderBy(p => p.SortOrder)
+                .Select(StopPhotoDto.From)
+                .ToList()
         };
     }
 }

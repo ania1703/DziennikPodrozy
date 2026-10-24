@@ -96,6 +96,36 @@ namespace DziennikPodrozy.Api.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("DziennikPodrozy.Api.Models.StopPhoto", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Caption")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TripStopId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TripStopId");
+
+                    b.ToTable("StopPhotos");
+                });
+
             modelBuilder.Entity("DziennikPodrozy.Api.Models.Trip", b =>
                 {
                     b.Property<int>("Id")
@@ -308,6 +338,17 @@ namespace DziennikPodrozy.Api.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("DziennikPodrozy.Api.Models.StopPhoto", b =>
+                {
+                    b.HasOne("DziennikPodrozy.Api.Models.TripStop", "TripStop")
+                        .WithMany("Photos")
+                        .HasForeignKey("TripStopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TripStop");
+                });
+
             modelBuilder.Entity("DziennikPodrozy.Api.Models.Trip", b =>
                 {
                     b.HasOne("DziennikPodrozy.Api.Models.ApplicationUser", "Owner")
@@ -384,6 +425,11 @@ namespace DziennikPodrozy.Api.Migrations
             modelBuilder.Entity("DziennikPodrozy.Api.Models.Trip", b =>
                 {
                     b.Navigation("Stops");
+                });
+
+            modelBuilder.Entity("DziennikPodrozy.Api.Models.TripStop", b =>
+                {
+                    b.Navigation("Photos");
                 });
 #pragma warning restore 612, 618
         }
