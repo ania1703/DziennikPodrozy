@@ -57,11 +57,13 @@ export function TripForm({ initialValues, cancelTo, withStatus, onSubmit, isPend
       />
 
       <TextField
-        label="Opis"
+        label="Motto podróży (opcjonalnie)"
         value={description}
         onChange={(event) => setDescription(event.target.value)}
         multiline
-        minRows={3}
+        minRows={2}
+        slotProps={{ htmlInput: { maxLength: 300 } }}
+        helperText={`${description.length}/300`}
       />
 
       <TextField

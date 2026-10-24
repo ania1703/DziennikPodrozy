@@ -2,10 +2,10 @@ using System.Security.Claims;
 using DziennikPodrozy.Api.Data;
 using DziennikPodrozy.Api.DTOs;
 using DziennikPodrozy.Api.Models;
+using DziennikPodrozy.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using DziennikPodrozy.Api.Services;
 
 namespace DziennikPodrozy.Api.Controllers;
 
@@ -48,8 +48,9 @@ public class TripsController : ControllerBase
             : query.OrderByDescending(t => t.StartDate);
 
         var trips = await query.ToListAsync();
+        var counts = await GetCountsAsync(trips.Select(t => t.Id).ToList());
 
-        return Ok(trips.Select(ToDto));
+        return Ok(trips.Select(t => ToDto(t, counts[t.Id])));
     }
 
     [HttpGet("{id}")]
@@ -63,7 +64,7 @@ public class TripsController : ControllerBase
             return NotFound();
         }
 
-        return Ok(ToDto(trip));
+        return Ok(await ToDtoAsync(trip));
     }
 
     [HttpPost]
@@ -97,7 +98,10 @@ public class TripsController : ControllerBase
         _context.Trips.Add(trip);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction(nameof(GetTrip), new { id = trip.Id }, ToDto(trip));
+        return CreatedAtAction(
+            nameof(GetTrip),
+            new { id = trip.Id },
+            ToDto(trip, new TripCounts(0, 0, 0)));
     }
 
     [HttpPut("{id}")]
@@ -123,7 +127,7 @@ public class TripsController : ControllerBase
 
         await _context.SaveChangesAsync();
 
-        return Ok(ToDto(trip));
+        return Ok(await ToDtoAsync(trip));
     }
 
     [HttpPatch("{id}/status")]
@@ -145,7 +149,7 @@ public class TripsController : ControllerBase
         trip.Status = newStatus;
         await _context.SaveChangesAsync();
 
-        return Ok(ToDto(trip));
+        return Ok(await ToDtoAsync(trip));
     }
 
     [HttpPost("{id}/cover-photo")]
@@ -171,7 +175,7 @@ public class TripsController : ControllerBase
         trip.CoverPhotoUrl = saved.Url;
         await _context.SaveChangesAsync();
 
-        return Ok(ToDto(trip));
+        return Ok(await ToDtoAsync(trip));
     }
 
     [HttpDelete("{id}")]
@@ -213,7 +217,44 @@ public class TripsController : ControllerBase
         return NoContent();
     }
 
-    private static TripDto ToDto(Trip trip)
+    private record TripCounts(int Stops, int Photos, int Recordings);
+
+    private async Task<Dictionary<int, TripCounts>> GetCountsAsync(List<int> tripIds)
+    {
+        var stops = await _context.TripStops
+            .Where(s => tripIds.Contains(s.TripId))
+            .GroupBy(s => s.TripId)
+            .Select(g => new { TripId = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.TripId, x => x.Count);
+
+        var photos = await _context.StopPhotos
+            .Where(p => tripIds.Contains(p.TripStop!.TripId))
+            .GroupBy(p => p.TripStop!.TripId)
+            .Select(g => new { TripId = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.TripId, x => x.Count);
+
+        var recordings = await _context.StopRecordings
+            .Where(r => tripIds.Contains(r.TripStop!.TripId))
+            .GroupBy(r => r.TripStop!.TripId)
+            .Select(g => new { TripId = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.TripId, x => x.Count);
+
+        return tripIds.ToDictionary(
+            id => id,
+            id => new TripCounts(
+                stops.GetValueOrDefault(id),
+                photos.GetValueOrDefault(id),
+                recordings.GetValueOrDefault(id)));
+    }
+
+    private async Task<TripDto> ToDtoAsync(Trip trip)
+    {
+        var counts = await GetCountsAsync(new List<int> { trip.Id });
+
+        return ToDto(trip, counts[trip.Id]);
+    }
+
+    private static TripDto ToDto(Trip trip, TripCounts counts)
     {
         return new TripDto
         {
@@ -223,7 +264,13 @@ public class TripsController : ControllerBase
             StartDate = trip.StartDate,
             EndDate = trip.EndDate,
             Status = trip.Status.ToString(),
-            CoverPhotoUrl = trip.CoverPhotoUrl
+            CoverPhotoUrl = trip.CoverPhotoUrl,
+            DayCount = trip.EndDate.HasValue
+                ? trip.EndDate.Value.DayNumber - trip.StartDate.DayNumber + 1
+                : null,
+            StopCount = counts.Stops,
+            PhotoCount = counts.Photos,
+            RecordingCount = counts.Recordings
         };
     }
 }

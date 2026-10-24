@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axiosClient from './axiosClient'
 import type { StopRecording } from './useTripStops'
+import { invalidateTrip } from './invalidateTrip'
 
 interface UploadRecordingPayload {
   blob: Blob
@@ -31,7 +32,7 @@ export function useUploadStopRecording(tripId: number, stopId: number) {
       return response.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['trips', String(tripId), 'stops'] })
+      invalidateTrip(queryClient, tripId)
     },
   })
 }

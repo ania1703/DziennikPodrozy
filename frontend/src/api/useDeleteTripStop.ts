@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axiosClient from './axiosClient'
+import { invalidateTrip } from './invalidateTrip'
 
 export function useDeleteTripStop(tripId: number, stopId: number) {
   const queryClient = useQueryClient()
@@ -9,7 +10,7 @@ export function useDeleteTripStop(tripId: number, stopId: number) {
       await axiosClient.delete(`/trips/${tripId}/stops/${stopId}`)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['trips', String(tripId), 'stops'] })
+      invalidateTrip(queryClient, tripId)
     },
   })
 }

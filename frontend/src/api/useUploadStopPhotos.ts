@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axiosClient from './axiosClient'
 import type { StopPhoto } from './useTripStops'
+import { invalidateTrip } from './invalidateTrip'
 
 export function useUploadStopPhotos(tripId: number, stopId: number) {
   const queryClient = useQueryClient()
@@ -21,7 +22,7 @@ export function useUploadStopPhotos(tripId: number, stopId: number) {
       return response.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['trips', String(tripId), 'stops'] })
+      invalidateTrip(queryClient, tripId)
     },
   })
 }

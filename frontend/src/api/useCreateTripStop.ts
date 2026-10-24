@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axiosClient from './axiosClient'
 import type { TripStop } from './useTripStops'
+import { invalidateTrip } from './invalidateTrip'
 
 export interface CreateTripStopPayload {
   title: string
@@ -19,7 +20,7 @@ export function useCreateTripStop(tripId: number) {
       return response.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['trips', String(tripId), 'stops'] })
+      invalidateTrip(queryClient, tripId)
     },
   })
 }
