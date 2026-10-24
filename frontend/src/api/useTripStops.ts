@@ -15,6 +15,13 @@ export interface StopWeather {
   precipitationMm: number
 }
 
+export interface StopRecording {
+  id: number
+  url: string
+  durationSeconds: number
+  createdAt: string
+}
+
 export interface TripStop {
   id: number
   title: string
@@ -25,6 +32,7 @@ export interface TripStop {
   note: string | null
   photos: StopPhoto[]
   weather: StopWeather | null
+  recordings: StopRecording[]
 }
 
 export function useTripStops(tripId: number) {

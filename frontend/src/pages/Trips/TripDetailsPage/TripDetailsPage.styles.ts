@@ -1,4 +1,4 @@
-import { styled } from '@mui/material/styles'
+import { keyframes, styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 
@@ -460,3 +460,43 @@ export const StopWeatherCompact = styled('span')(({ theme }) => ({
   fontSize: '0.9rem',
   color: theme.palette.text.secondary,
 }))
+
+const pulse = keyframes`
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+`
+
+export const RecordingBar = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexWrap: 'wrap',
+  alignItems: 'center',
+  gap: 12,
+  marginBottom: 8,
+  padding: '8px 12px',
+  borderRadius: 10,
+  border: '1px solid #EADFCB',
+  backgroundColor: theme.palette.background.default,
+}))
+
+export const RecordingDot = styled('span')({
+  width: 10,
+  height: 10,
+  borderRadius: '50%',
+  backgroundColor: '#C0392B',
+  animation: `${pulse} 1.2s ease-in-out infinite`,
+})
+
+export const RecordingItem = styled(Box)({
+  display: 'flex',
+  flexWrap: 'wrap',
+  alignItems: 'center',
+  gap: 12,
+  marginBottom: 8,
+})
+
+export const RecordingAudio = styled('audio')({
+  flex: 1,
+  minWidth: 220,
+  height: 40,
+})
