@@ -8,7 +8,7 @@ public class CreateTripDto
     [MaxLength(150)]
     public string Title { get; set; } = string.Empty;
 
-    [MaxLength(2000)]
+    [MaxLength(300)]
     public string? Description { get; set; }
 
     [Required]

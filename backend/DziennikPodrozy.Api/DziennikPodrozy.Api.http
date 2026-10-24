@@ -705,3 +705,69 @@ Authorization: Bearer {{loginUser.response.body.$.token}}
 ### NAGRANIA: ponowne usunięcie tego samego (oczekiwane: 404)
 DELETE {{host}}/api/trips/16/stops/4/recordings/{{uploadRecording.response.body.$.id}}
 Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### PODSUMOWANIE: podróż z 3 dniami i bez przystanków (oczekiwane: 201, dayCount 3, stopCount 0, photoCount 0, recordingCount 0)
+# @name createTripForSummary
+POST {{host}}/api/trips
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Test podsumowania",
+  "description": "Krótkie motto",
+  "startDate": "2026-12-20",
+  "endDate": "2026-12-22"
+}
+
+### PODSUMOWANIE: przystanek 1 (oczekiwane: 201)
+POST {{host}}/api/trips/{{createTripForSummary.response.body.$.id}}/stops
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Wawel",
+  "latitude": 50.0540,
+  "longitude": 19.9354,
+  "date": "2026-12-20"
+}
+
+### PODSUMOWANIE: przystanek 2 (oczekiwane: 201)
+POST {{host}}/api/trips/{{createTripForSummary.response.body.$.id}}/stops
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Rynek Główny",
+  "latitude": 50.0617,
+  "longitude": 19.9373,
+  "date": "2026-12-21"
+}
+
+### PODSUMOWANIE: szczegóły podróży (oczekiwane: 200, dayCount 3, stopCount 2, photoCount 0, recordingCount 0)
+GET {{host}}/api/trips/{{createTripForSummary.response.body.$.id}}
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### PODSUMOWANIE: lista podróży (oczekiwane: 200, w każdej podróży są pola dayCount, stopCount, photoCount, recordingCount)
+GET {{host}}/api/trips
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### PODSUMOWANIE: podróż bez daty końca (oczekiwane: 201, dayCount null)
+POST {{host}}/api/trips
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Bez końca",
+  "startDate": "2026-12-20"
+}
+
+### PODSUMOWANIE: motto za długie, 301 znaków (oczekiwane: 400)
+POST {{host}}/api/trips
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Za długie motto",
+  "description": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "startDate": "2026-12-20"
+}
