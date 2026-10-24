@@ -8,6 +8,13 @@ export interface StopPhoto {
   sortOrder: number
 }
 
+export interface StopWeather {
+  weatherCode: number
+  temperatureMax: number
+  temperatureMin: number
+  precipitationMm: number
+}
+
 export interface TripStop {
   id: number
   title: string
@@ -17,6 +24,7 @@ export interface TripStop {
   sortOrder: number
   note: string | null
   photos: StopPhoto[]
+  weather: StopWeather | null
 }
 
 export function useTripStops(tripId: number) {

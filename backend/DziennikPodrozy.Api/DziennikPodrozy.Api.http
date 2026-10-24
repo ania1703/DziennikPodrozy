@@ -520,3 +520,80 @@ Content-Type: image/png
 ### Usunięcie zdjęcia (podstaw id zdjęcia z odpowiedzi, oczekiwane: 204)
 DELETE {{host}}/api/trips/16/stops/5/photos/1
 Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### Podróż do testu pogody
+# @name createWeatherTrip
+POST {{host}}/api/trips
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Test pogody",
+  "startDate": "2025-06-01",
+  "endDate": "2026-12-31"
+}
+
+### Przystanek sprzed ponad 90 dni (archiwum)
+# @name weatherStop1
+POST {{host}}/api/trips/{{createWeatherTrip.response.body.$.id}}/stops
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Archiwum",
+  "latitude": 50.05,
+  "longitude": 19.93,
+  "date": "2025-06-01"
+}
+
+### Przystanek sprzed kilkunastu dni
+POST {{host}}/api/trips/{{createWeatherTrip.response.body.$.id}}/stops
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Ostatnie dni",
+  "latitude": 50.05,
+  "longitude": 19.93,
+  "date": "2026-10-10"
+}
+
+### Przystanek w najbliższej przyszłości (prognoza)
+POST {{host}}/api/trips/{{createWeatherTrip.response.body.$.id}}/stops
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Najbliższa przyszłość",
+  "latitude": 50.05,
+  "longitude": 19.93,
+  "date": "2026-11-03"
+}
+
+### Przystanek za daleko w przyszłości
+POST {{host}}/api/trips/{{createWeatherTrip.response.body.$.id}}/stops
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Za daleko",
+  "latitude": 50.05,
+  "longitude": 19.93,
+  "date": "2026-12-20"
+}
+
+### Lista przystanków z pogodą
+GET {{host}}/api/trips/{{createWeatherTrip.response.body.$.id}}/stops
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### Zmiana dnia pierwszego przystanku (pogoda ma się przeliczyć)
+PUT {{host}}/api/trips/{{createWeatherTrip.response.body.$.id}}/stops/{{weatherStop1.response.body.$.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Archiwum",
+  "latitude": 50.05,
+  "longitude": 19.93,
+  "date": "2025-06-02"
+}

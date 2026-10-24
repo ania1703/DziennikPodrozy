@@ -19,11 +19,16 @@ public class TripStopsController : ControllerBase
 
     private readonly AppDbContext _context;
     private readonly FileStorageService _fileStorage;
+    private readonly WeatherService _weather;
 
-    public TripStopsController(AppDbContext context, FileStorageService fileStorage)
+    public TripStopsController(
+        AppDbContext context,
+        FileStorageService fileStorage,
+        WeatherService weather)
     {
         _context = context;
         _fileStorage = fileStorage;
+        _weather = weather;
     }
 
     private string OwnerId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -45,6 +50,8 @@ public class TripStopsController : ControllerBase
             .OrderBy(s => s.Date)
             .ThenBy(s => s.SortOrder)
             .ToListAsync();
+
+            await RefreshWeatherAsync(stops);
 
         return Ok(stops.Select(ToDto));
     }
@@ -99,6 +106,13 @@ public class TripStopsController : ControllerBase
         if (dto.Date != stop.Date)
         {
             stop.SortOrder = await NextSortOrderAsync(tripId, dto.Date);
+        }
+
+        if (dto.Date != stop.Date
+            || dto.Latitude != stop.Latitude
+            || dto.Longitude != stop.Longitude)
+        {
+            ClearWeather(stop);
         }
 
         stop.Title = dto.Title;
@@ -163,6 +177,72 @@ public class TripStopsController : ControllerBase
         return (lastOrder ?? 0) + 1;
     }
 
+    private async Task RefreshWeatherAsync(List<TripStop> stops)
+    {
+        var now = DateTime.UtcNow;
+        var today = DateOnly.FromDateTime(now);
+
+        var outdated = stops.Where(stop => NeedsWeather(stop, today, now)).ToList();
+
+        if (outdated.Count == 0)
+        {
+            return;
+        }
+
+        var results = await Task.WhenAll(
+            outdated.Select(stop =>
+                _weather.GetDailyWeatherAsync(stop.Latitude, stop.Longitude, stop.Date)));
+
+        for (var i = 0; i < outdated.Count; i++)
+        {
+            var stop = outdated[i];
+            var weather = results[i];
+
+            stop.WeatherCheckedAt = now;
+
+            if (weather != null)
+            {
+                stop.WeatherCode = weather.WeatherCode;
+                stop.TemperatureMax = weather.TemperatureMax;
+                stop.TemperatureMin = weather.TemperatureMin;
+                stop.PrecipitationMm = weather.PrecipitationMm;
+            }
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
+    private static bool NeedsWeather(TripStop stop, DateOnly today, DateTime now)
+    {
+        if (!WeatherService.IsInRange(stop.Date))
+        {
+            return false;
+        }
+
+        if (stop.WeatherCheckedAt == null)
+        {
+            return true;
+        }
+
+        var age = now - stop.WeatherCheckedAt.Value;
+
+        if (stop.WeatherCode == null)
+        {
+            return age > TimeSpan.FromHours(1);
+        }
+
+        return stop.Date >= today && age > TimeSpan.FromHours(6);
+    }
+
+    private static void ClearWeather(TripStop stop)
+    {
+        stop.WeatherCode = null;
+        stop.TemperatureMax = null;
+        stop.TemperatureMin = null;
+        stop.PrecipitationMm = null;
+        stop.WeatherCheckedAt = null;
+    }
+
     private static TripStopDto ToDto(TripStop stop)
     {
         return new TripStopDto
@@ -177,7 +257,18 @@ public class TripStopsController : ControllerBase
             Photos = stop.Photos
                 .OrderBy(p => p.SortOrder)
                 .Select(StopPhotoDto.From)
-                .ToList()
+                .ToList(),
+            Weather = stop.WeatherCode.HasValue
+                && stop.TemperatureMax.HasValue
+                && stop.TemperatureMin.HasValue
+                ? new WeatherDto
+                {
+                    WeatherCode = stop.WeatherCode.Value,
+                    TemperatureMax = stop.TemperatureMax.Value,
+                    TemperatureMin = stop.TemperatureMin.Value,
+                    PrecipitationMm = stop.PrecipitationMm ?? 0
+                }
+                : null
         };
     }
 }

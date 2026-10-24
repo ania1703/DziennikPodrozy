@@ -48,6 +48,11 @@ builder.Services.AddScoped<TokenService>();
 
 builder.Services.AddScoped<FileStorageService>();
 
+builder.Services.AddHttpClient<WeatherService>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(4);
+});
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>

@@ -10,4 +10,5 @@ public class TripStopDto
     public int SortOrder { get; set; }
     public string? Note { get; set; }
     public List<StopPhotoDto> Photos { get; set; } = new();
+    public WeatherDto? Weather { get; set; }
 }
