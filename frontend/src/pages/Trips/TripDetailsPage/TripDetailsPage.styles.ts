@@ -438,3 +438,25 @@ export const LightboxImage = styled('img')({
   borderRadius: 6,
   boxShadow: '0 4px 16px rgba(59, 47, 42, 0.25)',
 })
+
+export const StopBoxContent = styled(Box)({
+  flex: 1,
+  minWidth: 0,
+})
+
+export const StopTitleRow = styled(Box)({
+  display: 'flex',
+  alignItems: 'baseline',
+  justifyContent: 'space-between',
+  gap: 12,
+})
+
+export const StopWeatherCompact = styled('span')(({ theme }) => ({
+  display: 'inline-flex',
+  alignItems: 'center',
+  flexShrink: 0,
+  gap: 4,
+  whiteSpace: 'nowrap',
+  fontSize: '0.9rem',
+  color: theme.palette.text.secondary,
+}))

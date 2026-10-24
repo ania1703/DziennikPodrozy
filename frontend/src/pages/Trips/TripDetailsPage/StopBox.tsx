@@ -1,13 +1,22 @@
 import type { KeyboardEvent } from 'react'
+import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined'
 import Button from '@mui/material/Button'
 import Collapse from '@mui/material/Collapse'
 import Typography from '@mui/material/Typography'
 import type { TripStop } from '../../../api/useTripStops'
-import { StopActions, StopBoxRoot, StopNumber, StopPreview, PhotoCount } from './TripDetailsPage.styles'
 import { htmlToText } from '../../../utils/richText'
 import RichTextView from './RichTextView'
-import PhotoCameraOutlinedIcon from '@mui/icons-material/PhotoCameraOutlined'
 import StopPhotos from './StopPhotos'
+import WeatherSummary from './WeatherSummary'
+import {
+  PhotoCount,
+  StopActions,
+  StopBoxContent,
+  StopBoxRoot,
+  StopNumber,
+  StopPreview,
+  StopTitleRow,
+} from './TripDetailsPage.styles'
 
 interface StopBoxProps {
   stop: TripStop
@@ -20,7 +29,16 @@ interface StopBoxProps {
   onDelete: (stop: TripStop) => void
 }
 
-function StopBox({ stop, tripId, number, selected, color, onToggle, onEdit, onDelete }: StopBoxProps) {
+function StopBox({
+  stop,
+  tripId,
+  number,
+  selected,
+  color,
+  onToggle,
+  onEdit,
+  onDelete,
+}: StopBoxProps) {
   function handleKeyDown(event: KeyboardEvent) {
     if (event.target !== event.currentTarget) {
       return
@@ -44,10 +62,15 @@ function StopBox({ stop, tripId, number, selected, color, onToggle, onEdit, onDe
     >
       <StopNumber style={{ backgroundColor: color }}>{number}</StopNumber>
 
-      <div>
-        <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-          {stop.title}
-        </Typography>
+      <StopBoxContent>
+        <StopTitleRow>
+          <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+            {stop.title}
+          </Typography>
+
+          {stop.weather && <WeatherSummary weather={stop.weather} />}
+
+        </StopTitleRow>
 
         {!selected && stop.note && (
           <StopPreview variant="body2">{htmlToText(stop.note)}</StopPreview>
@@ -61,7 +84,6 @@ function StopBox({ stop, tripId, number, selected, color, onToggle, onEdit, onDe
         )}
 
         <Collapse in={selected}>
-          <Typography variant="body2" sx={{ color: 'text.secondary', whiteSpace: 'pre-wrap' }}>
           {stop.note ? (
             <RichTextView content={stop.note} />
           ) : (
@@ -69,15 +91,18 @@ function StopBox({ stop, tripId, number, selected, color, onToggle, onEdit, onDe
               Brak wpisu.
             </Typography>
           )}
-          </Typography>
-
-          <Typography variant="caption" component="p" sx={{ color: 'text.secondary' }}>
-            {stop.latitude.toFixed(4)}, {stop.longitude.toFixed(4)}
-          </Typography>
 
           <div onClick={(event) => event.stopPropagation()}>
             <StopPhotos tripId={tripId} stop={stop} />
           </div>
+
+          <Typography
+            variant="caption"
+            component="p"
+            sx={{ marginTop: 1, color: 'text.secondary' }}
+          >
+            {stop.latitude.toFixed(4)}, {stop.longitude.toFixed(4)}
+          </Typography>
 
           <StopActions>
             <Button
@@ -102,7 +127,7 @@ function StopBox({ stop, tripId, number, selected, color, onToggle, onEdit, onDe
             </Button>
           </StopActions>
         </Collapse>
-      </div>
+      </StopBoxContent>
     </StopBoxRoot>
   )
 }

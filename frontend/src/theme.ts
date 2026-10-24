@@ -26,5 +26,18 @@ export const theme = createTheme({
         },
       },
     },
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: ({ theme }) => ({
+          backgroundColor: theme.palette.background.paper,
+          color: theme.palette.text.primary,
+          border: '1px solid #EADFCB',
+          borderRadius: 10,
+          boxShadow: '0 4px 14px rgba(59, 47, 42, 0.2)',
+          fontSize: '0.9rem',
+          padding: '8px 12px',
+        }),
+      },
+    },
   },
 })
