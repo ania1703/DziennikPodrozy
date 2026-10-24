@@ -190,12 +190,22 @@ public class TripsController : ControllerBase
             .Select(p => p.Url)
             .ToListAsync();
 
+        var recordingUrls = await _context.StopRecordings
+            .Where(r => r.TripStop!.TripId == id)
+            .Select(r => r.Url)
+            .ToListAsync();
+
         _context.Trips.Remove(trip);
         await _context.SaveChangesAsync();
 
         _fileStorage.Delete(trip.CoverPhotoUrl);
 
         foreach (var url in photoUrls)
+        {
+            _fileStorage.Delete(url);
+        }
+
+        foreach (var url in recordingUrls)
         {
             _fileStorage.Delete(url);
         }

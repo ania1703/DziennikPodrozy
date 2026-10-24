@@ -46,6 +46,8 @@ public class TripStopsController : ControllerBase
 
         var stops = await _context.TripStops
             .Include(s => s.Photos)
+            .Include(s => s.Recordings)
+            .AsSplitQuery()
             .Where(s => s.TripId == tripId)
             .OrderBy(s => s.Date)
             .ThenBy(s => s.SortOrder)
@@ -144,6 +146,11 @@ public class TripStopsController : ControllerBase
             _fileStorage.Delete(photo.Url);
         }
 
+        foreach (var recording in stop.Recordings)
+        {
+            _fileStorage.Delete(recording.Url);
+        }
+
         return NoContent();
     }
 
@@ -158,6 +165,8 @@ public class TripStopsController : ControllerBase
         return _context.TripStops
             .Include(s => s.Trip)
             .Include(s => s.Photos)
+            .Include(s => s.Recordings)
+            .AsSplitQuery()
             .FirstOrDefaultAsync(s =>
                 s.Id == id && s.TripId == tripId && s.Trip!.OwnerId == OwnerId);
     }
@@ -268,7 +277,11 @@ public class TripStopsController : ControllerBase
                     TemperatureMin = stop.TemperatureMin.Value,
                     PrecipitationMm = stop.PrecipitationMm ?? 0
                 }
-                : null
+                : null,
+            Recordings = stop.Recordings
+                .OrderBy(r => r.CreatedAt)
+                .Select(StopRecordingDto.From)
+                .ToList()
         };
     }
 }

@@ -27,6 +27,8 @@ public class TripStop
 
     public List<StopPhoto> Photos { get; set; } = new();
 
+    public List<StopRecording> Recordings { get; set; } = new();
+
     public int? WeatherCode { get; set; }
     public double? TemperatureMax { get; set; }
     public double? TemperatureMin { get; set; }

@@ -8,6 +8,8 @@ import { htmlToText } from '../../../utils/richText'
 import RichTextView from './RichTextView'
 import StopPhotos from './StopPhotos'
 import WeatherSummary from './WeatherSummary'
+import MicNoneOutlinedIcon from '@mui/icons-material/MicNoneOutlined'
+import StopRecordings from './StopRecordings'
 import {
   PhotoCount,
   StopActions,
@@ -76,10 +78,21 @@ function StopBox({
           <StopPreview variant="body2">{htmlToText(stop.note)}</StopPreview>
         )}
 
-        {!selected && stop.photos.length > 0 && (
+        {!selected && (stop.photos.length > 0 || stop.recordings.length > 0) && (
           <PhotoCount>
-            <PhotoCameraOutlinedIcon fontSize="inherit" />
-            {stop.photos.length}
+            {stop.photos.length > 0 && (
+              <>
+                <PhotoCameraOutlinedIcon fontSize="inherit" />
+                {stop.photos.length}
+              </>
+            )}
+
+            {stop.recordings.length > 0 && (
+              <>
+                <MicNoneOutlinedIcon fontSize="inherit" />
+                {stop.recordings.length}
+              </>
+            )}
           </PhotoCount>
         )}
 
@@ -94,6 +107,7 @@ function StopBox({
 
           <div onClick={(event) => event.stopPropagation()}>
             <StopPhotos tripId={tripId} stop={stop} />
+            <StopRecordings tripId={tripId} stop={stop} />
           </div>
 
           <Typography
