@@ -185,10 +185,20 @@ public class TripsController : ControllerBase
             return NotFound();
         }
 
+        var photoUrls = await _context.StopPhotos
+            .Where(p => p.TripStop!.TripId == id)
+            .Select(p => p.Url)
+            .ToListAsync();
+
         _context.Trips.Remove(trip);
         await _context.SaveChangesAsync();
 
         _fileStorage.Delete(trip.CoverPhotoUrl);
+
+        foreach (var url in photoUrls)
+        {
+            _fileStorage.Delete(url);
+        }
 
         return NoContent();
     }

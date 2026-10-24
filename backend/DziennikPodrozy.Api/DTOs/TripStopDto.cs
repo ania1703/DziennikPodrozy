@@ -9,4 +9,5 @@ public class TripStopDto
     public DateOnly Date { get; set; }
     public int SortOrder { get; set; }
     public string? Note { get; set; }
+    public List<StopPhotoDto> Photos { get; set; } = new();
 }

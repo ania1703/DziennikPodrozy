@@ -454,3 +454,69 @@ Authorization: Bearer {{loginUser.response.body.$.token}}
 ### Lista przystanków po usunięciu podróży (oczekiwane: 404)
 GET {{host}}/api/trips/{{createTripForStops.response.body.$.id}}/stops
 Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### Podrobiony plik jako PNG (oczekiwane: 400)
+POST {{host}}/api/profile/avatar
+Content-Type: multipart/form-data; boundary=MojaGranica
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+--MojaGranica
+Content-Disposition: form-data; name="file"; filename="fake.png"
+Content-Type: image/png
+
+< C:\Users\aniaa\Desktop\fake.png
+--MojaGranica--
+
+### Lista przystanków z polem photos (oczekiwane: 200)
+GET {{host}}/api/trips/16/stops
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### Dodanie dwóch zdjęć naraz (oczekiwane: 200, tablica z 2 zdjęciami)
+POST {{host}}/api/trips/16/stops/5/photos
+Content-Type: multipart/form-data; boundary=MojaGranica
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+--MojaGranica
+Content-Disposition: form-data; name="files"; filename="a.png"
+Content-Type: image/jpeg
+
+< C:\Users\aniaa\Desktop\krakow1.webp
+--MojaGranica
+Content-Disposition: form-data; name="files"; filename="b.png"
+Content-Type: image/jpeg
+
+< C:\Users\aniaa\Desktop\krakow1.webp
+--MojaGranica--
+
+### Zdjęcie + podrobiony plik w jednym zapytaniu (oczekiwane: 400, ŻADNE zdjęcie nie zostaje zapisane)
+POST {{host}}/api/trips/16/stops/5/photos
+Content-Type: multipart/form-data; boundary=MojaGranica
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+--MojaGranica
+Content-Disposition: form-data; name="files"; filename="a.png"
+Content-Type: image/png
+
+< C:\Users\aniaa\Desktop\krakow1.webp
+--MojaGranica
+Content-Disposition: form-data; name="files"; filename="fake.png"
+Content-Type: image/png
+
+< C:\Users\aniaa\Desktop\fake.png
+--MojaGranica--
+
+### Cudzy przystanek jako ADMIN (oczekiwane: 404)
+POST {{host}}/api/trips/16/stops/5/photos
+Content-Type: multipart/form-data; boundary=MojaGranica
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+--MojaGranica
+Content-Disposition: form-data; name="files"; filename="a.png"
+Content-Type: image/png
+
+< C:\Users\aniaa\Desktop\krakow1.webp
+--MojaGranica--
+
+### Usunięcie zdjęcia (podstaw id zdjęcia z odpowiedzi, oczekiwane: 204)
+DELETE {{host}}/api/trips/16/stops/5/photos/1
+Authorization: Bearer {{loginUser.response.body.$.token}}
