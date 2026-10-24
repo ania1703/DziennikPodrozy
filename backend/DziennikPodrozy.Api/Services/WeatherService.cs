@@ -12,7 +12,7 @@ public record DailyWeather(
 public class WeatherService
 {
     private const int MaxForecastDays = 15;
-    private const int ForecastPastDays = 90;
+    private const int ArchiveMinAgeDays = 7;
     private const string ForecastUrl = "https://api.open-meteo.com/v1/forecast";
     private const string ArchiveUrl = "https://archive-api.open-meteo.com/v1/archive";
 
@@ -43,7 +43,28 @@ public class WeatherService
         }
 
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
-        var baseUrl = date >= today.AddDays(-ForecastPastDays) ? ForecastUrl : ArchiveUrl;
+
+        if (date <= today.AddDays(-ArchiveMinAgeDays))
+        {
+            return await RequestAsync(ArchiveUrl, latitude, longitude, date);
+        }
+
+        var weather = await RequestAsync(ForecastUrl, latitude, longitude, date);
+
+        if (weather == null && date < today.AddDays(-1))
+        {
+            weather = await RequestAsync(ArchiveUrl, latitude, longitude, date);
+        }
+
+        return weather;
+    }
+
+    private async Task<DailyWeather?> RequestAsync(
+        string baseUrl,
+        double latitude,
+        double longitude,
+        DateOnly date)
+    {
         var day = date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 
         var url = string.Create(
