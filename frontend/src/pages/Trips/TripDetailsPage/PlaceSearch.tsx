@@ -11,9 +11,10 @@ import { PlaceResults, PlaceSearchForm } from './TripDetailsPage.styles'
 
 interface PlaceSearchProps {
   onSelect: (place: PlaceResult) => void
+  label?: string
 }
 
-function PlaceSearch({ onSelect }: PlaceSearchProps) {
+function PlaceSearch({ onSelect, label = 'Szukaj miejsca (np. Wawel, Kraków)' }: PlaceSearchProps) {
   const [inputValue, setInputValue] = useState('')
   const [query, setQuery] = useState('')
   const { data: places, isFetching, isError } = usePlaceSearch(query)
@@ -29,7 +30,7 @@ function PlaceSearch({ onSelect }: PlaceSearchProps) {
         <TextField
           size="small"
           fullWidth
-          label="Szukaj miejsca (np. Wawel, Kraków)"
+          label={label}
           value={inputValue}
           onChange={(event) => setInputValue(event.target.value)}
         />

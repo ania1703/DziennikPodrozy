@@ -32,16 +32,7 @@ public class ProfileController : ControllerBase
             return Unauthorized();
         }
 
-        var profile = new ProfileDto
-        {
-            UserName = user.UserName!,
-            Email = user.Email!,
-            AvatarUrl = user.AvatarUrl,
-            Bio = user.Bio,
-            HomeCity = user.HomeCity
-        };
-
-        return Ok(profile);
+        return Ok(ToDto(user));
     }
 
     [HttpPut]
@@ -54,12 +45,19 @@ public class ProfileController : ControllerBase
             return Unauthorized();
         }
 
+        if (dto.HomeLatitude.HasValue != dto.HomeLongitude.HasValue)
+        {
+            return BadRequest(new { message = "Współrzędne miasta domowego muszą być podane razem." });
+        }
+
         user.Bio = dto.Bio;
         user.HomeCity = dto.HomeCity;
+        user.HomeLatitude = dto.HomeLatitude;
+        user.HomeLongitude = dto.HomeLongitude;
 
         await _userManager.UpdateAsync(user);
 
-        return Ok(new { message = "Profil zaktualizowany." });
+        return Ok(ToDto(user));
     }
 
     [HttpPost("avatar")]
@@ -84,6 +82,20 @@ public class ProfileController : ControllerBase
         user.AvatarUrl = saved.Url;
         await _userManager.UpdateAsync(user);
 
-        return Ok(new { avatarUrl = user.AvatarUrl });
+        return Ok(ToDto(user));
+    }
+
+    private static ProfileDto ToDto(ApplicationUser user)
+    {
+        return new ProfileDto
+        {
+            UserName = user.UserName!,
+            Email = user.Email!,
+            AvatarUrl = user.AvatarUrl,
+            Bio = user.Bio,
+            HomeCity = user.HomeCity,
+            HomeLatitude = user.HomeLatitude,
+            HomeLongitude = user.HomeLongitude
+        };
     }
 }

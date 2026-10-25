@@ -8,6 +8,7 @@ import { AppLayout } from './components/common/AppLayout'
 import NewTripPage from './pages/Trips/NewTripPage/NewTripPage'
 import TripDetailsPage from './pages/Trips/TripDetailsPage/TripDetailsPage'
 import EditTripPage from './pages/Trips/EditTripPage/EditTripPage'
+import ProfilePage from './pages/Profile/ProfilePage/ProfilePage'
 
 export const router = createBrowserRouter([
   {
@@ -43,7 +44,11 @@ export const router = createBrowserRouter([
           {
             path: '/trips/:id/edit',
             element: <EditTripPage />,
-          }
+          },
+          {
+            path: '/profile',
+            element: <ProfilePage />,
+          },
         ],
       },
     ],

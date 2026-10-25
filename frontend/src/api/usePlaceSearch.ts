@@ -31,8 +31,11 @@ async function searchPlaces(query: string): Promise<PlaceResult[]> {
   }
 
   const items: NominatimItem[] = await response.json()
+  const uniqueItems = items.filter(
+    (item, index) => items.findIndex((other) => other.display_name === item.display_name) === index,
+  )
 
-  return items.map((item) => ({
+  return uniqueItems.map((item) => ({
     id: item.place_id,
     name: item.name || item.display_name.split(',')[0],
     displayName: item.display_name,

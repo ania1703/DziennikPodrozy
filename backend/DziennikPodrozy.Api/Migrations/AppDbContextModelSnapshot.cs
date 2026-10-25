@@ -50,6 +50,12 @@ namespace DziennikPodrozy.Api.Migrations
                     b.Property<string>("HomeCity")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<double?>("HomeLatitude")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("HomeLongitude")
+                        .HasColumnType("float");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
