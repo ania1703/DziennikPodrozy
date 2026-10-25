@@ -771,3 +771,61 @@ Authorization: Bearer {{loginUser.response.body.$.token}}
   "description": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
   "startDate": "2026-12-20"
 }
+
+### PROFIL: zapis miasta domowego ze współrzędnymi (oczekiwane: 200, w odpowiedzi cały profil z homeLatitude 53.1325 i homeLongitude 23.1688)
+PUT {{host}}/api/profile
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "bio": "Kocham góry i długie wyprawy rowerem.",
+  "homeCity": "Białystok",
+  "homeLatitude": 53.1325,
+  "homeLongitude": 23.1688
+}
+
+### PROFIL: odczyt po zapisie (oczekiwane: 200, współrzędne zapamiętane)
+GET {{host}}/api/profile
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### PROFIL: tylko szerokość bez długości (oczekiwane: 400)
+PUT {{host}}/api/profile
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "homeCity": "Białystok",
+  "homeLatitude": 53.1325
+}
+
+### PROFIL: szerokość spoza zakresu (oczekiwane: 400)
+PUT {{host}}/api/profile
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "homeCity": "Nigdzie",
+  "homeLatitude": 200,
+  "homeLongitude": 23.1688
+}
+
+### PROFIL: wyczyszczenie miasta domowego (oczekiwane: 200, homeCity, homeLatitude i homeLongitude są null)
+PUT {{host}}/api/profile
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "bio": "Kocham góry i długie wyprawy rowerem."
+}
+
+### PROFIL: przywrócenie miasta domowego, żeby dane testowe były ładne (oczekiwane: 200)
+PUT {{host}}/api/profile
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "bio": "Kocham góry i długie wyprawy rowerem.",
+  "homeCity": "Białystok",
+  "homeLatitude": 53.1325,
+  "homeLongitude": 23.1688
+}
