@@ -1,4 +1,4 @@
-import { Link, Outlet } from 'react-router-dom'
+import { Link, Outlet, ScrollRestoration } from 'react-router-dom'
 import AppBar from '@mui/material/AppBar'
 import Button from '@mui/material/Button'
 import { getFileUrl } from '../../api/fileUrl'
@@ -40,6 +40,8 @@ export function AppLayout() {
       </AppBar>
 
       <Outlet />
+
+      <ScrollRestoration />
     </>
   )
 }

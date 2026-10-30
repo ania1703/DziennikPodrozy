@@ -9,6 +9,7 @@ import NewTripPage from './pages/Trips/NewTripPage/NewTripPage'
 import TripDetailsPage from './pages/Trips/TripDetailsPage/TripDetailsPage'
 import EditTripPage from './pages/Trips/EditTripPage/EditTripPage'
 import ProfilePage from './pages/Profile/ProfilePage/ProfilePage'
+import ReadingPage from './pages/Trips/ReadingPage/ReadingPage'
 
 export const router = createBrowserRouter([
   {
@@ -44,6 +45,10 @@ export const router = createBrowserRouter([
           {
             path: '/trips/:id/edit',
             element: <EditTripPage />,
+          },
+          {
+            path: '/trips/:id/read',
+            element: <ReadingPage />,
           },
           {
             path: '/profile',

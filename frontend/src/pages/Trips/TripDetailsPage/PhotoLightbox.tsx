@@ -16,7 +16,7 @@ interface PhotoLightboxProps {
   title: string
   onIndexChange: (index: number) => void
   onClose: () => void
-  onDelete: (photo: StopPhoto) => void
+  onDelete?: (photo: StopPhoto) => void
 }
 
 function PhotoLightbox({
@@ -56,9 +56,11 @@ function PhotoLightbox({
         </Typography>
 
         <div>
-          <IconButton aria-label="Usuń zdjęcie" color="inherit" onClick={() => onDelete(photo)}>
-            <DeleteOutlineIcon />
-          </IconButton>
+          {onDelete && (
+            <IconButton aria-label="Usuń zdjęcie" color="inherit" onClick={() => onDelete(photo)}>
+              <DeleteOutlineIcon />
+            </IconButton>
+          )}
 
           <IconButton aria-label="Zamknij" color="inherit" onClick={onClose}>
             <CloseIcon />

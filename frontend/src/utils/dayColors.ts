@@ -1,7 +1,11 @@
-const DAY_COLORS = ['#7F4A33', '#3F6F5E', '#2F5D7C', '#8E3B5C', '#A0671A', '#5B4B8A']
+const FIRST_HUE = 18
+const HUE_STEP = 137.5
+const SATURATION = 43
+const LIGHTNESS = 35
 
 export function getDayColor(dayNumber: number): string {
-  const index = (((dayNumber - 1) % DAY_COLORS.length) + DAY_COLORS.length) % DAY_COLORS.length
+  const rawHue = FIRST_HUE + (dayNumber - 1) * HUE_STEP
+  const hue = Math.round(((rawHue % 360) + 360) % 360)
 
-  return DAY_COLORS[index]
+  return `hsl(${hue}, ${SATURATION}%, ${LIGHTNESS}%)`
 }
