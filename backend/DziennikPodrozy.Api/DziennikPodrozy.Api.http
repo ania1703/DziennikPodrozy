@@ -829,3 +829,23 @@ Authorization: Bearer {{loginUser.response.body.$.token}}
   "homeLatitude": 53.1325,
   "homeLongitude": 23.1688
 }
+
+### REJESTRACJA: za słabe hasło (oczekiwane: 400, message z polskim opisem wielkiej litery i cyfry)
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "userName": "slabehaslo",
+  "email": "slabe@test.pl",
+  "password": "abcdefghi"
+}
+
+### REJESTRACJA: zajęty login (oczekiwane: 400, message "Ten login jest już zajęty." oraz e-mail jeśli też istnieje)
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "userName": "kubaty1",
+  "email": "kuba@test.pl",
+  "password": "Kuba12345"
+}

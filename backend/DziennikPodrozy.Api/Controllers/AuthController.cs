@@ -32,12 +32,29 @@ public class AuthController : ControllerBase
 
         if (!result.Succeeded)
         {
-            return BadRequest(result.Errors.Select(e => e.Description));
+            var message = string.Join(" ", result.Errors.Select(DescribeIdentityError));
+
+            return BadRequest(new { message });
         }
 
         await _userManager.AddToRoleAsync(user, "User");
 
         return Ok(new { message = "Konto zostało utworzone." });
+    }
+
+    private static string DescribeIdentityError(IdentityError error)
+    {
+        return error.Code switch
+        {
+            "DuplicateUserName" => "Ten login jest już zajęty.",
+            "DuplicateEmail" => "Konto z tym adresem e-mail już istnieje.",
+            "InvalidUserName" => "Login może zawierać tylko litery, cyfry oraz znaki - . _ @ +",
+            "InvalidEmail" => "Adres e-mail jest nieprawidłowy.",
+            "PasswordTooShort" => "Hasło musi mieć co najmniej 8 znaków.",
+            "PasswordRequiresDigit" => "Hasło musi zawierać cyfrę.",
+            "PasswordRequiresUpper" => "Hasło musi zawierać wielką literę.",
+            _ => error.Description
+        };
     }
 
     [HttpPost("login")]
