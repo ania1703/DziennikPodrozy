@@ -53,3 +53,12 @@ export const EmptyState = styled(Box)({
   padding: 64,
   textAlign: 'center',
 })
+
+export const FilterBar = styled(Box)({
+  display: 'flex',
+  flexWrap: 'wrap',
+  gap: 8,
+  maxWidth: 1200,
+  margin: '16px auto 0',
+  padding: '0 24px',
+})
