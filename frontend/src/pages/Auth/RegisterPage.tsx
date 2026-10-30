@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography'
 import Alert from '@mui/material/Alert'
 import { useRegister } from '../../api/useRegister'
 import { AuthFormContainer } from '../../components/common/AuthFormContainer'
+import { getErrorMessage } from '../../api/getErrorMessage'
 
 function RegisterPage() {
   const [userName, setUserName] = useState('')
@@ -28,7 +29,12 @@ function RegisterPage() {
       </Typography>
 
       {register.isError && (
-        <Alert severity="error">Rejestracja się nie powiodła. Sprawdź dane.</Alert>
+        <Alert severity="error">
+          {getErrorMessage(
+            register.error,
+            'Rejestracja się nie powiodła. Login musi mieć co najmniej 3 znaki, a adres e-mail musi być poprawny.',
+          )}
+        </Alert>
       )}
 
       {register.isSuccess && <Alert severity="success">{register.data.message}</Alert>}
@@ -53,6 +59,7 @@ function RegisterPage() {
         type="password"
         value={password}
         onChange={(event) => setPassword(event.target.value)}
+        helperText="Min. 8 znaków, wielka litera i cyfra"
         required
       />
 
