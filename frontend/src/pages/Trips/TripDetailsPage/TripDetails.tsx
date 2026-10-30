@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import Button from '@mui/material/Button'
 import Divider from '@mui/material/Divider'
 import Typography from '@mui/material/Typography'
+import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined'
 import { getFileUrl } from '../../../api/fileUrl'
 import type { Trip } from '../../../api/useTrips'
 import { TripStatusChip } from '../../../components/common/TripStatusChip'
@@ -80,6 +81,15 @@ function TripDetails({ trip }: TripDetailsProps) {
           <Divider />
 
           <TripDetailsActions>
+            <Button
+              variant="contained"
+              component={Link}
+              to={`/trips/${trip.id}/read`}
+              startIcon={<AutoStoriesOutlinedIcon />}
+            >
+              Czytaj dziennik
+            </Button>
+
             <UploadCoverAction trip={trip} />
 
             <Button variant="outlined" component={Link} to={`/trips/${trip.id}/edit`}>
