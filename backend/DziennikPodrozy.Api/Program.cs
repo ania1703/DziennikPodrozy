@@ -53,6 +53,12 @@ builder.Services.AddHttpClient<WeatherService>(client =>
     client.Timeout = TimeSpan.FromSeconds(4);
 });
 
+builder.Services.AddHttpClient<GeocodingService>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(4);
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("DziennikPodrozy/1.0 (projekt inzynierski)");
+});
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>

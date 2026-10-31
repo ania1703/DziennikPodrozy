@@ -34,4 +34,7 @@ public class TripStop
     public double? TemperatureMin { get; set; }
     public double? PrecipitationMm { get; set; }
     public DateTime? WeatherCheckedAt { get; set; }
+    [MaxLength(2)]
+    public string? CountryCode { get; set; }
+    public DateTime? CountryCheckedAt { get; set; }
 }
