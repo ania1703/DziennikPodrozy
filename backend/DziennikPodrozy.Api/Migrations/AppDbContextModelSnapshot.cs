@@ -209,6 +209,13 @@ namespace DziennikPodrozy.Api.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<DateTime?>("CountryCheckedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CountryCode")
+                        .HasMaxLength(2)
+                        .HasColumnType("nvarchar(2)");
+
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 

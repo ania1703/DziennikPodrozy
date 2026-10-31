@@ -849,3 +849,31 @@ Content-Type: application/json
   "email": "kuba@test.pl",
   "password": "Kuba12345"
 }
+
+### KRAJ: lista przystanków Krakowa, stare przystanki dostają kraj (oczekiwane: 200, w każdym przystanku countryCode "PL"; pierwsze wczytanie może trwać kilka sekund)
+GET {{host}}/api/trips/{{createTripForSummary.response.body.$.id}}/stops
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### KRAJ: nowy przystanek we Włoszech (oczekiwane: 201, countryCode "IT")
+POST {{host}}/api/trips/{{createTripForSummary.response.body.$.id}}/stops
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Koloseum",
+  "latitude": 41.8902,
+  "longitude": 12.4922,
+  "date": "2026-12-21"
+}
+
+### KRAJ: punkt na środku oceanu (oczekiwane: 201, countryCode null)
+POST {{host}}/api/trips/{{createTripForSummary.response.body.$.id}}/stops
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Ocean",
+  "latitude": 0,
+  "longitude": -30,
+  "date": "2026-12-21"
+}

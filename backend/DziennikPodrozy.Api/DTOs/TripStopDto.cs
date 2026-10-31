@@ -9,6 +9,7 @@ public class TripStopDto
     public DateOnly Date { get; set; }
     public int SortOrder { get; set; }
     public string? Note { get; set; }
+    public string? CountryCode { get; set; }
     public List<StopPhotoDto> Photos { get; set; } = new();
     public List<StopRecordingDto> Recordings { get; set; } = new();
     public WeatherDto? Weather { get; set; }

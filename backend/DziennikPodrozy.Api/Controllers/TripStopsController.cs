@@ -20,15 +20,18 @@ public class TripStopsController : ControllerBase
     private readonly AppDbContext _context;
     private readonly FileStorageService _fileStorage;
     private readonly WeatherService _weather;
+    private readonly GeocodingService _geocoding;
 
     public TripStopsController(
         AppDbContext context,
         FileStorageService fileStorage,
-        WeatherService weather)
+        WeatherService weather,
+        GeocodingService geocoding)
     {
         _context = context;
         _fileStorage = fileStorage;
         _weather = weather;
+        _geocoding = geocoding;
     }
 
     private string OwnerId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -53,7 +56,9 @@ public class TripStopsController : ControllerBase
             .ThenBy(s => s.SortOrder)
             .ToListAsync();
 
-            await RefreshWeatherAsync(stops);
+        await RefreshWeatherAsync(stops);
+        await _geocoding.FillMissingCountriesAsync(stops, 5);
+        await _context.SaveChangesAsync();
 
         return Ok(stops.Select(ToDto));
     }
@@ -83,6 +88,9 @@ public class TripStopsController : ControllerBase
             SortOrder = await NextSortOrderAsync(tripId, dto.Date),
             Note = dto.Note
         };
+
+        stop.CountryCode = await _geocoding.GetCountryCodeAsync(dto.Latitude, dto.Longitude);
+        stop.CountryCheckedAt = DateTime.UtcNow;
 
         _context.TripStops.Add(stop);
         await _context.SaveChangesAsync();
@@ -115,6 +123,12 @@ public class TripStopsController : ControllerBase
             || dto.Longitude != stop.Longitude)
         {
             ClearWeather(stop);
+        }
+
+        if (dto.Latitude != stop.Latitude || dto.Longitude != stop.Longitude)
+        {
+            stop.CountryCode = await _geocoding.GetCountryCodeAsync(dto.Latitude, dto.Longitude);
+            stop.CountryCheckedAt = DateTime.UtcNow;
         }
 
         stop.Title = dto.Title;
@@ -263,6 +277,7 @@ public class TripStopsController : ControllerBase
             Date = stop.Date,
             SortOrder = stop.SortOrder,
             Note = stop.Note,
+            CountryCode = stop.CountryCode,
             Photos = stop.Photos
                 .OrderBy(p => p.SortOrder)
                 .Select(StopPhotoDto.From)
