@@ -877,3 +877,43 @@ Authorization: Bearer {{loginUser.response.body.$.token}}
   "longitude": -30,
   "date": "2026-12-21"
 }
+
+### STATYSTYKI: bez tokenu (oczekiwane: 401)
+GET {{host}}/api/stats
+
+### STATYSTYKI: moje (oczekiwane: 200, tripCount = liczba podróży "W trakcie" i "Zakończona", countryCodes m.in. PL i IT, distanceKm większe od 0, farthestPoint nie jest null, jeśli masz ustawione miasto domowe; pierwsze wywołanie może trwać kilka sekund, bo uzupełnia kraje)
+GET {{host}}/api/stats
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### STATYSTYKI: podróż zaplanowana z przystankiem w Japonii (oczekiwane: 201)
+# @name createPlannedForStats
+POST {{host}}/api/trips
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Tokio (plan)",
+  "startDate": "2027-04-01",
+  "endDate": "2027-04-05",
+  "status": "Planned"
+}
+
+### STATYSTYKI: przystanek w zaplanowanej podróży (oczekiwane: 201, countryCode "JP")
+POST {{host}}/api/trips/{{createPlannedForStats.response.body.$.id}}/stops
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Shibuya",
+  "latitude": 35.6595,
+  "longitude": 139.7005,
+  "date": "2027-04-02"
+}
+
+### STATYSTYKI: po dodaniu planu (oczekiwane: 200, te same liczby co wcześniej, w countryCodes NIE MA "JP", bo zaplanowane podróże się nie liczą)
+GET {{host}}/api/stats
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### STATYSTYKI: inny użytkownik, admin (oczekiwane: 200, tripCount 0 i puste listy, czyli nie widzi cudzych danych)
+GET {{host}}/api/stats
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
