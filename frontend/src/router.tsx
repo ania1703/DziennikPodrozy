@@ -10,6 +10,7 @@ import TripDetailsPage from './pages/Trips/TripDetailsPage/TripDetailsPage'
 import EditTripPage from './pages/Trips/EditTripPage/EditTripPage'
 import ProfilePage from './pages/Profile/ProfilePage/ProfilePage'
 import ReadingPage from './pages/Trips/ReadingPage/ReadingPage'
+import StatsPage from './pages/Stats/StatsPage/StatsPage'
 
 export const router = createBrowserRouter([
   {
@@ -53,6 +54,10 @@ export const router = createBrowserRouter([
           {
             path: '/profile',
             element: <ProfilePage />,
+          },
+          {
+            path: '/stats',
+            element: <StatsPage />,
           },
         ],
       },

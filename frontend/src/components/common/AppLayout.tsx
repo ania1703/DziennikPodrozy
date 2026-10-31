@@ -20,6 +20,10 @@ export function AppLayout() {
             Moje podróże
           </Button>
 
+          <Button color="inherit" component={Link} to="/stats">
+            Statystyki
+          </Button>
+
           <Button
             color="inherit"
             component={Link}
