@@ -11,6 +11,7 @@ import { LoadingSpinner } from '../../../components/common/LoadingSpinner'
 import CountriesSection from './CountriesSection'
 import ExplorationSection from './ExplorationSection'
 import FarthestPointSection from './FarthestPointSection'
+import MilestonesSection from './MilestonesSection'
 import {
   SectionsGrid,
   StatsContainer,
@@ -78,6 +79,7 @@ function StatsPage() {
       </SectionsGrid>
 
       <FarthestPointSection stats={stats} />
+      <MilestonesSection stats={stats} />
     </StatsContainer>
   )
 }
