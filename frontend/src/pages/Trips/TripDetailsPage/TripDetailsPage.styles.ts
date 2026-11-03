@@ -244,7 +244,22 @@ export const MapSearchFooter = styled(Box)({
 export const StopActions = styled(Box)({
   display: 'flex',
   gap: 8,
-  marginTop: 8,
+})
+
+export const StopSection = styled(Box)({
+  marginTop: 16,
+  paddingTop: 12,
+  borderTop: '1px solid #EADFCB',
+})
+
+export const StopFooter = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 8,
+  marginTop: 16,
+  paddingTop: 8,
+  borderTop: '1px solid #EADFCB',
 })
 
 export const DayDot = styled(Box)({
@@ -277,8 +292,8 @@ export const LegendItem = styled(Box)({
 })
 
 export const RichTextRoot = styled('div')(({ theme }) => ({
-  ...theme.typography.body2,
-  color: theme.palette.text.secondary,
+  ...theme.typography.body1,
+  color: theme.palette.text.primary,
   '& > *:first-of-type': {
     marginTop: 0,
   },
@@ -385,8 +400,7 @@ export const PhotoSectionHeader = styled(Box)({
   alignItems: 'center',
   justifyContent: 'space-between',
   gap: 8,
-  marginTop: 12,
-  marginBottom: 8,
+  marginBottom: 4,
 })
 
 export const PhotoGrid = styled(Box)({

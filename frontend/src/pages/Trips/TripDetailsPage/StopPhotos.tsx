@@ -14,6 +14,7 @@ import {
   PhotoGrid,
   PhotoSectionHeader,
   PhotoThumb,
+  StopSection,
   VisuallyHiddenInput,
 } from './TripDetailsPage.styles'
 
@@ -70,9 +71,9 @@ function StopPhotos({ tripId, stop }: StopPhotosProps) {
   }
 
   return (
-    <div>
+    <StopSection>
       <PhotoSectionHeader>
-        <Typography variant="subtitle2">
+        <Typography variant="overline" sx={{ color: 'text.secondary', fontWeight: 600 }}>
           Zdjęcia{stop.photos.length > 0 ? ` (${stop.photos.length})` : ''}
         </Typography>
 
@@ -98,6 +99,12 @@ function StopPhotos({ tripId, stop }: StopPhotosProps) {
           Nie udało się dodać zdjęć. Wybierz pliki JPG, PNG lub WebP (maksymalnie 20 zdjęć na
           przystanek).
         </Alert>
+      )}
+
+      {stop.photos.length === 0 && (
+        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+          Brak zdjęć.
+        </Typography>
       )}
 
       {stop.photos.length > 0 && (
@@ -135,7 +142,7 @@ function StopPhotos({ tripId, stop }: StopPhotosProps) {
         onClose={() => setDeletingPhoto(null)}
       />
 
-    </div>
+    </StopSection>
   )
 }
 

@@ -15,6 +15,7 @@ import {
   StopActions,
   StopBoxContent,
   StopBoxRoot,
+  StopFooter,
   StopNumber,
   StopPreview,
   StopTitleRow,
@@ -97,49 +98,49 @@ function StopBox({
         )}
 
         <Collapse in={selected}>
-          {stop.note ? (
-            <RichTextView content={stop.note} />
-          ) : (
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              Brak wpisu.
-            </Typography>
-          )}
+          <div style={{ marginTop: 8 }}>
+            {stop.note ? (
+              <RichTextView content={stop.note} />
+            ) : (
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                Brak wpisu.
+              </Typography>
+            )}
+          </div>
 
           <div onClick={(event) => event.stopPropagation()}>
             <StopPhotos tripId={tripId} stop={stop} />
             <StopRecordings tripId={tripId} stop={stop} />
           </div>
 
-          <Typography
-            variant="caption"
-            component="p"
-            sx={{ marginTop: 1, color: 'text.secondary' }}
-          >
-            {stop.latitude.toFixed(4)}, {stop.longitude.toFixed(4)}
-          </Typography>
+          <StopFooter>
+            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+              {stop.latitude.toFixed(4)}, {stop.longitude.toFixed(4)}
+            </Typography>
 
-          <StopActions>
-            <Button
-              size="small"
-              onClick={(event) => {
-                event.stopPropagation()
-                onEdit(stop)
-              }}
-            >
-              Edytuj
-            </Button>
+            <StopActions>
+              <Button
+                size="small"
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onEdit(stop)
+                }}
+              >
+                Edytuj
+              </Button>
 
-            <Button
-              size="small"
-              color="error"
-              onClick={(event) => {
-                event.stopPropagation()
-                onDelete(stop)
-              }}
-            >
-              Usuń
-            </Button>
-          </StopActions>
+              <Button
+                size="small"
+                color="error"
+                onClick={(event) => {
+                  event.stopPropagation()
+                  onDelete(stop)
+                }}
+              >
+                Usuń
+              </Button>
+            </StopActions>
+          </StopFooter>
         </Collapse>
       </StopBoxContent>
     </StopBoxRoot>

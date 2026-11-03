@@ -37,11 +37,13 @@ function ProfileEditForm({ profile }: ProfileEditFormProps) {
   const [bio, setBio] = useState(profile.bio ?? '')
   const [home, setHome] = useState<HomeLocation | null>(getInitialHome(profile))
   const [searchKey, setSearchKey] = useState(0)
+  const [changingHome, setChangingHome] = useState(false)
 
   function handleSelectPlace(place: PlaceResult) {
     updateProfile.reset()
     setHome({ city: place.name, latitude: place.latitude, longitude: place.longitude })
     setSearchKey((key) => key + 1)
+    setChangingHome(false)
   }
 
   function handleSave() {
@@ -79,8 +81,8 @@ function ProfileEditForm({ profile }: ProfileEditFormProps) {
           Miasto domowe
         </Typography>
 
-        {home ? (
-          <div>
+        {home && !changingHome ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Chip
               label={home.city}
               onDelete={() => {
@@ -88,19 +90,35 @@ function ProfileEditForm({ profile }: ProfileEditFormProps) {
                 setHome(null)
               }}
             />
+
+            <Button size="small" onClick={() => setChangingHome(true)}>
+              Zmień
+            </Button>
           </div>
         ) : (
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Nie wybrano. Podaj miasto, a w statystykach policzymy, jak daleko od domu
-            zawędrowano.
-          </Typography>
-        )}
+          <>
+            {!home && (
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                Nie wybrano. Podaj miasto, a w statystykach policzymy, jak daleko od domu
+                zawędrowano.
+              </Typography>
+            )}
 
-        <PlaceSearch
-          key={searchKey}
-          label="Szukaj miasta (np. Warszawa)"
-          onSelect={handleSelectPlace}
-        />
+            <PlaceSearch
+              key={searchKey}
+              label="Szukaj miasta (np. Warszawa)"
+              onSelect={handleSelectPlace}
+            />
+
+            {home && (
+              <div>
+                <Button size="small" onClick={() => setChangingHome(false)}>
+                  Anuluj
+                </Button>
+              </div>
+            )}
+          </>
+        )}
       </HomeCitySection>
 
       <div>
