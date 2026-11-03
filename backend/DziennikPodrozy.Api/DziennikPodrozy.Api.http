@@ -917,3 +917,36 @@ Authorization: Bearer {{loginUser.response.body.$.token}}
 ### STATYSTYKI: inny użytkownik, admin (oczekiwane: 200, tripCount 0 i puste listy, czyli nie widzi cudzych danych)
 GET {{host}}/api/stats
 Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+### AUTO-STATUS: podróż "W trakcie" z końcem w przeszłości (oczekiwane: 201, w odpowiedzi status "InProgress", bo tworzenie niczego nie zmienia)
+# @name createExpiredTrip
+POST {{host}}/api/trips
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Dawno temu",
+  "startDate": "2026-01-10",
+  "endDate": "2026-01-15",
+  "status": "InProgress"
+}
+
+### AUTO-STATUS: szczegóły tej podróży (oczekiwane: 200, status "Finished")
+GET {{host}}/api/trips/{{createExpiredTrip.response.body.$.id}}
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### AUTO-STATUS: podróż "W trakcie" z końcem w przyszłości nie jest ruszana (oczekiwane: 201, a potem w liście nadal "InProgress")
+POST {{host}}/api/trips
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Jeszcze trwa",
+  "startDate": "2026-11-01",
+  "endDate": "2027-12-31",
+  "status": "InProgress"
+}
+
+### AUTO-STATUS: lista (oczekiwane: "Dawno temu" i "Porto" mają status "Finished", "Jeszcze trwa" ma "InProgress")
+GET {{host}}/api/trips
+Authorization: Bearer {{loginUser.response.body.$.token}}

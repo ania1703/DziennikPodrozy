@@ -25,12 +25,36 @@ public class TripsController : ControllerBase
 
     private string OwnerId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
+    private async Task FinishExpiredTripsAsync()
+    {
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        var expired = await _context.Trips
+            .Where(t => t.OwnerId == OwnerId
+                && t.Status == TripStatus.InProgress
+                && t.EndDate != null
+                && t.EndDate < today)
+            .ToListAsync();
+
+        foreach (var trip in expired)
+        {
+            trip.Status = TripStatus.Finished;
+        }
+
+        if (expired.Count > 0)
+        {
+            await _context.SaveChangesAsync();
+        }
+    }
+
     [HttpGet]
     public async Task<IActionResult> GetTrips(
         [FromQuery] int? year,
         [FromQuery] string? status,
         [FromQuery] string sort = "newest")
     {
+        await FinishExpiredTripsAsync();
+
         var query = _context.Trips.Where(t => t.OwnerId == OwnerId);
 
         if (year.HasValue)
@@ -56,6 +80,8 @@ public class TripsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetTrip(int id)
     {
+        await FinishExpiredTripsAsync();
+
         var trip = await _context.Trips
             .FirstOrDefaultAsync(t => t.Id == id && t.OwnerId == OwnerId);
 
