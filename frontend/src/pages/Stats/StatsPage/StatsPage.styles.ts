@@ -93,3 +93,43 @@ export const ProgressHeader = styled(Box)({
   gap: 8,
   marginBottom: 4,
 })
+
+export const MilestoneGrid = styled(Box)({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+  gap: 12,
+  marginTop: 16,
+})
+
+export const MilestoneBadgeRoot = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'flex-start',
+  gap: 12,
+  padding: 16,
+  borderRadius: 12,
+  border: '1px solid #EADFCB',
+  backgroundColor: theme.palette.background.default,
+  '&[data-achieved="true"]': {
+    borderColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.background.paper,
+  },
+  '&[data-achieved="false"]': {
+    opacity: 0.65,
+  },
+}))
+
+export const MilestoneIcon = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexShrink: 0,
+  width: 44,
+  height: 44,
+  borderRadius: '50%',
+  backgroundColor: '#EADFCB',
+  color: theme.palette.text.secondary,
+  '&[data-achieved="true"]': {
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.background.default,
+  },
+}))

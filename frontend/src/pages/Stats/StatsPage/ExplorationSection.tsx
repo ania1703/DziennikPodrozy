@@ -10,6 +10,7 @@ import {
   type Progress,
 } from '../../../utils/countries'
 import { ChipRow, ProgressHeader, ProgressRow, SectionCard } from './StatsPage.styles'
+import { useCountUp } from '../../../hooks/useCountUp'
 
 interface ProgressBarProps {
   label: string
@@ -18,6 +19,7 @@ interface ProgressBarProps {
 
 function ProgressBar({ label, progress }: ProgressBarProps) {
   const percentText = progress.percent.toLocaleString('pl-PL', { maximumFractionDigits: 1 })
+  const animatedPercent = useCountUp(progress.percent)
 
   return (
     <ProgressRow>
@@ -31,7 +33,7 @@ function ProgressBar({ label, progress }: ProgressBarProps) {
 
       <LinearProgress
         variant="determinate"
-        value={progress.percent}
+        value={animatedPercent}
         sx={{ height: 10, borderRadius: 5 }}
       />
     </ProgressRow>
