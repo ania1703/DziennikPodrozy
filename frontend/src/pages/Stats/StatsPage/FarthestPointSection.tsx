@@ -6,6 +6,7 @@ import type { Stats } from '../../../api/useStats'
 import { getCountryName } from '../../../utils/countries'
 import { SectionCard } from './StatsPage.styles'
 import MuiLink from '@mui/material/Link'
+import AnimatedNumber from './AnimatedNumber'
 
 interface FarthestPointSectionProps {
   stats: Stats
@@ -43,7 +44,7 @@ function FarthestPointSection({ stats }: FarthestPointSectionProps) {
       {hasHome && farthestPoint && (
         <div>
           <Typography variant="h4" component="p" sx={{ marginTop: 2, color: 'primary.main' }}>
-            {farthestPoint.distanceKm.toLocaleString('pl-PL')} km
+            <AnimatedNumber value={farthestPoint.distanceKm} /> km
           </Typography>
 
           <Typography sx={{ marginTop: 1 }}>
