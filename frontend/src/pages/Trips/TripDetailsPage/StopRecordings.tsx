@@ -19,6 +19,7 @@ import {
   RecordingBar,
   RecordingDot,
   RecordingItem,
+  StopSection,
 } from './TripDetailsPage.styles'
 
 interface StopRecordingsProps {
@@ -68,9 +69,9 @@ function StopRecordings({ tripId, stop }: StopRecordingsProps) {
   }
 
   return (
-    <div>
+    <StopSection>
       <PhotoSectionHeader>
-        <Typography variant="subtitle2">
+        <Typography variant="overline" sx={{ color: 'text.secondary', fontWeight: 600 }}>
           Nagrania{stop.recordings.length > 0 ? ` (${stop.recordings.length})` : ''}
         </Typography>
 
@@ -142,6 +143,12 @@ function StopRecordings({ tripId, stop }: StopRecordingsProps) {
         </RecordingBar>
       )}
 
+      {stop.recordings.length === 0 && recorder.status === 'idle' && (
+        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+          Brak nagrań.
+        </Typography>
+      )}
+
       {stop.recordings.map((recording) => (
         <RecordingItem key={recording.id}>
           <RecordingAudio controls preload="metadata" src={getFileUrl(recording.url)} />
@@ -171,7 +178,7 @@ function StopRecordings({ tripId, stop }: StopRecordingsProps) {
         onConfirm={handleConfirmDelete}
         onClose={() => setDeletingRecording(null)}
       />
-    </div>
+    </StopSection>
   )
 }
 

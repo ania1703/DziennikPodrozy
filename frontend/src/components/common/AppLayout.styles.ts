@@ -4,10 +4,13 @@ import Avatar from '@mui/material/Avatar'
 import { Link } from 'react-router-dom'
 
 export const NavToolbar = styled(Toolbar)({
-  gap: 16,
+  gap: 8,
 })
 
 export const Brand = styled(Link)({
+  display: 'flex',
+  alignItems: 'center',
+  gap: 10,
   flexGrow: 1,
   color: 'inherit',
   textDecoration: 'none',
