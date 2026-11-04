@@ -950,3 +950,89 @@ Authorization: Bearer {{loginUser.response.body.$.token}}
 ### AUTO-STATUS: lista (oczekiwane: "Dawno temu" i "Porto" mają status "Finished", "Jeszcze trwa" ma "InProgress")
 GET {{host}}/api/trips
 Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### LISTA MARZEŃ: bez tokenu (oczekiwane: 401)
+GET {{host}}/api/wishlist
+
+### LISTA MARZEŃ: dodanie miejsca (oczekiwane: 201, countryCode "JP", addedOn dzisiejsza data)
+# @name wish1
+POST {{host}}/api/wishlist
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Kioto",
+  "latitude": 35.0116,
+  "longitude": 135.7681,
+  "note": "Świątynie i ogrody, najlepiej jesienią."
+}
+
+### LISTA MARZEŃ: drugie miejsce, bez notatki (oczekiwane: 201, note null)
+# @name wish2
+POST {{host}}/api/wishlist
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Lofoty",
+  "latitude": 68.2,
+  "longitude": 14.6
+}
+
+### LISTA MARZEŃ: lista (oczekiwane: 200, dwa miejsca, najpierw to dodane później, czyli Lofoty)
+GET {{host}}/api/wishlist
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### LISTA MARZEŃ: edycja (oczekiwane: 200, nowa nazwa i notatka, położenie bez zmian)
+PUT {{host}}/api/wishlist/{{wish1.response.body.$.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Kioto i Nara",
+  "note": "Świątynie, ogrody i jelenie w Nara."
+}
+
+### LISTA MARZEŃ: pusty tytuł (oczekiwane: 400)
+POST {{host}}/api/wishlist
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "",
+  "latitude": 10,
+  "longitude": 10
+}
+
+### LISTA MARZEŃ: szerokość spoza zakresu (oczekiwane: 400)
+POST {{host}}/api/wishlist
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Nigdzie",
+  "latitude": 200,
+  "longitude": 10
+}
+
+### LISTA MARZEŃ: cudze miejsce jako ADMIN, edycja (oczekiwane: 404)
+PUT {{host}}/api/wishlist/{{wish1.response.body.$.id}}
+Content-Type: application/json
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+{
+  "title": "Cudze",
+  "note": null
+}
+
+### LISTA MARZEŃ: lista admina (oczekiwane: 200, pusta, czyli nie widzi cudzych miejsc)
+GET {{host}}/api/wishlist
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+### LISTA MARZEŃ: usunięcie drugiego miejsca (oczekiwane: 204)
+DELETE {{host}}/api/wishlist/{{wish2.response.body.$.id}}
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### LISTA MARZEŃ: ponowne usunięcie (oczekiwane: 404)
+DELETE {{host}}/api/wishlist/{{wish2.response.body.$.id}}
+Authorization: Bearer {{loginUser.response.body.$.token}}
