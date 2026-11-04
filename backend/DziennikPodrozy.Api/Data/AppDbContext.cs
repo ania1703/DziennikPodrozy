@@ -17,4 +17,6 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
 
     public DbSet<StopRecording> StopRecordings { get; set; }
 
+    public DbSet<WishlistItem> WishlistItems { get; set; }
+
 }

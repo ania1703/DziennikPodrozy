@@ -55,6 +55,10 @@ export function AppLayout() {
             Moje podróże
           </Button>
 
+          <Button color="inherit" component={NavLink} to="/wishlist" sx={navButtonSx}>
+            Chcę zobaczyć
+          </Button>
+
           <Button color="inherit" component={NavLink} to="/stats" sx={navButtonSx}>
             Statystyki
           </Button>
