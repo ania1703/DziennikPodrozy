@@ -11,6 +11,7 @@ import EditTripPage from './pages/Trips/EditTripPage/EditTripPage'
 import ProfilePage from './pages/Profile/ProfilePage/ProfilePage'
 import ReadingPage from './pages/Trips/ReadingPage/ReadingPage'
 import StatsPage from './pages/Stats/StatsPage/StatsPage'
+import WishlistPage from './pages/Wishlist/WishlistPage/WishlistPage'
 
 export const router = createBrowserRouter([
   {
@@ -58,6 +59,10 @@ export const router = createBrowserRouter([
           {
             path: '/stats',
             element: <StatsPage />,
+          },
+          {
+            path: '/wishlist',
+            element: <WishlistPage />,
           },
         ],
       },
