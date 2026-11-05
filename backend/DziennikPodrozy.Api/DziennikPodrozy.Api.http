@@ -1036,3 +1036,80 @@ Authorization: Bearer {{loginUser.response.body.$.token}}
 ### LISTA MARZEŃ: ponowne usunięcie (oczekiwane: 404)
 DELETE {{host}}/api/wishlist/{{wish2.response.body.$.id}}
 Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### NOTATKA DNIA: podróż do testu (oczekiwane: 201)
+# @name createTripForDayNotes
+POST {{host}}/api/trips
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Test notatek dni",
+  "startDate": "2027-06-10",
+  "endDate": "2027-06-12"
+}
+
+### NOTATKA DNIA: bez tokenu (oczekiwane: 401)
+GET {{host}}/api/trips/{{createTripForDayNotes.response.body.$.id}}/day-notes
+
+### NOTATKA DNIA: zapis notatki dla dnia 1 (oczekiwane: 200, w odpowiedzi date i text)
+PUT {{host}}/api/trips/{{createTripForDayNotes.response.body.$.id}}/day-notes/2027-06-10
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "text": "Pierwszy dzień: dojazd i spacer po starówce."
+}
+
+### NOTATKA DNIA: nadpisanie tej samej notatki (oczekiwane: 200, nowy tekst, nadal jedna notatka dla dnia)
+PUT {{host}}/api/trips/{{createTripForDayNotes.response.body.$.id}}/day-notes/2027-06-10
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "text": "Dojazd, spacer po starówce i kolacja nad rzeką."
+}
+
+### NOTATKA DNIA: druga notatka dla dnia 2 (oczekiwane: 200)
+PUT {{host}}/api/trips/{{createTripForDayNotes.response.body.$.id}}/day-notes/2027-06-11
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "text": "Cały dzień w muzeach."
+}
+
+### NOTATKA DNIA: lista (oczekiwane: 200, dwie notatki po dacie: 2027-06-10 i 2027-06-11)
+GET {{host}}/api/trips/{{createTripForDayNotes.response.body.$.id}}/day-notes
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### NOTATKA DNIA: data poza podróżą (oczekiwane: 400)
+PUT {{host}}/api/trips/{{createTripForDayNotes.response.body.$.id}}/day-notes/2027-07-01
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "text": "Za późno."
+}
+
+### NOTATKA DNIA: cudza podróż jako ADMIN (oczekiwane: 404)
+PUT {{host}}/api/trips/{{createTripForDayNotes.response.body.$.id}}/day-notes/2027-06-10
+Content-Type: application/json
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+{
+  "text": "Cudza."
+}
+
+### NOTATKA DNIA: pusty tekst usuwa notatkę dnia 2 (oczekiwane: 204)
+PUT {{host}}/api/trips/{{createTripForDayNotes.response.body.$.id}}/day-notes/2027-06-11
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "text": ""
+}
+
+### NOTATKA DNIA: lista po usunięciu (oczekiwane: 200, tylko notatka dnia 1)
+GET {{host}}/api/trips/{{createTripForDayNotes.response.body.$.id}}/day-notes
+Authorization: Bearer {{loginUser.response.body.$.token}}
