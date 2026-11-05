@@ -514,3 +514,12 @@ export const RecordingAudio = styled('audio')({
   minWidth: 220,
   height: 40,
 })
+
+export const DayNoteBox = styled(Box)({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+  gap: 8,
+  padding: '12px 16px',
+  borderBottom: '1px solid #EADFCB',
+})

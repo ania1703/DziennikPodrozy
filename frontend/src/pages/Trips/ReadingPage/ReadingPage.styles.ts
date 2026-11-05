@@ -1,5 +1,6 @@
 import { styled } from '@mui/material/styles'
 import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 
 export const ReadingContainer = styled(Box)({
   maxWidth: 1100,
@@ -95,3 +96,12 @@ export const ReadingRecordings = styled(Box)({
   gap: 8,
   marginTop: 16,
 })
+
+export const ReadingDayNote = styled(Typography)(({ theme }) => ({
+  maxWidth: '75ch',
+  margin: '-16px auto 32px',
+  textAlign: 'center',
+  fontStyle: 'italic',
+  color: theme.palette.text.secondary,
+  whiteSpace: 'pre-wrap',
+}))
