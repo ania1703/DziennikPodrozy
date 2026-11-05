@@ -15,10 +15,12 @@ import ReadingStop from './ReadingStop'
 import {
   ReadingContainer,
   ReadingCover,
-  ReadingDaySection,
   ReadingDayHeader,
+  ReadingDayNote,
+  ReadingDaySection,
   ReadingHeader,
 } from './ReadingPage.styles'
+import { toDayNoteMap, useDayNotes } from '../../../api/useDayNotes'
 
 interface ReadingViewProps {
   trip: Trip
@@ -26,6 +28,8 @@ interface ReadingViewProps {
 
 function ReadingView({ trip }: ReadingViewProps) {
   const { data: stops, isLoading, isError } = useTripStops(trip.id)
+  const { data: dayNotes } = useDayNotes(trip.id)
+  const noteByDate = toDayNoteMap(dayNotes)
   const imageUrl = getFileUrl(trip.coverPhotoUrl)
   const summary = formatTripSummary(trip)
   const days = stops ? groupStopsByDay(stops, trip.startDate) : []
@@ -94,6 +98,10 @@ function ReadingView({ trip }: ReadingViewProps) {
                 </Typography>
               </Typography>
             </ReadingDayHeader>
+
+            {noteByDate.get(day.date) && (
+              <ReadingDayNote>{noteByDate.get(day.date)}</ReadingDayNote>
+            )}
 
             {day.stops.map((stop, index) => (
               <ReadingStop

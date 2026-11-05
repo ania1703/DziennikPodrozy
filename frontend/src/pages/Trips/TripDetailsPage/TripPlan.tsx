@@ -19,6 +19,7 @@ import {
 } from './TripDetailsPage.styles'
 import TripMap, { type MapPosition } from './TripMap'
 import MapLegend from './MapLegend'
+import { toDayNoteMap, useDayNotes } from '../../../api/useDayNotes'
 
 interface TripPlanProps {
   trip: Trip
@@ -32,6 +33,7 @@ interface StopDraft {
 
 function TripPlan({ trip }: TripPlanProps) {
   const { data: stops, isLoading, isError } = useTripStops(trip.id)
+  const { data: dayNotes } = useDayNotes(trip.id)
   const [selectedStopId, setSelectedStopId] = useState<number | null>(null)
   const [addingStop, setAddingStop] = useState(false)
   const [draft, setDraft] = useState<StopDraft | null>(null)
@@ -73,6 +75,7 @@ function TripPlan({ trip }: TripPlanProps) {
   }
 
   const days = groupStopsByDay(stops, trip.startDate)
+  const noteByDate = toDayNoteMap(dayNotes)
   const firstNumbers = days.map(
     (_, index) =>
       days.slice(0, index).reduce((sum, day) => sum + day.stops.length, 0) + 1,
@@ -125,6 +128,7 @@ function TripPlan({ trip }: TripPlanProps) {
                 onEditStop={setEditingStop}
                 onDeleteStop={setDeletingStop}
                 tripId={trip.id}
+                note={noteByDate.get(day.date) ?? null}
               />
             ))
           )}

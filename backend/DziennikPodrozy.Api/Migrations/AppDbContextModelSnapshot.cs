@@ -102,6 +102,33 @@ namespace DziennikPodrozy.Api.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("DziennikPodrozy.Api.Models.DayNote", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int>("TripId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TripId", "Date")
+                        .IsUnique();
+
+                    b.ToTable("DayNotes");
+                });
+
             modelBuilder.Entity("DziennikPodrozy.Api.Models.StopPhoto", b =>
                 {
                     b.Property<int>("Id")
@@ -434,6 +461,17 @@ namespace DziennikPodrozy.Api.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("DziennikPodrozy.Api.Models.DayNote", b =>
+                {
+                    b.HasOne("DziennikPodrozy.Api.Models.Trip", "Trip")
+                        .WithMany()
+                        .HasForeignKey("TripId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Trip");
                 });
 
             modelBuilder.Entity("DziennikPodrozy.Api.Models.StopPhoto", b =>
