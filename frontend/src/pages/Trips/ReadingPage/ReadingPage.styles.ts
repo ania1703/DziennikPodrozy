@@ -105,3 +105,9 @@ export const ReadingDayNote = styled(Typography)(({ theme }) => ({
   color: theme.palette.text.secondary,
   whiteSpace: 'pre-wrap',
 }))
+
+export const ReadingNextTime = styled(Typography)({
+  maxWidth: '75ch',
+  margin: '0 auto',
+  whiteSpace: 'pre-wrap',
+})

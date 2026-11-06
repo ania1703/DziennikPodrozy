@@ -19,6 +19,7 @@ import {
   ReadingDayNote,
   ReadingDaySection,
   ReadingHeader,
+  ReadingNextTime,
 } from './ReadingPage.styles'
 import { toDayNoteMap, useDayNotes } from '../../../api/useDayNotes'
 
@@ -114,6 +115,17 @@ function ReadingView({ trip }: ReadingViewProps) {
           </ReadingDaySection>
         )
       })}
+      {trip.nextTimeNote && (
+        <ReadingDaySection>
+          <ReadingDayHeader>
+            <Typography variant="h5" component="h2">
+              Na następny raz
+            </Typography>
+          </ReadingDayHeader>
+
+          <ReadingNextTime>{trip.nextTimeNote}</ReadingNextTime>
+        </ReadingDaySection>
+      )}
     </ReadingContainer>
   )
 }

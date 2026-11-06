@@ -9,6 +9,7 @@ public class TripDto
     public DateOnly? EndDate { get; set; }
     public string Status { get; set; } = string.Empty;
     public string? CoverPhotoUrl { get; set; }
+    public string? NextTimeNote { get; set; }
     public int? DayCount { get; set; }
     public int StopCount { get; set; }
     public int PhotoCount { get; set; }

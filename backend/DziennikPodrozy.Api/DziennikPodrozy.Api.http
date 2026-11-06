@@ -1113,3 +1113,46 @@ Authorization: Bearer {{loginUser.response.body.$.token}}
 ### NOTATKA DNIA: lista po usunięciu (oczekiwane: 200, tylko notatka dnia 1)
 GET {{host}}/api/trips/{{createTripForDayNotes.response.body.$.id}}/day-notes
 Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### NA NASTĘPNY RAZ: podróż do testu (oczekiwane: 201, nextTimeNote null)
+# @name createTripForNextTime
+POST {{host}}/api/trips
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Test na następny raz",
+  "startDate": "2027-08-01",
+  "endDate": "2027-08-03"
+}
+
+### NA NASTĘPNY RAZ: zapis (oczekiwane: 200, nextTimeNote z tekstem)
+PUT {{host}}/api/trips/{{createTripForNextTime.response.body.$.id}}/next-time-note
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "text": "Zarezerwować bilety wcześniej. Polecam kawiarnię przy rynku."
+}
+
+### NA NASTĘPNY RAZ: szczegóły podróży (oczekiwane: 200, nextTimeNote nadal zapisana)
+GET {{host}}/api/trips/{{createTripForNextTime.response.body.$.id}}
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### NA NASTĘPNY RAZ: za długi tekst, powyżej 2000 znaków nie testujemy ręcznie, więc sprawdzamy cudzą podróż jako ADMIN (oczekiwane: 404)
+PUT {{host}}/api/trips/{{createTripForNextTime.response.body.$.id}}/next-time-note
+Content-Type: application/json
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+{
+  "text": "Cudza."
+}
+
+### NA NASTĘPNY RAZ: wyczyszczenie pustym tekstem (oczekiwane: 200, nextTimeNote null)
+PUT {{host}}/api/trips/{{createTripForNextTime.response.body.$.id}}/next-time-note
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "text": ""
+}

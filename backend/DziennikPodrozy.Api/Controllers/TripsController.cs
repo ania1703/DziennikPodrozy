@@ -204,6 +204,25 @@ public class TripsController : ControllerBase
         return Ok(await ToDtoAsync(trip));
     }
 
+    [HttpPut("{id}/next-time-note")]
+    public async Task<IActionResult> SaveNextTimeNote(int id, SaveNextTimeNoteDto dto)
+    {
+        var trip = await _context.Trips
+            .FirstOrDefaultAsync(t => t.Id == id && t.OwnerId == OwnerId);
+
+        if (trip == null)
+        {
+            return NotFound();
+        }
+
+        var text = dto.Text?.Trim();
+        trip.NextTimeNote = string.IsNullOrEmpty(text) ? null : text;
+
+        await _context.SaveChangesAsync();
+
+        return Ok(await ToDtoAsync(trip));
+    }
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteTrip(int id)
     {
@@ -291,6 +310,7 @@ public class TripsController : ControllerBase
             EndDate = trip.EndDate,
             Status = trip.Status.ToString(),
             CoverPhotoUrl = trip.CoverPhotoUrl,
+            NextTimeNote = trip.NextTimeNote,
             DayCount = trip.EndDate.HasValue
                 ? trip.EndDate.Value.DayNumber - trip.StartDate.DayNumber + 1
                 : null,

@@ -12,6 +12,7 @@ import { getTripFallbackColor } from '../../../utils/tripColors'
 import DeleteTripAction from './DeleteTripAction'
 import TripStatusControl from './TripStatusControl'
 import UploadCoverAction from './UploadCoverAction'
+import NextTimeNote from './NextTimeNote'
 import TripPlan from './TripPlan'
 import {
   TripDetailsActions,
@@ -77,6 +78,7 @@ function TripDetails({ trip }: TripDetailsProps) {
           )}
 
           <TripPlan trip={trip} />
+          <NextTimeNote trip={trip} />
 
           <Divider />
 
