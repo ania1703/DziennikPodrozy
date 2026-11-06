@@ -523,3 +523,14 @@ export const DayNoteBox = styled(Box)({
   padding: '12px 16px',
   borderBottom: '1px solid #EADFCB',
 })
+
+export const NextTimeBox = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+  gap: 8,
+  padding: 16,
+  borderRadius: 12,
+  border: '1px solid #EADFCB',
+  backgroundColor: theme.palette.background.default,
+}))
