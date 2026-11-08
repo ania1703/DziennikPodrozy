@@ -1156,3 +1156,15 @@ Authorization: Bearer {{loginUser.response.body.$.token}}
 {
   "text": ""
 }
+
+### STATYSTYKI PO LATACH: cały czas (oczekiwane: 200, w "years" lata malejąco, np. 2026, 2025, 2024)
+GET {{host}}/api/stats
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### STATYSTYKI PO LATACH: tylko 2025 (oczekiwane: 200, tripCount 1 i dayCount 10, czyli sam "Wyjazd 2025", a "years" te same co wyżej)
+GET {{host}}/api/stats?year=2025
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### STATYSTYKI PO LATACH: rok bez podróży (oczekiwane: 200, same zera i puste listy, "years" nadal pełna lista)
+GET {{host}}/api/stats?year=1999
+Authorization: Bearer {{loginUser.response.body.$.token}}

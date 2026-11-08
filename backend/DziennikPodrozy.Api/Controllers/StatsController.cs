@@ -34,7 +34,7 @@ public class StatsController : ControllerBase
     private string OwnerId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
     [HttpGet]
-    public async Task<IActionResult> GetStats()
+    public async Task<IActionResult> GetStats([FromQuery] int? year)
     {
         var user = await _userManager.GetUserAsync(User);
 
@@ -43,9 +43,19 @@ public class StatsController : ControllerBase
             return Unauthorized();
         }
 
-        var trips = await _context.Trips
+        var allTrips = await _context.Trips
             .Where(t => t.OwnerId == OwnerId && t.Status != TripStatus.Planned)
             .ToListAsync();
+
+        var years = allTrips
+            .Select(t => t.StartDate.Year)
+            .Distinct()
+            .OrderByDescending(y => y)
+            .ToList();
+
+        var trips = year.HasValue
+            ? allTrips.Where(t => t.StartDate.Year == year.Value).ToList()
+            : allTrips;
 
         var tripIds = trips.Select(t => t.Id).ToList();
 
@@ -78,7 +88,8 @@ public class StatsController : ControllerBase
                 .ToList(),
             HasHome = user.HomeLatitude.HasValue && user.HomeLongitude.HasValue,
             HomeCity = user.HomeCity,
-            FarthestPoint = FindFarthestPoint(stops, user)
+            FarthestPoint = FindFarthestPoint(stops, user),
+            Years = years
         };
 
         return Ok(stats);
