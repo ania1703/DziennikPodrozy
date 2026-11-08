@@ -7,6 +7,7 @@ import { TripCardOverlay, TripCardRoot } from './TripsPage.styles'
 import { formatDateRange } from '../../../utils/formatDate'
 import { getTripFallbackColor } from '../../../utils/tripColors'
 import { formatTripSummary } from '../../../utils/formatTripSummary'
+import { DescribedChip } from '../../../components/common/DescribedChip'
 
 interface TripCardProps {
   trip: Trip
@@ -35,7 +36,10 @@ function TripCard({ trip }: TripCardProps) {
               {formatTripSummary(trip)}
             </Typography>
           )}
-          <TripStatusChip status={trip.status} />
+          <div style={{ display: 'flex', gap: 6 }}>
+            <TripStatusChip status={trip.status} />
+            {trip.isDescribed && <DescribedChip />}
+          </div>
         </TripCardOverlay>
       </TripCardRoot>
     </Link>

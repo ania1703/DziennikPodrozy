@@ -16,6 +16,7 @@ export interface Trip {
   photoCount: number
   recordingCount: number
   nextTimeNote: string | null
+  isDescribed: boolean
 }
 
 export function useTrips() {

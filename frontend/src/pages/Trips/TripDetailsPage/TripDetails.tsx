@@ -10,9 +10,10 @@ import { formatDateRange } from '../../../utils/formatDate'
 import { formatTripSummary } from '../../../utils/formatTripSummary'
 import { getTripFallbackColor } from '../../../utils/tripColors'
 import DeleteTripAction from './DeleteTripAction'
-import TripStatusControl from './TripStatusControl'
 import UploadCoverAction from './UploadCoverAction'
 import NextTimeNote from './NextTimeNote'
+import { DescribedChip } from '../../../components/common/DescribedChip'
+import TripStatusMenu from './TripStatusMenu'
 import TripPlan from './TripPlan'
 import {
   TripDetailsActions,
@@ -55,7 +56,8 @@ function TripDetails({ trip }: TripDetailsProps) {
 
           <TripDetailsStatus>
             <TripStatusChip status={trip.status} size="medium" />
-            <TripStatusControl trip={trip} />
+            {trip.isDescribed && <DescribedChip size="medium" />}
+            <TripStatusMenu trip={trip} />
           </TripDetailsStatus>
 
           {trip.description && (
