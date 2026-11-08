@@ -1242,3 +1242,95 @@ Authorization: Bearer {{loginUser.response.body.$.token}}
 {
   "described": false
 }
+
+### ADMIN: rejestracja użytkownika do testów (oczekiwane: 200)
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "userName": "tester1",
+  "email": "tester1@test.pl",
+  "password": "Test12345"
+}
+
+### ADMIN: logowanie testera (oczekiwane: 200)
+# @name loginTester
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "tester1@test.pl",
+  "password": "Test12345"
+}
+
+### ADMIN: lista bez tokenu (oczekiwane: 401)
+GET {{host}}/api/admin/users
+
+### ADMIN: lista jako zwykły użytkownik (oczekiwane: 403)
+GET {{host}}/api/admin/users
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### ADMIN: lista jako admin (oczekiwane: 200, tester1 z createdAt i lastActiveAt, isSuspended false, isAdmin false; admin ma isAdmin true; skopiuj "id" użytkownika tester1)
+GET {{host}}/api/admin/users
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+### ADMIN: wklej tu id testera z listy powyżej
+@testerId = 15563a36-9981-4316-b593-536f8fac89a5
+
+### ADMIN: zwykły użytkownik próbuje zawiesić (oczekiwane: 403)
+POST {{host}}/api/admin/users/{{testerId}}/suspend
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### ADMIN: zawieszenie nieistniejącego konta (oczekiwane: 404)
+POST {{host}}/api/admin/users/nie-ma-takiego/suspend
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+### ADMIN: zawieszenie testera (oczekiwane: 204)
+POST {{host}}/api/admin/users/{{testerId}}/suspend
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+### ADMIN: logowanie zawieszonego (oczekiwane: 403 z komunikatem o zawieszeniu)
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "tester1@test.pl",
+  "password": "Test12345"
+}
+
+### ADMIN: stary token zawieszonego (oczekiwane: 401)
+GET {{host}}/api/trips
+Authorization: Bearer {{loginTester.response.body.$.token}}
+
+### ADMIN: odwieszenie (oczekiwane: 204)
+POST {{host}}/api/admin/users/{{testerId}}/unsuspend
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+### ADMIN: logowanie po odwieszeniu (oczekiwane: 200)
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "tester1@test.pl",
+  "password": "Test12345"
+}
+
+### ADMIN: zaplanowanie usunięcia (oczekiwane: 204)
+POST {{host}}/api/admin/users/{{testerId}}/request-deletion
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+### ADMIN: lista po zaplanowaniu (oczekiwane: 200, tester1 ma isSuspended true i deletionRequestedAt z dzisiejszą datą)
+GET {{host}}/api/admin/users
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+### ADMIN: próba usunięcia od razu (oczekiwane: 400, że dopiero po 7 dniach)
+DELETE {{host}}/api/admin/users/{{testerId}}
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+### ADMIN: usunięcie po skróconym czasie (oczekiwane: 204)
+DELETE {{host}}/api/admin/users/{{testerId}}
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+### ADMIN: lista po usunięciu (oczekiwane: 200, tester1 już nie ma na liście)
+GET {{host}}/api/admin/users
+Authorization: Bearer {{loginAdmin.response.body.$.token}}

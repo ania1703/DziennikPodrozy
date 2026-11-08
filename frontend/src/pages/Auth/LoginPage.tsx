@@ -10,6 +10,7 @@ import { AuthFormContainer } from '../../components/common/AuthFormContainer'
 import { Link } from 'react-router-dom'
 import MuiLink from '@mui/material/Link'
 import { AuthLayout } from '../../components/common/AuthLayout'
+import { getErrorMessage } from '../../api/getErrorMessage'
 
 function LoginPage() {
   const [email, setEmail] = useState('')
@@ -26,7 +27,7 @@ function LoginPage() {
       {
         onSuccess: (data) => {
           saveAuth(data.token, data.userName, data.roles)
-          navigate('/trips', { replace: true })
+          navigate(data.roles.includes('Admin') ? '/admin' : '/trips', { replace: true })
         },
       },
     )
@@ -39,7 +40,11 @@ function LoginPage() {
           Logowanie
         </Typography>
 
-        {login.isError && <Alert severity="error">Nieprawidłowy e-mail lub hasło.</Alert>}
+        {login.isError && (
+          <Alert severity="error">
+            {getErrorMessage(login.error, 'Nieprawidłowy e-mail lub hasło.')}
+          </Alert>
+        )}
 
         <TextField
           label="E-mail"

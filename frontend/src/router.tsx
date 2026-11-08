@@ -12,6 +12,9 @@ import ProfilePage from './pages/Profile/ProfilePage/ProfilePage'
 import ReadingPage from './pages/Trips/ReadingPage/ReadingPage'
 import StatsPage from './pages/Stats/StatsPage/StatsPage'
 import WishlistPage from './pages/Wishlist/WishlistPage/WishlistPage'
+import AdminPage from './pages/Admin/AdminPage/AdminPage'
+import { AdminRoute } from './components/common/AdminRoute'
+import { UserRoute } from './components/common/UserRoute'
 
 export const router = createBrowserRouter([
   {
@@ -31,38 +34,52 @@ export const router = createBrowserRouter([
     children: [
       {
         element: <AppLayout />,
-        children: [
+                children: [
           {
-            path: '/trips',
-            element: <TripsPage />,
+            element: <UserRoute />,
+            children: [
+              {
+                path: '/trips',
+                element: <TripsPage />,
+              },
+              {
+                path: '/trips/new',
+                element: <NewTripPage />,
+              },
+              {
+                path: '/trips/:id',
+                element: <TripDetailsPage />,
+              },
+              {
+                path: '/trips/:id/edit',
+                element: <EditTripPage />,
+              },
+              {
+                path: '/trips/:id/read',
+                element: <ReadingPage />,
+              },
+              {
+                path: '/profile',
+                element: <ProfilePage />,
+              },
+              {
+                path: '/stats',
+                element: <StatsPage />,
+              },
+              {
+                path: '/wishlist',
+                element: <WishlistPage />,
+              },
+            ],
           },
           {
-            path: '/trips/new',
-            element: <NewTripPage />,
-          },
-          {
-            path: '/trips/:id',
-            element: <TripDetailsPage />,
-          },
-          {
-            path: '/trips/:id/edit',
-            element: <EditTripPage />,
-          },
-          {
-            path: '/trips/:id/read',
-            element: <ReadingPage />,
-          },
-          {
-            path: '/profile',
-            element: <ProfilePage />,
-          },
-          {
-            path: '/stats',
-            element: <StatsPage />,
-          },
-          {
-            path: '/wishlist',
-            element: <WishlistPage />,
+            element: <AdminRoute />,
+            children: [
+              {
+                path: '/admin',
+                element: <AdminPage />,
+              },
+            ],
           },
         ],
       },

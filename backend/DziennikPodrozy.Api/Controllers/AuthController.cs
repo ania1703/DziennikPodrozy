@@ -67,6 +67,14 @@ public class AuthController : ControllerBase
             return Unauthorized(new { message = "Nieprawidłowy e-mail lub hasło." });
         }
 
+        if (await _userManager.IsLockedOutAsync(user))
+        {
+            return StatusCode(403, new { message = "Konto zostało zawieszone. Skontaktuj się z administratorem." });
+        }
+
+        user.LastActiveAt = DateTime.UtcNow;
+        await _userManager.UpdateAsync(user);
+
         var roles = await _userManager.GetRolesAsync(user);
         var token = _tokenService.CreateToken(user, roles);
 

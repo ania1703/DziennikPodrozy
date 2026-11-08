@@ -23,7 +23,8 @@ const navButtonSx = {
 }
 
 export function AppLayout() {
-  const { userName, logout } = useAuth()
+  const { userName, roles, logout } = useAuth()
+  const isAdmin = roles.includes('Admin')
   const { data: profile } = useProfile()
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null)
 
@@ -46,22 +47,30 @@ export function AppLayout() {
         }}
       >
         <NavToolbar>
-          <Brand to="/trips">
+          <Brand to={isAdmin ? '/admin' : '/trips'}>
             <ExploreOutlinedIcon fontSize="large" />
             Dziennik Podróży
           </Brand>
 
-          <Button color="inherit" component={NavLink} to="/trips" sx={navButtonSx}>
-            Moje podróże
-          </Button>
+          {isAdmin ? (
+            <Button color="inherit" component={NavLink} to="/admin" sx={navButtonSx}>
+              Administracja
+            </Button>
+          ) : (
+            <>
+              <Button color="inherit" component={NavLink} to="/trips" sx={navButtonSx}>
+                Moje podróże
+              </Button>
 
-          <Button color="inherit" component={NavLink} to="/wishlist" sx={navButtonSx}>
-            Chcę zobaczyć
-          </Button>
+              <Button color="inherit" component={NavLink} to="/wishlist" sx={navButtonSx}>
+                Chcę zobaczyć
+              </Button>
 
-          <Button color="inherit" component={NavLink} to="/stats" sx={navButtonSx}>
-            Statystyki
-          </Button>
+              <Button color="inherit" component={NavLink} to="/stats" sx={navButtonSx}>
+                Statystyki
+              </Button>
+            </>
+          )}
 
           <Button
             color="inherit"
@@ -80,12 +89,14 @@ export function AppLayout() {
           </Button>
 
           <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={handleCloseMenu}>
-            <MenuItem component={Link} to="/profile" onClick={handleCloseMenu}>
-              <ListItemIcon>
-                <PersonOutlineOutlinedIcon fontSize="small" />
-              </ListItemIcon>
-              Mój profil
-            </MenuItem>
+            {!isAdmin && (
+              <MenuItem component={Link} to="/profile" onClick={handleCloseMenu}>
+                <ListItemIcon>
+                  <PersonOutlineOutlinedIcon fontSize="small" />
+                </ListItemIcon>
+                Mój profil
+              </MenuItem>
+            )}
 
             <MenuItem
               onClick={() => {
