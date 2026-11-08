@@ -54,11 +54,19 @@ export const EmptyState = styled(Box)({
   textAlign: 'center',
 })
 
+export const TripsToolbar = styled(Box)({
+  display: 'flex',
+  flexWrap: 'wrap',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 16,
+  maxWidth: 1200,
+  margin: '16px auto 0',
+  padding: '0 24px',
+})
+
 export const FilterBar = styled(Box)({
   display: 'flex',
   flexWrap: 'wrap',
   gap: 8,
-  maxWidth: 1200,
-  margin: '16px auto 0',
-  padding: '0 24px',
 })
