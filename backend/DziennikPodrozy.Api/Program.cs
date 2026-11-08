@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using DziennikPodrozy.Api.Services;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +40,37 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = jwtSettings["Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(jwtSettings["Key"]!))
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = async context =>
+            {
+                var userId = context.Principal?.FindFirstValue(ClaimTypes.NameIdentifier);
+                var db = context.HttpContext.RequestServices.GetRequiredService<AppDbContext>();
+
+                var account = userId == null
+                    ? null
+                    : await db.Users
+                        .AsNoTracking()
+                        .Where(u => u.Id == userId)
+                        .Select(u => new { u.LockoutEnd, u.LastActiveAt })
+                        .FirstOrDefaultAsync();
+
+                if (account == null || (account.LockoutEnd.HasValue && account.LockoutEnd > DateTimeOffset.UtcNow))
+                {
+                    context.Fail("Konto jest zawieszone lub nie istnieje.");
+                    return;
+                }
+
+                var now = DateTime.UtcNow;
+
+                if (account.LastActiveAt == null || now - account.LastActiveAt.Value > TimeSpan.FromMinutes(5))
+                {
+                    await db.Users
+                        .Where(u => u.Id == userId)
+                        .ExecuteUpdateAsync(setters => setters.SetProperty(u => u.LastActiveAt, now));
+                }
+            }
         };
     });
 

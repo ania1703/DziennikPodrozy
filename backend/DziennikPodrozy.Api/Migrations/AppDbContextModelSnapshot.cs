@@ -40,6 +40,12 @@ namespace DziennikPodrozy.Api.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletionRequestedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -55,6 +61,9 @@ namespace DziennikPodrozy.Api.Migrations
 
                     b.Property<double?>("HomeLongitude")
                         .HasColumnType("float");
+
+                    b.Property<DateTime?>("LastActiveAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
