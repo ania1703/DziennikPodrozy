@@ -2,7 +2,7 @@ import Chip from '@mui/material/Chip'
 import type { TripStatus } from '../../../api/useTrips'
 import { FilterBar } from './TripsPage.styles'
 
-export type TripFilter = 'All' | TripStatus
+export type TripFilter = 'All' | TripStatus | 'ToDescribe'
 
 interface TripStatusFilterProps {
   value: TripFilter
@@ -15,6 +15,7 @@ const OPTIONS: { value: TripFilter; label: string }[] = [
   { value: 'InProgress', label: 'W trakcie' },
   { value: 'Planned', label: 'Zaplanowane' },
   { value: 'Finished', label: 'Zakończone' },
+  { value: 'ToDescribe', label: 'Do opisania' },
 ]
 
 function TripStatusFilter({ value, counts, onChange }: TripStatusFilterProps) {

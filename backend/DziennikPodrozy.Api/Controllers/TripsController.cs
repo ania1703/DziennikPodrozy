@@ -173,6 +173,10 @@ public class TripsController : ControllerBase
         }
 
         trip.Status = newStatus;
+        if (newStatus != TripStatus.Finished)
+        {
+            trip.IsDescribed = false;
+        }
         await _context.SaveChangesAsync();
 
         return Ok(await ToDtoAsync(trip));
@@ -218,6 +222,28 @@ public class TripsController : ControllerBase
         var text = dto.Text?.Trim();
         trip.NextTimeNote = string.IsNullOrEmpty(text) ? null : text;
 
+        await _context.SaveChangesAsync();
+
+        return Ok(await ToDtoAsync(trip));
+    }
+
+    [HttpPut("{id}/described")]
+    public async Task<IActionResult> SetDescribed(int id, SetDescribedDto dto)
+    {
+        var trip = await _context.Trips
+            .FirstOrDefaultAsync(t => t.Id == id && t.OwnerId == OwnerId);
+
+        if (trip == null)
+        {
+            return NotFound();
+        }
+
+        if (dto.Described && trip.Status != TripStatus.Finished)
+        {
+            return BadRequest(new { message = "Tylko zakończoną podróż można oznaczyć jako opisaną." });
+        }
+
+        trip.IsDescribed = dto.Described;
         await _context.SaveChangesAsync();
 
         return Ok(await ToDtoAsync(trip));
@@ -311,6 +337,7 @@ public class TripsController : ControllerBase
             Status = trip.Status.ToString(),
             CoverPhotoUrl = trip.CoverPhotoUrl,
             NextTimeNote = trip.NextTimeNote,
+            IsDescribed = trip.IsDescribed,
             DayCount = trip.EndDate.HasValue
                 ? trip.EndDate.Value.DayNumber - trip.StartDate.DayNumber + 1
                 : null,

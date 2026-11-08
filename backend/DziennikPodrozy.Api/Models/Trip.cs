@@ -31,6 +31,8 @@ public class Trip
     [MaxLength(2000)]
     public string? NextTimeNote { get; set; }
 
+    public bool IsDescribed { get; set; }
+
     public string OwnerId { get; set; } = string.Empty;
 
     public List<TripStop> Stops { get; set; } = new();

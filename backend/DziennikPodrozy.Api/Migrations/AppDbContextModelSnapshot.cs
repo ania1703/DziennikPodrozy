@@ -206,6 +206,9 @@ namespace DziennikPodrozy.Api.Migrations
                     b.Property<DateOnly?>("EndDate")
                         .HasColumnType("date");
 
+                    b.Property<bool>("IsDescribed")
+                        .HasColumnType("bit");
+
                     b.Property<string>("NextTimeNote")
                         .HasMaxLength(2000)
                         .HasColumnType("nvarchar(2000)");

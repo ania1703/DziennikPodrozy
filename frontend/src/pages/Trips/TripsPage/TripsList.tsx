@@ -3,11 +3,23 @@ import { Link } from 'react-router-dom'
 import Alert from '@mui/material/Alert'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
-import { useTrips } from '../../../api/useTrips'
+import { useTrips, type Trip } from '../../../api/useTrips'
 import { LoadingSpinner } from '../../../components/common/LoadingSpinner'
 import TripCard from './TripCard'
 import TripStatusFilter, { type TripFilter } from './TripStatusFilter'
 import { EmptyState, TripsGrid } from './TripsPage.styles'
+
+function matchesFilter(trip: Trip, filter: TripFilter): boolean {
+  if (filter === 'All') {
+    return true
+  }
+
+  if (filter === 'ToDescribe') {
+    return trip.status === 'Finished' && !trip.isDescribed
+  }
+
+  return trip.status === filter
+}
 
 function TripsList() {
   const { data: trips, isLoading, isError } = useTrips()
@@ -37,13 +49,13 @@ function TripsList() {
 
   const counts: Record<TripFilter, number> = {
     All: trips.length,
-    InProgress: trips.filter((trip) => trip.status === 'InProgress').length,
-    Planned: trips.filter((trip) => trip.status === 'Planned').length,
-    Finished: trips.filter((trip) => trip.status === 'Finished').length,
+    InProgress: trips.filter((trip) => matchesFilter(trip, 'InProgress')).length,
+    Planned: trips.filter((trip) => matchesFilter(trip, 'Planned')).length,
+    Finished: trips.filter((trip) => matchesFilter(trip, 'Finished')).length,
+    ToDescribe: trips.filter((trip) => matchesFilter(trip, 'ToDescribe')).length,
   }
 
-  const visibleTrips =
-    filter === 'All' ? trips : trips.filter((trip) => trip.status === filter)
+  const visibleTrips = trips.filter((trip) => matchesFilter(trip, filter))
 
   return (
     <>

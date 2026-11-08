@@ -14,4 +14,5 @@ public class TripDto
     public int StopCount { get; set; }
     public int PhotoCount { get; set; }
     public int RecordingCount { get; set; }
+    public bool IsDescribed { get; set; }
 }
