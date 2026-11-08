@@ -133,3 +133,20 @@ export const MilestoneIcon = styled(Box)(({ theme }) => ({
     color: theme.palette.background.default,
   },
 }))
+
+export const StatsHeader = styled(Box)({
+  display: 'flex',
+  alignItems: 'flex-start',
+  justifyContent: 'space-between',
+  flexWrap: 'wrap',
+  gap: 16,
+})
+
+export const PeriodFields = styled(Box)({
+  display: 'flex',
+  flexWrap: 'wrap',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 16,
+  marginTop: 8,
+})
