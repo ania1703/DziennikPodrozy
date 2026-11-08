@@ -12,4 +12,7 @@ public class StatsDto
     public bool HasHome { get; set; }
     public string? HomeCity { get; set; }
     public FarthestPointDto? FarthestPoint { get; set; }
+    public List<int> Years { get; set; } = new();
+    public DateOnly? FirstDate { get; set; }
+    public DateOnly? LastDate { get; set; }
 }

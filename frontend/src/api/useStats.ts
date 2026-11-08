@@ -19,13 +19,26 @@ export interface Stats {
   hasHome: boolean
   homeCity: string | null
   farthestPoint: FarthestPoint | null
+  years: number[]
+  firstDate: string | null
+  lastDate: string | null
 }
 
-export function useStats() {
+export interface StatsRange {
+  from: string | null
+  to: string | null
+}
+
+export function useStats(range?: StatsRange) {
+  const from = range?.from ?? null
+  const to = range?.to ?? null
+
   return useQuery({
-    queryKey: ['stats'],
+    queryKey: ['stats', from ?? 'all', to ?? 'all'],
     queryFn: async () => {
-      const response = await axiosClient.get<Stats>('/stats')
+      const response = await axiosClient.get<Stats>('/stats', {
+        params: { from: from ?? undefined, to: to ?? undefined },
+      })
       return response.data
     },
   })

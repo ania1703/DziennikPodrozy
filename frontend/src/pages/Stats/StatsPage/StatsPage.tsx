@@ -9,6 +9,7 @@ import CountriesSection from './CountriesSection'
 import ExplorationSection from './ExplorationSection'
 import MilestonesSection from './MilestonesSection'
 import OverviewTab from './OverviewTab'
+import PeriodPicker from './PeriodPicker'
 import { SectionsGrid, StatsContainer } from './StatsPage.styles'
 
 const TABS = ['overview', 'world', 'milestones'] as const
@@ -19,18 +20,58 @@ function parseTab(value: string | null): StatsTab {
   return TABS.find((tab) => tab === value) ?? 'overview'
 }
 
+function parseDate(value: string | null): string | null {
+  return value !== null && /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : null
+}
+
 function StatsPage() {
-  const { data: stats, isLoading, isError } = useStats()
   const [searchParams, setSearchParams] = useSearchParams()
   const tab = parseTab(searchParams.get('tab'))
+  const from = parseDate(searchParams.get('from'))
+  const to = parseDate(searchParams.get('to'))
 
-  if (isLoading) {
+  const allTime = useStats()
+  const selected = useStats({ from, to })
+
+  function updateParams(changes: {
+    tab?: StatsTab
+    range?: { from: string | null; to: string | null }
+  }) {
+    setSearchParams(
+      (previous) => {
+        const next = new URLSearchParams(previous)
+
+        if (changes.tab) {
+          next.set('tab', changes.tab)
+        }
+
+        if (changes.range) {
+          for (const [key, value] of Object.entries(changes.range)) {
+            if (value === null) {
+              next.delete(key)
+            } else {
+              next.set(key, value)
+            }
+          }
+        }
+
+        return next
+      },
+      { replace: true },
+    )
+  }
+
+  if (allTime.isLoading) {
     return <LoadingSpinner />
   }
 
-  if (isError || !stats) {
+  if (allTime.isError || !allTime.data) {
     return <Alert severity="error">Nie udało się wczytać statystyk.</Alert>
   }
+
+  const { firstDate, lastDate, years } = allTime.data
+  const stats = selected.data
+  const hasRange = from !== null || to !== null
 
   return (
     <StatsContainer>
@@ -43,9 +84,23 @@ function StatsPage() {
         linii prostej między kolejnymi przystankami.
       </Typography>
 
+      {firstDate && lastDate && (
+        <PeriodPicker
+          key={`${firstDate}-${lastDate}`}
+          firstDate={firstDate}
+          lastDate={lastDate}
+          years={years}
+          from={from}
+          to={to}
+          onChange={(nextFrom, nextTo) =>
+            updateParams({ range: { from: nextFrom, to: nextTo } })
+          }
+        />
+      )}
+
       <Tabs
         value={tab}
-        onChange={(_event, value: StatsTab) => setSearchParams({ tab: value }, { replace: true })}
+        onChange={(_event, value: StatsTab) => updateParams({ tab: value })}
         sx={{ marginTop: 3, borderBottom: 1, borderColor: 'divider' }}
       >
         <Tab label="Przegląd" value="overview" />
@@ -53,16 +108,36 @@ function StatsPage() {
         <Tab label="Osiągnięcia" value="milestones" />
       </Tabs>
 
-      {tab === 'overview' && <OverviewTab stats={stats} />}
+      {tab === 'milestones' && (
+        <>
+          {hasRange && (
+            <Typography variant="body2" sx={{ marginTop: 2, color: 'text.secondary' }}>
+              Osiągnięcia liczymy z całej historii podróży, niezależnie od wybranego okresu.
+            </Typography>
+          )}
 
-      {tab === 'world' && (
-        <SectionsGrid>
+          <MilestonesSection stats={allTime.data} />
+        </>
+      )}
+
+      {tab !== 'milestones' && selected.isLoading && <LoadingSpinner />}
+
+      {tab !== 'milestones' && selected.isError && (
+        <Alert severity="error" sx={{ marginTop: 3 }}>
+          Nie udało się wczytać statystyk dla wybranego okresu.
+        </Alert>
+      )}
+
+      {tab === 'overview' && stats && (
+        <OverviewTab key={`${from}-${to}`} stats={stats} />
+      )}
+
+      {tab === 'world' && stats && (
+        <SectionsGrid key={`${from}-${to}`}>
           <CountriesSection codes={stats.countryCodes} />
           <ExplorationSection codes={stats.countryCodes} />
         </SectionsGrid>
       )}
-
-      {tab === 'milestones' && <MilestonesSection stats={stats} />}
     </StatsContainer>
   )
 }

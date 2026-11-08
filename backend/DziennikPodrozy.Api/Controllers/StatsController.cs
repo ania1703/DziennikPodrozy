@@ -34,7 +34,7 @@ public class StatsController : ControllerBase
     private string OwnerId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
     [HttpGet]
-    public async Task<IActionResult> GetStats()
+    public async Task<IActionResult> GetStats([FromQuery] DateOnly? from, [FromQuery] DateOnly? to)
     {
         var user = await _userManager.GetUserAsync(User);
 
@@ -43,29 +43,58 @@ public class StatsController : ControllerBase
             return Unauthorized();
         }
 
-        var trips = await _context.Trips
+        if (from.HasValue && to.HasValue && to.Value < from.Value)
+        {
+            return BadRequest(new { message = "Data końcowa nie może być wcześniejsza niż początkowa." });
+        }
+
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        var allTrips = await _context.Trips
             .Where(t => t.OwnerId == OwnerId && t.Status != TripStatus.Planned)
             .ToListAsync();
 
+        var years = allTrips
+            .Select(t => t.StartDate.Year)
+            .Distinct()
+            .OrderByDescending(y => y)
+            .ToList();
+
+        var trips = allTrips
+            .Where(t => OverlapsRange(t, from, to, today))
+            .ToList();
+
         var tripIds = trips.Select(t => t.Id).ToList();
 
-        var stops = await _context.TripStops
-            .Where(s => tripIds.Contains(s.TripId))
-            .ToListAsync();
+        var stopsQuery = _context.TripStops.Where(s => tripIds.Contains(s.TripId));
+
+        if (from.HasValue)
+        {
+            stopsQuery = stopsQuery.Where(s => s.Date >= from.Value);
+        }
+
+        if (to.HasValue)
+        {
+            stopsQuery = stopsQuery.Where(s => s.Date <= to.Value);
+        }
+
+        var stops = await stopsQuery.ToListAsync();
 
         await _geocoding.FillMissingCountriesAsync(stops, MaxCountryLookups);
         await _context.SaveChangesAsync();
 
+        var stopIds = stops.Select(s => s.Id).ToList();
+
         var photoCount = await _context.StopPhotos
-            .CountAsync(p => tripIds.Contains(p.TripStop!.TripId));
+            .CountAsync(p => stopIds.Contains(p.TripStopId));
 
         var recordingCount = await _context.StopRecordings
-            .CountAsync(r => tripIds.Contains(r.TripStop!.TripId));
+            .CountAsync(r => stopIds.Contains(r.TripStopId));
 
         var stats = new StatsDto
         {
             TripCount = trips.Count,
-            DayCount = CountTravelDays(trips),
+            DayCount = CountTravelDays(trips, from, to, today),
             StopCount = stops.Count,
             PhotoCount = photoCount,
             RecordingCount = recordingCount,
@@ -78,15 +107,25 @@ public class StatsController : ControllerBase
                 .ToList(),
             HasHome = user.HomeLatitude.HasValue && user.HomeLongitude.HasValue,
             HomeCity = user.HomeCity,
-            FarthestPoint = FindFarthestPoint(stops, user)
+            FarthestPoint = FindFarthestPoint(stops, user),
+            Years = years,
+            FirstDate = allTrips.Count > 0 ? allTrips.Min(t => t.StartDate) : null,
+            LastDate = allTrips.Count > 0 ? allTrips.Max(t => t.EndDate ?? today) : null
         };
 
         return Ok(stats);
     }
 
-    private static int CountTravelDays(List<Trip> trips)
+    private static bool OverlapsRange(Trip trip, DateOnly? from, DateOnly? to, DateOnly today)
     {
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var end = trip.EndDate ?? today;
+
+        return (!to.HasValue || trip.StartDate <= to.Value)
+            && (!from.HasValue || end >= from.Value);
+    }
+
+    private static int CountTravelDays(List<Trip> trips, DateOnly? from, DateOnly? to, DateOnly today)
+    {
         var days = new HashSet<DateOnly>();
 
         foreach (var trip in trips)
@@ -100,6 +139,11 @@ public class StatsController : ControllerBase
 
             for (var day = trip.StartDate; day <= last; day = day.AddDays(1))
             {
+                if ((from.HasValue && day < from.Value) || (to.HasValue && day > to.Value))
+                {
+                    continue;
+                }
+
                 days.Add(day);
             }
         }
