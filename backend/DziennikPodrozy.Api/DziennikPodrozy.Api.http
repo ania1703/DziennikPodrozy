@@ -1157,14 +1157,26 @@ Authorization: Bearer {{loginUser.response.body.$.token}}
   "text": ""
 }
 
-### STATYSTYKI PO LATACH: cały czas (oczekiwane: 200, w "years" lata malejąco, np. 2026, 2025, 2024)
+### STATYSTYKI ZAKRES: cały czas (oczekiwane: 200, w "firstDate" najwcześniejszy początek podróży, w "lastDate" najpóźniejszy koniec, "years" jak wcześniej)
 GET {{host}}/api/stats
 Authorization: Bearer {{loginUser.response.body.$.token}}
 
-### STATYSTYKI PO LATACH: tylko 2025 (oczekiwane: 200, tripCount 1 i dayCount 10, czyli sam "Wyjazd 2025", a "years" te same co wyżej)
-GET {{host}}/api/stats?year=2025
+### STATYSTYKI ZAKRES: rok 2025 (oczekiwane: 200, tripCount 1 i dayCount 10, czyli "Wyjazd 2025")
+GET {{host}}/api/stats?from=2025-01-01&to=2025-12-31
 Authorization: Bearer {{loginUser.response.body.$.token}}
 
-### STATYSTYKI PO LATACH: rok bez podróży (oczekiwane: 200, same zera i puste listy, "years" nadal pełna lista)
-GET {{host}}/api/stats?year=1999
+### STATYSTYKI ZAKRES: jedna data (oczekiwane: 200, dayCount 1 i tylko przystanki z tego dnia, np. 2026-08-12 z Mediolanu)
+GET {{host}}/api/stats?from=2026-08-12&to=2026-08-12
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### STATYSTYKI ZAKRES: tylko "od" (oczekiwane: 200, wszystko od 1 października 2026 wzwyż)
+GET {{host}}/api/stats?from=2026-10-01
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### STATYSTYKI ZAKRES: data końcowa przed początkową (oczekiwane: 400)
+GET {{host}}/api/stats?from=2026-10-01&to=2026-01-01
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### STATYSTYKI ZAKRES: zakres bez podróży (oczekiwane: 200, same zera i puste listy)
+GET {{host}}/api/stats?from=1999-01-01&to=1999-12-31
 Authorization: Bearer {{loginUser.response.body.$.token}}
