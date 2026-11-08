@@ -1180,3 +1180,65 @@ Authorization: Bearer {{loginUser.response.body.$.token}}
 ### STATYSTYKI ZAKRES: zakres bez podróży (oczekiwane: 200, same zera i puste listy)
 GET {{host}}/api/stats?from=1999-01-01&to=1999-12-31
 Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### OPISANA: zakończona podróż do testu (oczekiwane: 201, isDescribed false)
+# @name createFinishedForDescribed
+POST {{host}}/api/trips
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "title": "Test opisanej",
+  "startDate": "2026-02-01",
+  "endDate": "2026-02-05",
+  "status": "Finished"
+}
+
+### OPISANA: oznaczenie (oczekiwane: 200, isDescribed true)
+PUT {{host}}/api/trips/{{createFinishedForDescribed.response.body.$.id}}/described
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "described": true
+}
+
+### OPISANA: szczegóły (oczekiwane: 200, isDescribed nadal true)
+GET {{host}}/api/trips/{{createFinishedForDescribed.response.body.$.id}}
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### OPISANA: cudza podróż jako ADMIN (oczekiwane: 404)
+PUT {{host}}/api/trips/{{createFinishedForDescribed.response.body.$.id}}/described
+Content-Type: application/json
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+{
+  "described": true
+}
+
+### OPISANA: zmiana statusu na "W trakcie" zdejmuje znacznik (oczekiwane: 200, status InProgress i isDescribed false)
+PATCH {{host}}/api/trips/{{createFinishedForDescribed.response.body.$.id}}/status
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "status": "InProgress"
+}
+
+### OPISANA: podróż niezakończona nie może być opisana (oczekiwane: 400)
+PUT {{host}}/api/trips/{{createFinishedForDescribed.response.body.$.id}}/described
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "described": true
+}
+
+### OPISANA: zdjęcie znacznika (oczekiwane: 200, isDescribed false)
+PUT {{host}}/api/trips/{{createFinishedForDescribed.response.body.$.id}}/described
+Content-Type: application/json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+{
+  "described": false
+}
