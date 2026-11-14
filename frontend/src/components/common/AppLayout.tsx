@@ -13,6 +13,8 @@ import { getFileUrl } from '../../api/fileUrl'
 import { useProfile } from '../../api/useProfile'
 import { useAuth } from '../../contexts/useAuth'
 import { Brand, NavToolbar, UserAvatar } from './AppLayout.styles'
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
+import { ChangePasswordDialog } from './ChangePasswordDialog'
 
 const navButtonSx = {
   paddingX: 2,
@@ -27,6 +29,7 @@ export function AppLayout() {
   const isAdmin = roles.includes('Admin')
   const { data: profile } = useProfile()
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null)
+  const [changingPassword, setChangingPassword] = useState(false)
 
   function handleOpenMenu(event: MouseEvent<HTMLElement>) {
     setMenuAnchor(event.currentTarget)
@@ -101,6 +104,18 @@ export function AppLayout() {
             <MenuItem
               onClick={() => {
                 handleCloseMenu()
+                setChangingPassword(true)
+              }}
+            >
+              <ListItemIcon>
+                <LockOutlinedIcon fontSize="small" />
+              </ListItemIcon>
+              Zmień hasło
+            </MenuItem>
+
+            <MenuItem
+              onClick={() => {
+                handleCloseMenu()
                 logout()
               }}
             >
@@ -116,6 +131,7 @@ export function AppLayout() {
       <Outlet />
 
       <ScrollRestoration />
+      {changingPassword && <ChangePasswordDialog onClose={() => setChangingPassword(false)} />}
     </>
   )
 }

@@ -11,12 +11,17 @@ namespace DziennikPodrozy.Api.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
-    private readonly TokenService _tokenService; // NOWE
+    private readonly TokenService _tokenService;
+    private readonly IConfiguration _configuration;
 
-    public AuthController(UserManager<ApplicationUser> userManager, TokenService tokenService)
+    public AuthController(
+        UserManager<ApplicationUser> userManager,
+        TokenService tokenService,
+        IConfiguration configuration)
     {
         _userManager = userManager;
-        _tokenService = tokenService; // NOWE
+        _tokenService = tokenService;
+        _configuration = configuration;
     }
 
     [HttpPost("register")]
@@ -32,7 +37,7 @@ public class AuthController : ControllerBase
 
         if (!result.Succeeded)
         {
-            var message = string.Join(" ", result.Errors.Select(DescribeIdentityError));
+            var message = string.Join(" ", result.Errors.Select(IdentityErrorTranslator.Describe));
 
             return BadRequest(new { message });
         }
@@ -42,18 +47,13 @@ public class AuthController : ControllerBase
         return Ok(new { message = "Konto zostało utworzone." });
     }
 
-    private static string DescribeIdentityError(IdentityError error)
+    private object LoginError(string message, string hint)
     {
-        return error.Code switch
+        return new
         {
-            "DuplicateUserName" => "Ten login jest już zajęty.",
-            "DuplicateEmail" => "Konto z tym adresem e-mail już istnieje.",
-            "InvalidUserName" => "Login może zawierać tylko litery, cyfry oraz znaki - . _ @ +",
-            "InvalidEmail" => "Adres e-mail jest nieprawidłowy.",
-            "PasswordTooShort" => "Hasło musi mieć co najmniej 8 znaków.",
-            "PasswordRequiresDigit" => "Hasło musi zawierać cyfrę.",
-            "PasswordRequiresUpper" => "Hasło musi zawierać wielką literę.",
-            _ => error.Description
+            message,
+            hint,
+            contactEmail = _configuration["Contact:AdminEmail"]
         };
     }
 
@@ -64,12 +64,16 @@ public class AuthController : ControllerBase
 
         if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
         {
-            return Unauthorized(new { message = "Nieprawidłowy e-mail lub hasło." });
+            return Unauthorized(LoginError(
+                "Nieprawidłowy e-mail lub hasło.",
+                "Jeśli nie pamiętasz hasła, skontaktuj się z administratorem."));
         }
 
         if (await _userManager.IsLockedOutAsync(user))
         {
-            return StatusCode(403, new { message = "Konto zostało zawieszone. Skontaktuj się z administratorem." });
+            return StatusCode(403, LoginError(
+                "Konto zostało zawieszone.",
+                "Skontaktuj się z administratorem."));
         }
 
         user.LastActiveAt = DateTime.UtcNow;

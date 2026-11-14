@@ -10,7 +10,8 @@ import { AuthFormContainer } from '../../components/common/AuthFormContainer'
 import { Link } from 'react-router-dom'
 import MuiLink from '@mui/material/Link'
 import { AuthLayout } from '../../components/common/AuthLayout'
-import { getErrorMessage } from '../../api/getErrorMessage'
+import { isAxiosError } from 'axios'
+import AlertTitle from '@mui/material/AlertTitle'
 
 function LoginPage() {
   const [email, setEmail] = useState('')
@@ -33,6 +34,12 @@ function LoginPage() {
     )
   }
 
+  const errorBody = isAxiosError(login.error)
+    ? (login.error.response?.data as
+        | { message?: string; hint?: string; contactEmail?: string }
+        | undefined)
+    : undefined
+
   return (
     <AuthLayout>
       <AuthFormContainer onSubmit={handleSubmit}>
@@ -42,7 +49,18 @@ function LoginPage() {
 
         {login.isError && (
           <Alert severity="error">
-            {getErrorMessage(login.error, 'Nieprawidłowy e-mail lub hasło.')}
+            <AlertTitle>{errorBody?.message ?? 'Nie udało się zalogować.'}</AlertTitle>
+
+            {errorBody?.hint}
+
+            {errorBody?.contactEmail && (
+              <>
+                <br />
+                <MuiLink href={`mailto:${errorBody.contactEmail}`}>
+                  {errorBody.contactEmail}
+                </MuiLink>
+              </>
+            )}
           </Alert>
         )}
 

@@ -85,6 +85,28 @@ public class ProfileController : ControllerBase
         return Ok(ToDto(user));
     }
 
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangePassword(ChangePasswordDto dto)
+    {
+        var user = await _userManager.GetUserAsync(User);
+
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
+
+        if (!result.Succeeded)
+        {
+            var message = string.Join(" ", result.Errors.Select(IdentityErrorTranslator.Describe));
+
+            return BadRequest(new { message });
+        }
+
+        return NoContent();
+    }
+
     private static ProfileDto ToDto(ApplicationUser user)
     {
         return new ProfileDto
