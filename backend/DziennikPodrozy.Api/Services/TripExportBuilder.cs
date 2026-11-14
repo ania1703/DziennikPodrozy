@@ -1,8 +1,10 @@
 using System.Globalization;
+using System.IO.Compression;
 using System.Net;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using DziennikPodrozy.Api.DTOs;
 using DziennikPodrozy.Api.Models;
@@ -11,28 +13,30 @@ namespace DziennikPodrozy.Api.Services;
 
 public static class TripExportBuilder
 {
-    public static TripExportDto Build(
+    public static TripExportResult Build(
         Trip trip,
         List<TripStop> stops,
         Dictionary<DateOnly, string> dayNotes,
-        string baseUrl)
+        bool withFiles)
     {
+        var files = new List<ExportedFile>();
         var days = new List<ExportDayDto>();
         var number = 0;
 
         foreach (var group in stops.GroupBy(s => s.Date))
         {
+            var dayNumber = DayNumber(trip, group.Key);
             var exportStops = new List<ExportStopDto>();
 
             foreach (var stop in group)
             {
                 number++;
-                exportStops.Add(ToStopDto(stop, number, baseUrl));
+                exportStops.Add(ToStopDto(stop, number, dayNumber, withFiles, files));
             }
 
             days.Add(new ExportDayDto(
                 group.Key,
-                DayNumber(trip, group.Key),
+                dayNumber,
                 dayNotes.GetValueOrDefault(group.Key),
                 exportStops));
         }
@@ -45,9 +49,13 @@ public static class TripExportBuilder
             }
         }
 
-        var cover = trip.CoverPhotoUrl == null
-            ? null
-            : new ExportFileDto(Path.GetFileName(trip.CoverPhotoUrl), baseUrl + trip.CoverPhotoUrl, null);
+        string? coverFile = null;
+
+        if (withFiles && trip.CoverPhotoUrl != null)
+        {
+            coverFile = $"zdjecie-glowne{Path.GetExtension(trip.CoverPhotoUrl)}";
+            files.Add(new ExportedFile(trip.CoverPhotoUrl, coverFile));
+        }
 
         var exportTrip = new ExportTripDto(
             trip.Title,
@@ -57,9 +65,12 @@ public static class TripExportBuilder
             trip.Status.ToString(),
             trip.IsDescribed,
             trip.NextTimeNote,
-            cover);
+            trip.CoverPhotoUrl != null,
+            coverFile);
 
-        return new TripExportDto(DateTime.UtcNow, exportTrip, days.OrderBy(d => d.Date).ToList());
+        var export = new TripExportDto(DateTime.UtcNow, exportTrip, days.OrderBy(d => d.Date).ToList());
+
+        return new TripExportResult(export, files);
     }
 
     public static string BuildFileName(Trip trip, string format)
@@ -81,7 +92,8 @@ public static class TripExportBuilder
         {
             WriteIndented = true,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
 
         return JsonSerializer.SerializeToUtf8Bytes(export, options);
@@ -107,9 +119,9 @@ public static class TripExportBuilder
         text.AppendLine($"Status: {StatusLabel(trip.Status)}");
         text.AppendLine($"Dziennik opisany: {(trip.IsDescribed ? "tak" : "nie")}");
 
-        if (trip.CoverPhoto != null)
+        if (trip.HasCoverPhoto)
         {
-            text.AppendLine($"Zdjęcie główne: {trip.CoverPhoto.FileName} ({trip.CoverPhoto.Url})");
+            text.AppendLine($"Zdjęcie główne: {trip.CoverPhotoFile ?? "tak"}");
         }
 
         foreach (var day in export.Days)
@@ -138,6 +150,43 @@ public static class TripExportBuilder
         }
 
         return Encoding.UTF8.GetPreamble().Concat(Encoding.UTF8.GetBytes(text.ToString())).ToArray();
+    }
+
+    public static async Task<byte[]> ToZipBytesAsync(TripExportResult result, FileStorageService storage)
+    {
+        using var memory = new MemoryStream();
+
+        using (var archive = new ZipArchive(memory, ZipArchiveMode.Create, leaveOpen: true))
+        {
+            await AddBytesAsync(archive, "dziennik.txt", ToTextBytes(result.Export));
+            await AddBytesAsync(archive, "dane.json", ToJsonBytes(result.Export));
+
+            foreach (var file in result.Files)
+            {
+                var path = storage.FindPath(file.StoredUrl);
+
+                if (path == null)
+                {
+                    continue;
+                }
+
+                var entry = archive.CreateEntry(file.EntryName, CompressionLevel.Fastest);
+
+                await using var entryStream = entry.Open();
+                await using var source = File.OpenRead(path);
+                await source.CopyToAsync(entryStream);
+            }
+        }
+
+        return memory.ToArray();
+    }
+
+    private static async Task AddBytesAsync(ZipArchive archive, string name, byte[] bytes)
+    {
+        var entry = archive.CreateEntry(name, CompressionLevel.Optimal);
+
+        await using var stream = entry.Open();
+        await stream.WriteAsync(bytes);
     }
 
     private static void AppendStop(StringBuilder text, ExportStopDto stop)
@@ -170,33 +219,63 @@ public static class TripExportBuilder
             }
         }
 
-        if (stop.Photos.Count > 0)
+        AppendPhotos(text, stop.Photos);
+        AppendRecordings(text, stop.Recordings);
+    }
+
+    private static void AppendPhotos(StringBuilder text, List<ExportPhotoDto> photos)
+    {
+        if (photos.Count == 0)
+        {
+            return;
+        }
+
+        if (photos.Any(p => p.File != null))
         {
             text.AppendLine("  Zdjęcia:");
 
-            foreach (var photo in stop.Photos)
+            foreach (var photo in photos)
             {
                 var caption = string.IsNullOrWhiteSpace(photo.Caption) ? "" : $" | {photo.Caption}";
 
-                text.AppendLine($"    - {photo.FileName} ({photo.Url}){caption}");
+                text.AppendLine($"    - {photo.File}{caption}");
             }
+
+            return;
         }
 
-        if (stop.Recordings.Count > 0)
+        text.AppendLine($"  Zdjęcia: {photos.Count}");
+
+        foreach (var photo in photos.Where(p => !string.IsNullOrWhiteSpace(p.Caption)))
         {
-            text.AppendLine("  Nagrania:");
-
-            foreach (var recording in stop.Recordings)
-            {
-                var duration = $"{recording.DurationSeconds / 60}:{recording.DurationSeconds % 60:00}";
-
-                text.AppendLine(
-                    $"    - {recording.FileName}, {duration}, nagrano {recording.RecordedAt:yyyy-MM-dd HH:mm} UTC ({recording.Url})");
-            }
+            text.AppendLine($"    - {photo.Caption}");
         }
     }
 
-    private static ExportStopDto ToStopDto(TripStop stop, int number, string baseUrl)
+    private static void AppendRecordings(StringBuilder text, List<ExportRecordingDto> recordings)
+    {
+        if (recordings.Count == 0)
+        {
+            return;
+        }
+
+        text.AppendLine(recordings.Any(r => r.File != null) ? "  Nagrania:" : $"  Nagrania: {recordings.Count}");
+
+        foreach (var recording in recordings)
+        {
+            var duration = $"{recording.DurationSeconds / 60}:{recording.DurationSeconds % 60:00}";
+            var file = recording.File == null ? "" : $"{recording.File}, ";
+
+            text.AppendLine($"    - {file}{duration}, nagrano {recording.RecordedAt:yyyy-MM-dd HH:mm} UTC");
+        }
+    }
+
+    private static ExportStopDto ToStopDto(
+        TripStop stop,
+        int number,
+        int dayNumber,
+        bool withFiles,
+        List<ExportedFile> files)
     {
         var entryHtml = string.IsNullOrWhiteSpace(stop.Note) ? null : stop.Note;
         var entry = entryHtml == null ? null : HtmlToText(entryHtml);
@@ -213,19 +292,40 @@ public static class TripExportBuilder
                 stop.PrecipitationMm ?? 0);
         }
 
-        var photos = stop.Photos
-            .OrderBy(p => p.SortOrder)
-            .Select(p => new ExportFileDto(Path.GetFileName(p.Url), baseUrl + p.Url, p.Caption))
-            .ToList();
+        var prefix = $"dzien-{dayNumber}_{number:00}-{Slug(stop.Title)}";
+        var photos = new List<ExportPhotoDto>();
+        var recordings = new List<ExportRecordingDto>();
+        var index = 0;
 
-        var recordings = stop.Recordings
-            .OrderBy(r => r.CreatedAt)
-            .Select(r => new ExportRecordingDto(
-                Path.GetFileName(r.Url),
-                baseUrl + r.Url,
-                r.DurationSeconds,
-                r.CreatedAt))
-            .ToList();
+        foreach (var photo in stop.Photos.OrderBy(p => p.SortOrder))
+        {
+            index++;
+            string? name = null;
+
+            if (withFiles)
+            {
+                name = $"zdjecia/{prefix}_{index}{Path.GetExtension(photo.Url)}";
+                files.Add(new ExportedFile(photo.Url, name));
+            }
+
+            photos.Add(new ExportPhotoDto(name, photo.Caption));
+        }
+
+        index = 0;
+
+        foreach (var recording in stop.Recordings.OrderBy(r => r.CreatedAt))
+        {
+            index++;
+            string? name = null;
+
+            if (withFiles)
+            {
+                name = $"nagrania/{prefix}_{index}{Path.GetExtension(recording.Url)}";
+                files.Add(new ExportedFile(recording.Url, name));
+            }
+
+            recordings.Add(new ExportRecordingDto(name, recording.DurationSeconds, recording.CreatedAt));
+        }
 
         return new ExportStopDto(
             number,
@@ -259,6 +359,31 @@ public static class TripExportBuilder
             "Finished" => "zakończona",
             _ => status
         };
+    }
+
+    private static string Slug(string text)
+    {
+        var normalized = text.ToLowerInvariant().Normalize(NormalizationForm.FormD).Replace('ł', 'l');
+        var builder = new StringBuilder();
+
+        foreach (var c in normalized)
+        {
+            if (CharUnicodeInfo.GetUnicodeCategory(c) == UnicodeCategory.NonSpacingMark)
+            {
+                continue;
+            }
+
+            builder.Append(char.IsAsciiLetterOrDigit(c) ? c : '-');
+        }
+
+        var slug = Regex.Replace(builder.ToString(), "-{2,}", "-").Trim('-');
+
+        if (slug.Length > 40)
+        {
+            slug = slug[..40].Trim('-');
+        }
+
+        return slug.Length == 0 ? "przystanek" : slug;
     }
 
     private static string DescribeWeather(int code)

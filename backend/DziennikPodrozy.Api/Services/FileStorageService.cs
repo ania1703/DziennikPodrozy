@@ -75,6 +75,24 @@ public class FileStorageService
         }
     }
 
+    public string? FindPath(string? url)
+    {
+        if (string.IsNullOrEmpty(url))
+        {
+            return null;
+        }
+
+        var root = Path.GetFullPath(_webRoot);
+        var filePath = Path.GetFullPath(Path.Combine(root, url.TrimStart('/')));
+
+        if (!filePath.StartsWith(root + Path.DirectorySeparatorChar))
+        {
+            return null;
+        }
+
+        return File.Exists(filePath) ? filePath : null;
+    }
+
     private static SavedFile? CheckFile(IFormFile? file, long maxSizeBytes)
     {
         if (file == null || file.Length == 0)

@@ -1,8 +1,8 @@
 namespace DziennikPodrozy.Api.DTOs;
 
-public record ExportFileDto(string FileName, string Url, string? Caption);
+public record ExportPhotoDto(string? File, string? Caption);
 
-public record ExportRecordingDto(string FileName, string Url, int DurationSeconds, DateTime RecordedAt);
+public record ExportRecordingDto(string? File, int DurationSeconds, DateTime RecordedAt);
 
 public record ExportWeatherDto(
     int WeatherCode,
@@ -20,7 +20,7 @@ public record ExportStopDto(
     ExportWeatherDto? Weather,
     string? Entry,
     string? EntryHtml,
-    List<ExportFileDto> Photos,
+    List<ExportPhotoDto> Photos,
     List<ExportRecordingDto> Recordings);
 
 public record ExportDayDto(DateOnly Date, int DayNumber, string? Note, List<ExportStopDto> Stops);
@@ -33,6 +33,11 @@ public record ExportTripDto(
     string Status,
     bool IsDescribed,
     string? NextTimeNote,
-    ExportFileDto? CoverPhoto);
+    bool HasCoverPhoto,
+    string? CoverPhotoFile);
 
 public record TripExportDto(DateTime ExportedAt, ExportTripDto Trip, List<ExportDayDto> Days);
+
+public record ExportedFile(string StoredUrl, string EntryName);
+
+public record TripExportResult(TripExportDto Export, List<ExportedFile> Files);

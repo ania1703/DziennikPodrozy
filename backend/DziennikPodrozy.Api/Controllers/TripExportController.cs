@@ -13,10 +13,12 @@ namespace DziennikPodrozy.Api.Controllers;
 public class TripExportController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly FileStorageService _fileStorage;
 
-    public TripExportController(AppDbContext context)
+    public TripExportController(AppDbContext context, FileStorageService fileStorage)
     {
         _context = context;
+        _fileStorage = fileStorage;
     }
 
     private string OwnerId => User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -24,9 +26,9 @@ public class TripExportController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Export(int tripId, [FromQuery] string format = "json")
     {
-        if (format != "json" && format != "txt")
+        if (format != "json" && format != "txt" && format != "zip")
         {
-            return BadRequest(new { message = "Nieobsługiwany format. Dozwolone: json, txt." });
+            return BadRequest(new { message = "Nieobsługiwany format. Dozwolone: json, txt, zip." });
         }
 
         var trip = await _context.Trips
@@ -50,12 +52,17 @@ public class TripExportController : ControllerBase
             .Where(n => n.TripId == tripId)
             .ToDictionaryAsync(n => n.Date, n => n.Text);
 
-        var baseUrl = $"{Request.Scheme}://{Request.Host}";
-        var export = TripExportBuilder.Build(trip, stops, dayNotes, baseUrl);
+        var result = TripExportBuilder.Build(trip, stops, dayNotes, withFiles: format == "zip");
         var fileName = TripExportBuilder.BuildFileName(trip, format);
 
-        return format == "txt"
-            ? File(TripExportBuilder.ToTextBytes(export), "text/plain; charset=utf-8", fileName)
-            : File(TripExportBuilder.ToJsonBytes(export), "application/json", fileName);
+        return format switch
+        {
+            "txt" => File(TripExportBuilder.ToTextBytes(result.Export), "text/plain; charset=utf-8", fileName),
+            "zip" => File(
+                await TripExportBuilder.ToZipBytesAsync(result, _fileStorage),
+                "application/zip",
+                fileName),
+            _ => File(TripExportBuilder.ToJsonBytes(result.Export), "application/json", fileName)
+        };
     }
 }

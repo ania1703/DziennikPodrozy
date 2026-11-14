@@ -1430,3 +1430,7 @@ Authorization: Bearer {{loginUser.response.body.$.token}}
 ### EKSPORT: cudza podróż jako ADMIN (oczekiwane: 404)
 GET {{host}}/api/trips/16/export?format=txt
 Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+### EKSPORT ZIP: Wypad do Krakowa (oczekiwane: 200, w VS Code kliknij "Save Response Body" i otwórz archiwum: dziennik.txt, dane.json, zdjecie-glowne.jpg oraz foldery zdjecia/ i nagrania/ z czytelnymi nazwami)
+GET {{host}}/api/trips/16/export?format=zip
+Authorization: Bearer {{loginUser.response.body.$.token}}
