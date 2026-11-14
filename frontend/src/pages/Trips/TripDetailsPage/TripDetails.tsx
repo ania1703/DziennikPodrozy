@@ -14,6 +14,7 @@ import UploadCoverAction from './UploadCoverAction'
 import NextTimeNote from './NextTimeNote'
 import { DescribedChip } from '../../../components/common/DescribedChip'
 import TripStatusMenu from './TripStatusMenu'
+import ExportAction from './ExportAction'
 import TripPlan from './TripPlan'
 import {
   TripDetailsActions,
@@ -93,6 +94,8 @@ function TripDetails({ trip }: TripDetailsProps) {
             >
               Czytaj dziennik
             </Button>
+
+            <ExportAction trip={trip} />
 
             <UploadCoverAction trip={trip} />
 
