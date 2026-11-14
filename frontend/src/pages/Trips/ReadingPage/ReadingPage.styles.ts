@@ -6,6 +6,22 @@ export const ReadingContainer = styled(Box)({
   maxWidth: 1100,
   margin: '0 auto',
   padding: 24,
+  printColorAdjust: 'exact',
+  WebkitPrintColorAdjust: 'exact',
+  '@media print': {
+    maxWidth: 'none',
+    padding: 0,
+  },
+})
+
+export const ReadingToolbar = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 16,
+  '@media print': {
+    display: 'none',
+  },
 })
 
 export const ReadingCover = styled(Box)({
@@ -15,6 +31,11 @@ export const ReadingCover = styled(Box)({
   backgroundSize: 'cover',
   backgroundPosition: 'center',
   boxShadow: '0 2px 8px rgba(59, 47, 42, 0.15)',
+  '@media print': {
+    height: 240,
+    marginTop: 0,
+    boxShadow: 'none',
+  },
 })
 
 export const ReadingHeader = styled(Box)({
@@ -28,6 +49,9 @@ export const ReadingHeader = styled(Box)({
 
 export const ReadingDaySection = styled('section')({
   marginTop: 64,
+  '@media print': {
+    marginTop: 40,
+  },
 })
 
 export const ReadingDayHeader = styled(Box)({
@@ -41,6 +65,9 @@ export const ReadingDayHeader = styled(Box)({
     height: 1,
     backgroundColor: '#D9C9AE',
   },
+  '@media print': {
+    breakAfter: 'avoid',
+  },
 })
 
 export const ReadingStopRoot = styled('article')({
@@ -48,6 +75,9 @@ export const ReadingStopRoot = styled('article')({
     marginBottom: 32,
     paddingBottom: 32,
     borderBottom: '1px dashed #D9C9AE',
+  },
+  '@media print': {
+    breakInside: 'avoid',
   },
 })
 
@@ -79,6 +109,11 @@ export const ReadingPhotoGrid = styled(Box)({
   gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
   gap: 12,
   marginTop: 16,
+  '@media print': {
+    gridTemplateColumns: 'repeat(3, 1fr)',
+    gap: 8,
+    marginTop: 12,
+  },
 })
 
 export const ReadingPhoto = styled('img')({
@@ -88,6 +123,9 @@ export const ReadingPhoto = styled('img')({
   objectFit: 'cover',
   borderRadius: 8,
   cursor: 'pointer',
+  '@media print': {
+    breakInside: 'avoid',
+  },
 })
 
 export const ReadingRecordings = styled(Box)({
@@ -95,6 +133,9 @@ export const ReadingRecordings = styled(Box)({
   flexDirection: 'column',
   gap: 8,
   marginTop: 16,
+  '@media print': {
+    display: 'none',
+  },
 })
 
 export const ReadingDayNote = styled(Typography)(({ theme }) => ({
