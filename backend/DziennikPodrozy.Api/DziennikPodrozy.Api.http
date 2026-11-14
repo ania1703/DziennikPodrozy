@@ -1411,3 +1411,26 @@ Content-Type: application/json
   "email": "tester2@test.pl",
   "password": "Nowe12345"
 }
+
+### EKSPORT: bez tokenu (oczekiwane: 401)
+GET {{host}}/api/trips/16/export?format=txt
+
+### EKSPORT TXT: Wypad do Krakowa (oczekiwane: 200, czytelny tekst z dniami, przystankami, wpisami, nazwami plików zdjęć i nagrań)
+GET {{host}}/api/trips/16/export?format=txt
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### EKSPORT JSON: ta sama podróż (oczekiwane: 200, struktura "trip" i "days", w przystankach "photos" i "recordings" z fileName i url)
+GET {{host}}/api/trips/16/export?format=json
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### EKSPORT: nieobsługiwany format (oczekiwane: 400)
+GET {{host}}/api/trips/16/export?format=pdf
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+### EKSPORT: cudza podróż jako ADMIN (oczekiwane: 404)
+GET {{host}}/api/trips/16/export?format=txt
+Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+### EKSPORT ZIP: Wypad do Krakowa (oczekiwane: 200, w VS Code kliknij "Save Response Body" i otwórz archiwum: dziennik.txt, dane.json, zdjecie-glowne.jpg oraz foldery zdjecia/ i nagrania/ z czytelnymi nazwami)
+GET {{host}}/api/trips/16/export?format=zip
+Authorization: Bearer {{loginUser.response.body.$.token}}
