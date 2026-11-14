@@ -47,6 +47,7 @@ export function AppLayout() {
         sx={{
           background: 'linear-gradient(90deg, #7F4A33 0%, #6A3D2A 100%)',
           boxShadow: '0 2px 10px rgba(59, 47, 42, 0.3)',
+          '@media print': { display: 'none' },
         }}
       >
         <NavToolbar>

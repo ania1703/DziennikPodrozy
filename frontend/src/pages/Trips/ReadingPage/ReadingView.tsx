@@ -11,12 +11,15 @@ import { formatDateRange } from '../../../utils/formatDate'
 import { formatTripSummary } from '../../../utils/formatTripSummary'
 import { groupStopsByDay } from '../../../utils/groupStopsByDay'
 import { getTripFallbackColor } from '../../../utils/tripColors'
+import PictureAsPdfOutlinedIcon from '@mui/icons-material/PictureAsPdfOutlined'
+import Tooltip from '@mui/material/Tooltip'
 import ReadingStop from './ReadingStop'
 import {
   ReadingContainer,
   ReadingCover,
   ReadingDayHeader,
   ReadingDayNote,
+  ReadingToolbar,
   ReadingDaySection,
   ReadingHeader,
   ReadingNextTime,
@@ -35,11 +38,46 @@ function ReadingView({ trip }: ReadingViewProps) {
   const summary = formatTripSummary(trip)
   const days = stops ? groupStopsByDay(stops, trip.startDate) : []
 
+  async function handleDownloadPdf() {
+    const images = Array.from(document.querySelectorAll('img'))
+
+    for (const image of images) {
+      image.loading = 'eager'
+    }
+
+    await Promise.all(images.map((image) => image.decode().catch(() => undefined)))
+
+    const previousTitle = document.title
+    document.title = `${trip.title} – Dziennik Podróży`
+
+    window.addEventListener(
+      'afterprint',
+      () => {
+        document.title = previousTitle
+      },
+      { once: true },
+    )
+
+    window.print()
+  }
+
   return (
     <ReadingContainer>
-      <Button component={Link} to={`/trips/${trip.id}`}>
-        ← Wróć do podróży
-      </Button>
+      <ReadingToolbar>
+        <Button component={Link} to={`/trips/${trip.id}`}>
+          ← Wróć do podróży
+        </Button>
+
+        <Tooltip title="W oknie drukowania wybierz „Zapisz jako PDF”">
+          <Button
+            variant="outlined"
+            startIcon={<PictureAsPdfOutlinedIcon />}
+            onClick={handleDownloadPdf}
+          >
+            Pobierz PDF
+          </Button>
+        </Tooltip>
+      </ReadingToolbar>
 
       <ReadingCover
         style={{
