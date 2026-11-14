@@ -1334,3 +1334,80 @@ Authorization: Bearer {{loginAdmin.response.body.$.token}}
 ### ADMIN: lista po usunięciu (oczekiwane: 200, tester1 już nie ma na liście)
 GET {{host}}/api/admin/users
 Authorization: Bearer {{loginAdmin.response.body.$.token}}
+
+### HASŁO: rejestracja użytkownika do testów (oczekiwane: 200)
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "userName": "tester2",
+  "email": "tester2@test.pl",
+  "password": "Test12345"
+}
+
+### HASŁO: logowanie (oczekiwane: 200)
+# @name loginTester2
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "tester2@test.pl",
+  "password": "Test12345"
+}
+
+### HASŁO: zmiana bez tokenu (oczekiwane: 401)
+POST {{host}}/api/profile/change-password
+Content-Type: application/json
+
+{
+  "currentPassword": "Test12345",
+  "newPassword": "Nowe12345"
+}
+
+### HASŁO: złe obecne hasło (oczekiwane: 400, "Obecne hasło jest nieprawidłowe.")
+POST {{host}}/api/profile/change-password
+Content-Type: application/json
+Authorization: Bearer {{loginTester2.response.body.$.token}}
+
+{
+  "currentPassword": "Zle12345",
+  "newPassword": "Nowe12345"
+}
+
+### HASŁO: za słabe nowe hasło (oczekiwane: 400, komunikaty o długości, wielkiej literze i cyfrze)
+POST {{host}}/api/profile/change-password
+Content-Type: application/json
+Authorization: Bearer {{loginTester2.response.body.$.token}}
+
+{
+  "currentPassword": "Test12345",
+  "newPassword": "abc"
+}
+
+### HASŁO: poprawna zmiana (oczekiwane: 204)
+POST {{host}}/api/profile/change-password
+Content-Type: application/json
+Authorization: Bearer {{loginTester2.response.body.$.token}}
+
+{
+  "currentPassword": "Test12345",
+  "newPassword": "Nowe12345"
+}
+
+### HASŁO: logowanie starym hasłem (oczekiwane: 401)
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "tester2@test.pl",
+  "password": "Test12345"
+}
+
+### HASŁO: logowanie nowym hasłem (oczekiwane: 200)
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "tester2@test.pl",
+  "password": "Nowe12345"
+}
