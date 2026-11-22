@@ -1,32 +1,35 @@
 @host = https://localhost:7168
 
 ### Rejestracja
+# @prompt userPassword Hasło dla konta ania
 POST {{host}}/api/auth/register
 Content-Type: application/json
 
 {
   "userName": "ania",
   "email": "ania@test.pl",
-  "password": "Haslo1234"
+  "password": "{{userPassword}}"
 }
 
 ### Logowanie
+# @prompt userPassword Hasło konta ania
 POST {{host}}/api/auth/login
 Content-Type: application/json
 
 {
   "email": "ania@test.pl",
-  "password": "Haslo1234"
+  "password": "{{userPassword}}"
 }
 
 ### Logowanie admina
 # @name loginAdmin
+# @prompt adminPassword Hasło administratora
 POST {{host}}/api/auth/login
 Content-Type: application/json
 
 {
   "email": "admin@dziennik.pl",
-  "password": "Admin12345"
+  "password": "{{adminPassword}}"
 }
 
 ### Ping admina BEZ tokenu (oczekiwane: 401)
@@ -37,23 +40,25 @@ GET {{host}}/api/admin/ping
 Authorization: Bearer {{loginAdmin.response.body.$.token}}
 
 ### Rejestracja zwykłego użytkownika
+# @prompt userPassword Hasło dla konta ola
 POST {{host}}/api/auth/register
 Content-Type: application/json
 
 {
   "userName": "ola",
   "email": "ola@test.pl",
-  "password": "Haslo1234"
+  "password": "{{userPassword}}"
 }
 
 ### Logowanie zwykłego użytkownika
 # @name loginUser
+# @prompt userPassword Hasło konta ola
 POST {{host}}/api/auth/login
 Content-Type: application/json
 
 {
   "email": "ola@test.pl",
-  "password": "Haslo1234"
+  "password": "{{userPassword}}"
 }
 
 ### Ping admina jako ZWYKŁY UŻYTKOWNIK (oczekiwane: 403)

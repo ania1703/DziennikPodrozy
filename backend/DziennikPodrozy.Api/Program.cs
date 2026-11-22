@@ -27,6 +27,11 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
     .AddEntityFrameworkStores<AppDbContext>();
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
+if (string.IsNullOrWhiteSpace(jwtSettings["Key"]) || jwtSettings["Key"]!.Length < 32)
+{
+    throw new InvalidOperationException(
+        "Brak klucza Jwt:Key (minimum 32 znaki). Ustaw go poleceniem: dotnet user-secrets set \"Jwt:Key\" \"<klucz>\"");
+}
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
