@@ -413,7 +413,8 @@ export const PhotoThumb = styled('img')({
   display: 'block',
   width: '100%',
   aspectRatio: '1 / 1',
-  objectFit: 'cover',
+  objectFit: 'contain',
+  backgroundColor: '#F3EBDD',
   borderRadius: 8,
   cursor: 'pointer',
 })
