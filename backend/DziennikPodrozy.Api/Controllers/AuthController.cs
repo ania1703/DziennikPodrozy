@@ -37,14 +37,30 @@ public class AuthController : ControllerBase
 
         if (!result.Succeeded)
         {
+            var errors = result.Errors
+                .GroupBy(error => FieldOf(error.Code))
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Select(IdentityErrorTranslator.Describe).ToArray());
+
             var message = string.Join(" ", result.Errors.Select(IdentityErrorTranslator.Describe));
 
-            return BadRequest(new { message });
+            return BadRequest(new { message, errors });
         }
 
         await _userManager.AddToRoleAsync(user, "User");
 
         return Ok(new { message = "Konto zostało utworzone." });
+    }
+
+    private static string FieldOf(string errorCode)
+    {
+        if (errorCode.Contains("Password"))
+        {
+            return "password";
+        }
+
+        return errorCode.Contains("Email") ? "email" : "userName";
     }
 
     private object LoginError(string message, string hint)

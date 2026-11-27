@@ -15,6 +15,7 @@ public static class IdentityErrorTranslator
             "PasswordTooShort" => "Hasło musi mieć co najmniej 8 znaków.",
             "PasswordRequiresDigit" => "Hasło musi zawierać cyfrę.",
             "PasswordRequiresUpper" => "Hasło musi zawierać wielką literę.",
+            "PasswordRequiresLower" => "Hasło musi zawierać małą literę.",
             "PasswordMismatch" => "Obecne hasło jest nieprawidłowe.",
             _ => error.Description
         };
