@@ -120,7 +120,8 @@ export const ReadingPhoto = styled('img')({
   display: 'block',
   width: '100%',
   aspectRatio: '4 / 3',
-  objectFit: 'cover',
+  objectFit: 'contain',
+  backgroundColor: '#F3EBDD',
   borderRadius: 8,
   cursor: 'pointer',
   '@media print': {
