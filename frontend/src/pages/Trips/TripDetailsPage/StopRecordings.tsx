@@ -6,6 +6,7 @@ import Alert from '@mui/material/Alert'
 import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
+import Fade from '@mui/material/Fade'
 import { useDeleteStopRecording } from '../../../api/useDeleteStopRecording'
 import { getFileUrl } from '../../../api/fileUrl'
 import type { StopRecording, TripStop } from '../../../api/useTripStops'
@@ -96,6 +97,23 @@ function StopRecordings({ tripId, stop }: StopRecordingsProps) {
         <Alert severity="error" sx={{ marginBottom: 1 }}>
           Nie udało się zapisać nagrania. Spróbuj ponownie.
         </Alert>
+      )}
+
+      {recorder.status === 'requesting' && (
+        <Fade in style={{ transitionDelay: '600ms' }}>
+          <Alert
+            severity="info"
+            sx={{ marginBottom: 1 }}
+            action={
+              <Button color="inherit" size="small" onClick={() => recorder.reset()}>
+                Anuluj
+              </Button>
+            }
+          >
+            Czekamy na zgodę na mikrofon. Jeśli nie widzisz pytania, kliknij ikonę obok paska
+            adresu i wybierz „Zezwól”.
+          </Alert>
+        </Fade>
       )}
 
       {recorder.status === 'recording' && (

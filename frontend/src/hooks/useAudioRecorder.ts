@@ -1,8 +1,26 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-export type RecorderStatus = 'idle' | 'recording' | 'recorded'
+export type RecorderStatus = 'idle' | 'requesting' | 'recording' | 'recorded'
 
 const MAX_SECONDS = 300
+
+function describeError(error: unknown): string {
+  const name = error instanceof DOMException ? error.name : ''
+
+  if (name === 'NotAllowedError' || name === 'SecurityError') {
+    return 'Przeglądarka blokuje mikrofon. Kliknij ikonę obok paska adresu, zezwól na mikrofon i spróbuj ponownie. Jeśli to nie pomaga, sprawdź ustawienia prywatności systemu.'
+  }
+
+  if (name === 'NotFoundError') {
+    return 'Nie znaleziono mikrofonu. Podłącz go i spróbuj ponownie.'
+  }
+
+  if (name === 'NotReadableError') {
+    return 'Nie można użyć mikrofonu. Być może korzysta z niego inny program.'
+  }
+
+  return 'Nie udało się rozpocząć nagrywania.'
+}
 
 export function useAudioRecorder() {
   const [status, setStatus] = useState<RecorderStatus>('idle')
@@ -15,6 +33,7 @@ export function useAudioRecorder() {
   const chunksRef = useRef<Blob[]>([])
   const timerRef = useRef<number | null>(null)
   const secondsRef = useRef(0)
+  const requestRef = useRef(0)
 
   const cleanup = useCallback(() => {
     if (timerRef.current !== null) {
@@ -35,8 +54,23 @@ export function useAudioRecorder() {
   const start = useCallback(async () => {
     setError(null)
 
+    if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') {
+      setError('Ta przeglądarka nie pozwala tutaj nagrywać. Użyj aktualnej przeglądarki.')
+      return
+    }
+
+    requestRef.current += 1
+    const request = requestRef.current
+    setStatus('requesting')
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+
+      if (request !== requestRef.current) {
+        stream.getTracks().forEach((track) => track.stop())
+        return
+      }
+
       const recorder = new MediaRecorder(stream)
 
       streamRef.current = stream
@@ -70,14 +104,20 @@ export function useAudioRecorder() {
           stop()
         }
       }, 1000)
-    } catch {
+    } catch (caught) {
+      if (request !== requestRef.current) {
+        return
+      }
+
       cleanup()
-      setError('Nie udało się uzyskać dostępu do mikrofonu. Sprawdź zgodę w przeglądarce.')
+      setError(describeError(caught))
       setStatus('idle')
     }
   }, [cleanup, stop])
 
   const reset = useCallback(() => {
+    requestRef.current += 1
+
     if (recorderRef.current && recorderRef.current.state !== 'inactive') {
       recorderRef.current.onstop = null
       recorderRef.current.stop()
