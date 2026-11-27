@@ -58,7 +58,7 @@ export function ChangePasswordDialog({ onClose }: ChangePasswordDialogProps) {
             autoComplete="new-password"
             value={newPassword}
             onChange={(event) => setNewPassword(event.target.value)}
-            helperText="Min. 8 znaków, wielka litera i cyfra"
+            helperText="Min. 8 znaków, wielka i mała litera, cyfra"
             required
           />
 

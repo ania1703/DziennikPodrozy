@@ -2,7 +2,11 @@ import { isAxiosError } from 'axios'
 
 export function getErrorMessage(error: unknown, fallback: string): string {
   if (isAxiosError(error)) {
-    const message = error.response?.data?.message
+    if (!error.response) {
+      return 'Brak połączenia z serwerem. Spróbuj ponownie za chwilę.'
+    }
+
+    const message = error.response.data?.message
 
     if (typeof message === 'string') {
       return message
